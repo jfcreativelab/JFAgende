@@ -45,7 +45,7 @@ const EstabelecimentoCard = ({
       className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] cursor-pointer"
       onClick={() => navigate(`/estabelecimento/${estabelecimento.id}`)}
     >
-      {/* Imagem de Capa */}
+      {/* Imagem de Capa com Logo */}
       <div className="relative h-48 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 overflow-hidden">
         {estabelecimento.imagemCapa ? (
           <img 
@@ -56,6 +56,17 @@ const EstabelecimentoCard = ({
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <MapPin size={64} className="text-primary-600 dark:text-primary-400 opacity-50" />
+          </div>
+        )}
+
+        {/* Logo do Estabelecimento */}
+        {estabelecimento.fotoPerfilUrl && (
+          <div className="absolute top-4 left-4 w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-lg">
+            <img 
+              src={estabelecimento.fotoPerfilUrl} 
+              alt={`Logo ${estabelecimento.nome}`}
+              className="w-full h-full object-cover"
+            />
           </div>
         )}
 
