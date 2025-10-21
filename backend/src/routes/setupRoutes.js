@@ -113,4 +113,109 @@ router.get('/database-status', async (req, res) => {
   }
 })
 
+// Endpoint para configurar Stripe
+router.post('/setup-stripe', async (req, res) => {
+  try {
+    console.log('🚀 Iniciando setup do Stripe...')
+
+    // Verificar se a chave do Stripe está configurada
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return res.status(400).json({
+        success: false,
+        message: 'STRIPE_SECRET_KEY não configurada no Railway'
+      })
+    }
+
+    const stripe = (await import('stripe')).default
+    const stripeClient = new stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2023-10-16',
+    })
+
+    // Buscar planos (exceto FREE)
+    const planos = await prisma.plano.findMany({
+      where: {
+        nome: { not: 'FREE' },
+        ativo: true,
+      },
+    })
+
+    if (planos.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Nenhum plano encontrado para configurar no Stripe'
+      })
+    }
+
+    const resultados = []
+
+    for (const plano of planos) {
+      try {
+        // Criar produto no Stripe
+        const product = await stripeClient.products.create({
+          name: `JFAgende - Plano ${plano.nome}`,
+          description: plano.descricao,
+          metadata: {
+            plano_id: plano.id,
+            plano_nome: plano.nome,
+          },
+        })
+
+        // Criar preço no Stripe
+        const price = await stripeClient.prices.create({
+          product: product.id,
+          currency: 'brl',
+          unit_amount: Math.round(plano.preco * 100),
+          recurring: {
+            interval: 'month',
+            interval_count: 1,
+          },
+          metadata: {
+            plano_id: plano.id,
+            plano_nome: plano.nome,
+          },
+        })
+
+        // Atualizar plano no banco
+        await prisma.plano.update({
+          where: { id: plano.id },
+          data: {
+            stripeProductId: product.id,
+            stripePriceId: price.id,
+          },
+        })
+
+        resultados.push({
+          plano: plano.nome,
+          productId: product.id,
+          priceId: price.id,
+          sucesso: true
+        })
+
+        console.log(`✅ ${plano.nome}: ${price.id}`)
+      } catch (error) {
+        resultados.push({
+          plano: plano.nome,
+          erro: error.message,
+          sucesso: false
+        })
+        console.error(`❌ ${plano.nome}: ${error.message}`)
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'Setup do Stripe concluído',
+      resultados
+    })
+
+  } catch (error) {
+    console.error('❌ Erro no setup do Stripe:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao configurar Stripe',
+      error: error.message
+    })
+  }
+})
+
 export default router
