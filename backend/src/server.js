@@ -20,6 +20,7 @@ import portfolioRoutes from './routes/portfolioRoutes.js';
 import planoRoutes from './routes/planoRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import pagamentoRoutes from './routes/pagamentoRoutes.js';
+import setupRoutes from './routes/setupRoutes.js';
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -62,6 +63,7 @@ app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/planos', planoRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/pagamento', pagamentoRoutes);
+app.use('/api/setup', setupRoutes);
 
 // Servir arquivos estáticos (imagens do portfólio)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
