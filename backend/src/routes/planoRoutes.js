@@ -8,7 +8,8 @@ import {
   verificarDestaque,
   listarDestaques,
   compararPlanos,
-  ativarDestaque
+  ativarDestaque,
+  criarPlano
 } from '../controllers/planoController.js';
 
 const router = express.Router();
@@ -19,6 +20,13 @@ const router = express.Router();
  * @access  Public
  */
 router.get('/', listarPlanos);
+
+/**
+ * @route   POST /planos
+ * @desc    Criar novo plano (apenas para setup)
+ * @access  Public (apenas para setup inicial)
+ */
+router.post('/', criarPlano);
 
 /**
  * @route   GET /planos/comparar

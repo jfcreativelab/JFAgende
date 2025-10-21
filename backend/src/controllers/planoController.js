@@ -344,3 +344,48 @@ export const ativarDestaque = async (req, res) => {
   }
 };
 
+/**
+ * Criar novo plano (apenas para setup)
+ */
+export const criarPlano = async (req, res) => {
+  try {
+    const {
+      nome,
+      descricao,
+      preco,
+      limiteAgendamentos,
+      limiteAgendamentosDia,
+      permitePortfolio,
+      permiteRelatorios,
+      permiteDestaque,
+      diasDestaque,
+      ativo = true
+    } = req.body;
+
+    // Validações básicas
+    if (!nome || !descricao || preco === undefined) {
+      return res.status(400).json({ error: 'Nome, descrição e preço são obrigatórios' });
+    }
+
+    const plano = await prisma.plano.create({
+      data: {
+        nome,
+        descricao,
+        preco: parseFloat(preco),
+        limiteAgendamentos: parseInt(limiteAgendamentos) || 0,
+        limiteAgendamentosDia: parseInt(limiteAgendamentosDia) || 0,
+        permitePortfolio: Boolean(permitePortfolio),
+        permiteRelatorios: Boolean(permiteRelatorios),
+        permiteDestaque: Boolean(permiteDestaque),
+        diasDestaque: parseInt(diasDestaque) || 0,
+        ativo: Boolean(ativo)
+      }
+    });
+
+    res.status(201).json(plano);
+  } catch (error) {
+    console.error('Erro ao criar plano:', error);
+    res.status(500).json({ error: 'Erro ao criar plano' });
+  }
+};
+

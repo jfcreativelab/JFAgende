@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Setup JFAgende</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin: 20px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Teste Setup JFAgende</h1>
+    
+    <button onclick="checkStatus()">1. Verificar Status do Banco</button>
+    <button onclick="populateDatabase()">2. Popular Banco de Dados</button>
+    
+    <div id="result" class="result" style="display: none;"></div>
+
+    <script>
+        const API_BASE = 'https://jfagende-production.up.railway.app/api';
+        
+        function showResult(message, isSuccess = true) {
+            const result = document.getElementById('result');
+            result.style.display = 'block';
+            result.className = `result ${isSuccess ? 'success' : 'error'}`;
+            result.innerHTML = message;
+        }
+
+        async function checkStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/planos`);
+                const planos = await response.json();
+                
+                showResult(`
+                    <h3>✅ Status do Banco:</h3>
+                    <p><strong>Planos encontrados:</strong> ${planos.length}</p>
+                    ${planos.length > 0 ? `
+                        <h4>Planos disponíveis:</h4>
+                        <ul>
+                            ${planos.map(plano => `<li><strong>${plano.nome}</strong> - R$ ${plano.preco}</li>`).join('')}
+                        </ul>
+                    ` : '<p>Nenhum plano encontrado. Clique em "Popular Banco de Dados" para criar os planos.</p>'}
+                `);
+            } catch (error) {
+                showResult(`❌ Erro de conexão: ${error.message}`, false);
+            }
+        }
+
+        async function populateDatabase() {
+            try {
+                // Criar planos diretamente via API
+                const planos = [
+                    {
+                        nome: 'FREE',
+                        descricao: 'Plano gratuito para começar',
+                        preco: 0,
+                        limiteAgendamentos: 10,
+                        limiteAgendamentosDia: 2,
+                        permitePortfolio: false,
+                        permiteRelatorios: false,
+                        permiteDestaque: false,
+                        diasDestaque: 0,
+                        ativo: true
+                    },
+                    {
+                        nome: 'BASIC',
+                        descricao: 'Plano básico para pequenos negócios',
+                        preco: 29.90,
+                        limiteAgendamentos: 100,
+                        limiteAgendamentosDia: 10,
+                        permitePortfolio: true,
+                        permiteRelatorios: true,
+                        permiteDestaque: false,
+                        diasDestaque: 0,
+                        ativo: true
+                    },
+                    {
+                        nome: 'PREMIUM',
+                        descricao: 'Plano premium com todos os recursos',
+                        preco: 59.90,
+                        limiteAgendamentos: 500,
+                        limiteAgendamentosDia: 50,
+                        permitePortfolio: true,
+                        permiteRelatorios: true,
+                        permiteDestaque: true,
+                        diasDestaque: 7,
+                        ativo: true
+                    }
+                ];
+
+                let planosCriados = 0;
+                for (const plano of planos) {
+                    try {
+                        const response = await fetch(`${API_BASE}/planos`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(plano)
+                        });
+                        
+                        if (response.ok) {
+                            planosCriados++;
+                        }
+                    } catch (error) {
+                        console.error('Erro ao criar plano:', plano.nome, error);
+                    }
+                }
+
+                showResult(`
+                    <h3>🎉 Banco Populado com Sucesso!</h3>
+                    <p>Planos criados: ${planosCriados} de ${planos.length}</p>
+                `);
+            } catch (error) {
+                showResult(`❌ Erro de conexão: ${error.message}`, false);
+            }
+        }
+    </script>
+</body>
+</html>
