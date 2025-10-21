@@ -389,3 +389,21 @@ export const criarPlano = async (req, res) => {
   }
 };
 
+/**
+ * Deletar plano (apenas para setup)
+ */
+export const deletarPlano = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const plano = await prisma.plano.delete({
+      where: { id }
+    });
+
+    res.json({ message: 'Plano deletado com sucesso', plano });
+  } catch (error) {
+    console.error('Erro ao deletar plano:', error);
+    res.status(500).json({ error: 'Erro ao deletar plano' });
+  }
+};
+

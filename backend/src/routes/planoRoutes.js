@@ -9,7 +9,8 @@ import {
   listarDestaques,
   compararPlanos,
   ativarDestaque,
-  criarPlano
+  criarPlano,
+  deletarPlano
 } from '../controllers/planoController.js';
 
 const router = express.Router();
@@ -27,6 +28,13 @@ router.get('/', listarPlanos);
  * @access  Public (apenas para setup inicial)
  */
 router.post('/', criarPlano);
+
+/**
+ * @route   DELETE /planos/:id
+ * @desc    Deletar plano (apenas para setup)
+ * @access  Public (apenas para setup inicial)
+ */
+router.delete('/:id', deletarPlano);
 
 /**
  * @route   GET /planos/comparar
