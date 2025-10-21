@@ -1,0 +1,132 @@
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { Mail, Lock, ArrowLeft } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import Button from '../components/Button'
+import Input from '../components/Input'
+import Card from '../components/Card'
+import Toast from '../components/Toast'
+import Logo from '../components/Logo'
+
+const LoginCliente = () => {
+  const navigate = useNavigate()
+  const { login } = useAuth()
+  
+  const [formData, setFormData] = useState({
+    email: '',
+    senha: ''
+  })
+  const [loading, setLoading] = useState(false)
+  const [toast, setToast] = useState(null)
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+
+    const result = await login(formData.email, formData.senha, 'cliente')
+
+    if (result.success) {
+      navigate('/cliente/dashboard')
+    } else {
+      setToast({ type: 'error', message: result.error })
+    }
+
+    setLoading(false)
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white flex items-center justify-center p-4">
+      {/* Toast */}
+      {toast && (
+        <div className="fixed top-4 right-4 z-50">
+          <Toast 
+            type={toast.type} 
+            message={toast.message}
+            onClose={() => setToast(null)}
+          />
+        </div>
+      )}
+
+      <div className="w-full max-w-md">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/')}
+          className="mb-6"
+        >
+          <ArrowLeft size={20} />
+          Voltar
+        </Button>
+
+        <Card>
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-6">
+              <Logo size="2xl" />
+            </div>
+            <h1 className="font-display text-3xl font-bold text-gray-900 mb-2">
+              Login Cliente
+            </h1>
+            <p className="text-gray-600">
+              Entre para agendar seus serviços
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="Email"
+              type="email"
+              name="email"
+              placeholder="seu@email.com"
+              icon={Mail}
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+
+            <Input
+              label="Senha"
+              type="password"
+              name="senha"
+              placeholder="••••••••"
+              icon={Lock}
+              value={formData.senha}
+              onChange={handleChange}
+              required
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              disabled={loading}
+              className="mt-6"
+            >
+              {loading ? 'Entrando...' : 'Entrar'}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-gray-600 text-sm">
+              Não tem uma conta?{' '}
+              <Link 
+                to="/cadastro/cliente" 
+                className="text-primary-600 font-medium hover:text-primary-700"
+              >
+                Cadastre-se
+              </Link>
+            </p>
+          </div>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export default LoginCliente
+

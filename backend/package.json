@@ -1,0 +1,49 @@
+{
+  "name": "jfagende-backend",
+  "version": "1.0.0",
+  "description": "Backend para plataforma de agendamento JFAgende",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "build": "prisma generate && prisma migrate deploy",
+    "postinstall": "prisma generate",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "seed": "node prisma/seed.js",
+    "create-admin": "node criar-admin.js",
+    "fix-assinaturas": "node scripts/fix-assinaturas.js",
+    "setup-stripe": "node scripts/setup-stripe-products.js",
+    "verify-stripe": "node scripts/verificar-stripe.js",
+    "criar-dados-teste": "node criar-dados-teste.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [
+    "agendamento",
+    "estética",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.7.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "sharp": "^0.34.4",
+    "stripe": "^19.1.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.7.0"
+  }
+}

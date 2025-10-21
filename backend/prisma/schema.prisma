@@ -1,0 +1,258 @@
+// Schema do Prisma para JFAgende
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+  // Para produção (Railway), use PostgreSQL:
+  // provider = "postgresql"
+  // url      = env("DATABASE_URL")
+}
+
+// Modelo Cliente
+model Cliente {
+  id           String        @id @default(uuid())
+  nome         String
+  email        String        @unique
+  telefone     String
+  senhaHash    String
+  fotoPerfil   String?
+  criadoEm     DateTime      @default(now())
+  atualizadoEm DateTime      @updatedAt
+  agendamentos Agendamento[]
+  avaliacoes   Avaliacao[]
+  favoritos    Favorito[]
+
+  @@map("clientes")
+}
+
+// Modelo Estabelecimento
+model Estabelecimento {
+  id           String        @id @default(uuid())
+  nome         String
+  categoria    String // "barbearia", "salao", "spa", etc
+  descricao    String?
+  endereco     String
+  telefone     String
+  email        String        @unique
+  senhaHash    String
+  imagemCapa   String?
+  galeria      String?       // JSON array de URLs de imagens
+  criadoEm     DateTime      @default(now())
+  atualizadoEm DateTime      @updatedAt
+  servicos     Servico[]
+  agendamentos Agendamento[]
+  horarios     Horario[]
+  avaliacoes   Avaliacao[]
+  favoritos    Favorito[]
+  bloqueios    BloqueioHorario[]
+  portfolio    Galeria[]
+  assinatura   Assinatura?
+
+  @@map("estabelecimentos")
+}
+
+// Modelo Serviço
+model Servico {
+  id                 String          @id @default(uuid())
+  estabelecimentoId  String
+  estabelecimento    Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  nome               String
+  duracaoMin         Int // duração em minutos
+  preco              Float
+  descricao          String?
+  ativo              Boolean         @default(true)
+  criadoEm           DateTime        @default(now())
+  atualizadoEm       DateTime        @updatedAt
+  agendamentos       Agendamento[]
+
+  @@map("servicos")
+}
+
+// Modelo Horário de Funcionamento
+model Horario {
+  id                 String          @id @default(uuid())
+  estabelecimentoId  String
+  estabelecimento    Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  diaSemana          Int // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+  horaInicio         String // formato "HH:mm", ex: "09:00"
+  horaFim            String // formato "HH:mm", ex: "18:00"
+  ativo              Boolean         @default(true)
+  criadoEm           DateTime        @default(now())
+
+  @@map("horarios")
+}
+
+// Modelo Bloqueio de Horário
+model BloqueioHorario {
+  id                 String          @id @default(uuid())
+  estabelecimentoId  String
+  estabelecimento    Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  dataInicio         DateTime
+  dataFim            DateTime
+  motivo             String?
+  criadoEm           DateTime        @default(now())
+
+  @@map("bloqueios_horarios")
+}
+
+// Modelo Galeria de Fotos (Portfólio)
+model Galeria {
+  id                 String          @id @default(uuid())
+  estabelecimentoId  String
+  estabelecimento    Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  titulo             String
+  descricao          String?
+  categoria          String          // Cabelo, Unha, Bronze, Maquiagem, Spa, etc
+  imagemUrl          String
+  imagemThumbUrl     String?         // Thumbnail para performance
+  tipo               String          @default("portfolio") // portfolio, antes-depois, capa
+  ordem              Int             @default(0)
+  ativo              Boolean         @default(true)
+  criadoEm           DateTime        @default(now())
+
+  @@map("galeria")
+}
+
+// Modelo Plano de Assinatura
+model Plano {
+  id                  String        @id @default(uuid())
+  nome                String        // FREE, BASIC, PREMIUM
+  descricao           String
+  preco               Float         @default(0)
+  limiteAgendamentos  Int           // -1 para ilimitado
+  limiteAgendamentosDia Int?        // Limite por dia (apenas FREE)
+  permitePortfolio    Boolean       @default(false)
+  permiteRelatorios   Boolean       @default(false)
+  permiteDestaque     Boolean       @default(false)
+  diasDestaque        Int           @default(0)
+  ativo               Boolean       @default(true)
+  stripeProductId     String?       // ID do produto no Stripe
+  stripePriceId       String?       // ID do preço no Stripe
+  criadoEm            DateTime      @default(now())
+  assinaturas         Assinatura[]
+
+  @@map("planos")
+}
+
+// Modelo Assinatura do Estabelecimento
+model Assinatura {
+  id                 String          @id @default(uuid())
+  estabelecimentoId  String          @unique
+  estabelecimento    Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  planoId            String
+  plano              Plano           @relation(fields: [planoId], references: [id])
+  dataInicio         DateTime        @default(now())
+  dataFim            DateTime?       // null para plano FREE permanente
+  ativo              Boolean         @default(true)
+  autoRenovar        Boolean         @default(false)
+  destaqueAte        DateTime?       // Data até quando tem destaque
+  stripeCustomerId   String?         // ID do cliente no Stripe
+  stripeSubscriptionId String?       // ID da assinatura no Stripe
+  status             String          @default("ATIVA") // ATIVA, SUSPENSA, CANCELADA
+  criadoEm           DateTime        @default(now())
+  atualizadoEm       DateTime        @updatedAt
+
+  @@map("assinaturas")
+}
+
+// Modelo Lembrete Automático
+model Lembrete {
+  id                 String          @id @default(uuid())
+  agendamentoId      String
+  agendamento        Agendamento     @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+  tipo               String          // email, whatsapp, push
+  dataEnvio          DateTime
+  enviado            Boolean         @default(false)
+  dataEnviado        DateTime?
+  erro               String?
+  criadoEm           DateTime        @default(now())
+
+  @@map("lembretes")
+}
+
+// Modelo Agendamento
+model Agendamento {
+  id                 String          @id @default(uuid())
+  clienteId          String
+  cliente            Cliente         @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  estabelecimentoId  String
+  estabelecimento    Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  servicoId          String
+  servico            Servico         @relation(fields: [servicoId], references: [id], onDelete: Cascade)
+  dataHora           DateTime
+  status             String          @default("PENDENTE")
+  formaPagamento     String?         // "DINHEIRO", "DEBITO", "CREDITO", "PIX", null se ainda não pago
+  observacoes        String?
+  criadoEm           DateTime        @default(now())
+  atualizadoEm       DateTime        @updatedAt
+  avaliacao          Avaliacao?
+  lembretes          Lembrete[]
+
+  @@map("agendamentos")
+}
+
+// Modelo Avaliação
+model Avaliacao {
+  id                 String          @id @default(uuid())
+  agendamentoId      String          @unique
+  agendamento        Agendamento     @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+  clienteId          String
+  cliente            Cliente         @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  estabelecimentoId  String
+  estabelecimento    Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  nota               Int             // 1 a 5 estrelas
+  comentario         String?
+  criadoEm           DateTime        @default(now())
+
+  @@map("avaliacoes")
+}
+
+// Modelo Favorito
+model Favorito {
+  id                 String          @id @default(uuid())
+  clienteId          String
+  cliente            Cliente         @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  estabelecimentoId  String
+  estabelecimento    Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
+  criadoEm           DateTime        @default(now())
+
+  @@unique([clienteId, estabelecimentoId])
+  @@map("favoritos")
+}
+
+// Modelo Admin - Sistema Administrativo
+model Admin {
+  id           String   @id @default(uuid())
+  nome         String
+  email        String   @unique
+  senhaHash    String
+  role         String   @default("ADMIN") // ADMIN, SUPER_ADMIN
+  avatar       String?
+  ativo        Boolean  @default(true)
+  ultimoAcesso DateTime?
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  logs         LogAtividade[]
+
+  @@map("admins")
+}
+
+// Log de Atividades do Sistema
+model LogAtividade {
+  id          String   @id @default(uuid())
+  adminId     String
+  admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  acao        String   // "CREATE_USER", "DELETE_USER", "UPDATE_PLAN", etc
+  entidade    String   // "Cliente", "Estabelecimento", "Plano", etc
+  entidadeId  String?
+  detalhes    String?  // JSON com detalhes da ação
+  ipAddress   String?
+  userAgent   String?
+  criadoEm    DateTime @default(now())
+
+  @@map("logs_atividade")
+}
+
