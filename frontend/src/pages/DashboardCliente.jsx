@@ -5,6 +5,9 @@ import { useAuth } from '../context/AuthContext'
 import { useNotifications } from '../hooks/useNotifications'
 import ThemeToggle from '../components/ThemeToggle'
 import NotificationCenter from '../components/NotificationCenter'
+import MobileBottomNav from '../components/MobileBottomNav'
+import ResponsiveSidebar from '../components/ResponsiveSidebar'
+import AdvancedSearch from '../components/AdvancedSearch'
 import estabelecimentoService from '../services/estabelecimentoService'
 import clienteService from '../services/clienteService'
 import favoritoService from '../services/favoritoService'
@@ -205,95 +208,82 @@ const DashboardCliente = () => {
     return <Loading fullScreen />
   }
 
+  const handleAdvancedSearch = (searchData) => {
+    console.log('Busca avançada:', searchData)
+    // Implementar lógica de busca avançada
+    setFiltros(prev => ({
+      ...prev,
+      ...searchData.filters,
+      nome: searchData.term
+    }))
+  }
+
+  const handleFilterChange = (newFilters) => {
+    setFiltros(prev => ({ ...prev, ...newFilters }))
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="font-display text-2xl font-bold text-primary-600">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Sidebar Responsiva */}
+      <ResponsiveSidebar />
+
+      {/* Conteúdo Principal */}
+      <div className="md:ml-64">
+        {/* Header Mobile */}
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 md:hidden">
+          <div className="px-4 py-4">
+            <div className="flex items-center justify-between">
+              <h1 className="font-display text-xl font-bold text-primary-600">
                 JFAgende
               </h1>
-              <div className="hidden md:flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                <User size={18} />
-                <span className="text-sm">{user.nome}</span>
+              <div className="flex items-center gap-2">
+                <NotificationCenter 
+                  notifications={notifications}
+                  onMarkAsRead={marcarComoLida}
+                  onMarkAllAsRead={marcarTodasComoLidas}
+                />
+                <ThemeToggle />
               </div>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <NotificationCenter 
-                notifications={notifications}
-                onMarkAsRead={marcarComoLida}
-                onMarkAllAsRead={marcarTodasComoLidas}
-              />
-              <ThemeToggle />
-              <Button variant="ghost" size="sm" onClick={() => navigate('/cliente/perfil')}>
-                <Settings size={18} />
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                <LogOut size={18} />
-                Sair
-              </Button>
-            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Coluna Principal - Estabelecimentos */}
-          <div className="lg:col-span-2 space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Encontre Estabelecimentos
-              </h2>
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Coluna Principal - Estabelecimentos */}
+            <div className="lg:col-span-2 space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                  Encontre Estabelecimentos
+                </h2>
 
-              {/* Filtros */}
-              <Card className="mb-6">
-                <div className="space-y-4">
-                  {/* Linha 1 - Busca e Categoria */}
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <Input
-                      placeholder="Buscar por nome ou serviço..."
-                      icon={Search}
-                      value={filtros.nome}
-                      onChange={(e) => setFiltros({ ...filtros, nome: e.target.value })}
-                    />
-                    
-                    <Select
-                      options={categorias}
-                      value={filtros.categoria}
-                      onChange={(e) => setFiltros({ ...filtros, categoria: e.target.value })}
-                    />
-                  </div>
+                {/* Busca Avançada */}
+                <div className="mb-6">
+                  <AdvancedSearch
+                    onSearch={handleAdvancedSearch}
+                    onFilterChange={handleFilterChange}
+                    initialFilters={filtros}
+                  />
+                </div>
 
-                  {/* Linha 2 - Ordenação e Filtros Rápidos */}
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Select
-                      options={opcoesOrdenacao}
-                      value={filtros.ordenacao}
-                      onChange={(e) => setFiltros({ ...filtros, ordenacao: e.target.value })}
-                      className="flex-1 min-w-[200px]"
-                    />
-                    
-                    {/* Botões de Filtro Rápido */}
-                    <button
-                      onClick={() => setFiltros({ ...filtros, disponivelAgora: !filtros.disponivelAgora })}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                        filtros.disponivelAgora
-                          ? 'bg-green-500 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      <Clock className="inline mr-1" size={16} />
-                      Aberto Agora
-                    </button>
-                    
-                    <button
-                      onClick={() => setFiltros({ ...filtros, mostrarFavoritos: !filtros.mostrarFavoritos })}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                        filtros.mostrarFavoritos
+                {/* Filtros Rápidos */}
+                <div className="flex flex-wrap items-center gap-3 mb-6">
+                  <button
+                    onClick={() => setFiltros({ ...filtros, disponivelAgora: !filtros.disponivelAgora })}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      filtros.disponivelAgora
+                        ? 'bg-green-500 text-white shadow-md'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    <Clock className="inline mr-1" size={16} />
+                    Aberto Agora
+                  </button>
+                  
+                  <button
+                    onClick={() => setFiltros({ ...filtros, mostrarFavoritos: !filtros.mostrarFavoritos })}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      filtros.mostrarFavoritos
                           ? 'bg-red-500 text-white shadow-md'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
@@ -540,6 +530,9 @@ const DashboardCliente = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   )
 }
