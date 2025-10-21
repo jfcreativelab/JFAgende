@@ -135,6 +135,63 @@ router.get('/env-status', async (req, res) => {
   }
 })
 
+// Endpoint para criar primeiro admin
+router.post('/create-admin', async (req, res) => {
+  try {
+    const { nome, email, senha } = req.body
+
+    if (!nome || !email || !senha) {
+      return res.status(400).json({
+        success: false,
+        message: 'Nome, email e senha são obrigatórios'
+      })
+    }
+
+    // Verificar se já existe admin
+    const adminExistente = await prisma.admin.findFirst()
+    if (adminExistente) {
+      return res.status(400).json({
+        success: false,
+        message: 'Já existe um administrador no sistema'
+      })
+    }
+
+    // Hash da senha
+    const bcrypt = (await import('bcrypt')).default
+    const senhaHash = await bcrypt.hash(senha, 10)
+
+    // Criar admin
+    const admin = await prisma.admin.create({
+      data: {
+        nome,
+        email,
+        senhaHash,
+        role: 'ADMIN',
+        ativo: true
+      }
+    })
+
+    res.json({
+      success: true,
+      message: 'Administrador criado com sucesso',
+      admin: {
+        id: admin.id,
+        nome: admin.nome,
+        email: admin.email,
+        role: admin.role
+      }
+    })
+
+  } catch (error) {
+    console.error('❌ Erro ao criar admin:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao criar administrador',
+      error: error.message
+    })
+  }
+})
+
 // Endpoint para configurar Stripe
 router.post('/setup-stripe', async (req, res) => {
   try {

@@ -19,6 +19,7 @@
     <button onclick="checkStatus()">1. Verificar Status do Banco</button>
     <button onclick="populateDatabase()">2. Popular Banco de Dados</button>
     <button onclick="setupStripe()">3. Configurar Stripe</button>
+    <button onclick="createAdmin()">4. Criar Admin</button>
     
     <div id="result" class="result" style="display: none;"></div>
 
@@ -144,6 +145,46 @@
                                     `<li><strong>${r.plano}</strong> - ❌ ${r.erro}</li>`
                             ).join('')}
                         </ul>
+                    `);
+                } else {
+                    showResult(`❌ Erro: ${data.message}`, false);
+                }
+            } catch (error) {
+                showResult(`❌ Erro de conexão: ${error.message}`, false);
+            }
+        }
+
+        async function createAdmin() {
+            const nome = prompt('Nome do administrador:');
+            const email = prompt('Email do administrador:');
+            const senha = prompt('Senha do administrador:');
+
+            if (!nome || !email || !senha) {
+                showResult('❌ Todos os campos são obrigatórios!', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/setup/create-admin`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ nome, email, senha })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(`
+                        <h3>🎉 Admin Criado com Sucesso!</h3>
+                        <p>${data.message}</p>
+                        <h4>Dados do Admin:</h4>
+                        <ul>
+                            <li><strong>Nome:</strong> ${data.admin.nome}</li>
+                            <li><strong>Email:</strong> ${data.admin.email}</li>
+                            <li><strong>Role:</strong> ${data.admin.role}</li>
+                        </ul>
+                        <p><strong>🔗 Acesse:</strong> <a href="https://jf-agende.vercel.app/admin/login" target="_blank">https://jf-agende.vercel.app/admin/login</a></p>
                     `);
                 } else {
                     showResult(`❌ Erro: ${data.message}`, false);
