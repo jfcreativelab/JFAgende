@@ -64,6 +64,9 @@ router.delete(
   adminController.cleanOldLogs
 )
 
+// Relatórios Avançados
+router.get('/relatorios-avancados', isAdmin, adminController.getRelatoriosAvancados)
+
 // =====================================================
 // ROTAS DE SUPER ADMIN (Gerenciamento de Admins)
 // =====================================================

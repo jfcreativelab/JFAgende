@@ -51,51 +51,47 @@ const RelatoriosAvancados = () => {
   const carregarDados = async () => {
     setLoading(true)
     try {
-      // Simular carregamento de dados
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      console.log('🔍 Carregando relatórios avançados...')
       
-      // Dados simulados para demonstração
+      // Buscar dados reais da API
+      const token = localStorage.getItem('adminToken')
+      const response = await fetch('https://jfagende-production.up.railway.app/api/admin/relatorios-avancados', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.status}`)
+      }
+
+      const dadosReais = await response.json()
+      console.log('📊 Dados reais recebidos:', dadosReais)
+      
+      setDados(dadosReais)
+    } catch (error) {
+      console.error('❌ Erro ao carregar dados:', error)
+      
+      // Fallback para dados simulados em caso de erro
       const dadosSimulados = {
         resumo: {
-          totalUsuarios: 1250,
-          totalEstabelecimentos: 89,
-          totalAgendamentos: 3456,
-          receitaTotal: 125000,
-          crescimentoUsuarios: 12.5,
-          crescimentoAgendamentos: 8.3,
-          crescimentoReceita: 15.2
+          totalUsuarios: 0,
+          totalEstabelecimentos: 0,
+          totalAgendamentos: 0,
+          receitaTotal: 0,
+          crescimentoUsuarios: 0,
+          crescimentoEstabelecimentos: 0,
+          crescimentoAgendamentos: 0
         },
-        usuariosPorMes: [
-          { mes: 'Jan', usuarios: 120, estabelecimentos: 8 },
-          { mes: 'Fev', usuarios: 135, estabelecimentos: 12 },
-          { mes: 'Mar', usuarios: 150, estabelecimentos: 15 },
-          { mes: 'Abr', usuarios: 165, estabelecimentos: 18 },
-          { mes: 'Mai', usuarios: 180, estabelecimentos: 22 },
-          { mes: 'Jun', usuarios: 200, estabelecimentos: 25 }
-        ],
-        agendamentosPorStatus: [
-          { status: 'CONFIRMADO', quantidade: 2340, porcentagem: 67.7 },
-          { status: 'PENDENTE', quantidade: 456, porcentagem: 13.2 },
-          { status: 'CONCLUIDO', quantidade: 380, porcentagem: 11.0 },
-          { status: 'CANCELADO', quantidade: 280, porcentagem: 8.1 }
-        ],
-        receitaPorPlano: [
-          { plano: 'FREE', quantidade: 45, receita: 0 },
-          { plano: 'BASIC', quantidade: 32, receita: 956.80 },
-          { plano: 'PREMIUM', quantidade: 12, receita: 718.80 }
-        ],
-        topEstabelecimentos: [
-          { nome: 'Salão Beleza Total', agendamentos: 234, receita: 12500 },
-          { nome: 'Clínica Saúde Plus', agendamentos: 189, receita: 9800 },
-          { nome: 'Barbearia Moderna', agendamentos: 156, receita: 7800 },
-          { nome: 'Spa Relaxamento', agendamentos: 134, receita: 6700 },
-          { nome: 'Academia Fit', agendamentos: 98, receita: 4900 }
-        ]
+        usuariosPorMes: [],
+        agendamentosPorStatus: [],
+        receitaPorPlano: [],
+        topEstabelecimentos: []
       }
       
       setDados(dadosSimulados)
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error)
     } finally {
       setLoading(false)
     }

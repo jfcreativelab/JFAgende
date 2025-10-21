@@ -633,3 +633,284 @@ export const deleteAdmin = async (req, res) => {
   }
 }
 
+// =====================================================
+// RELATÓRIOS AVANÇADOS
+// =====================================================
+
+export const getRelatoriosAvancados = async (req, res) => {
+  try {
+    const { periodo = '30d', tipoRelatorio = 'geral', estabelecimento, plano } = req.query
+
+    // Calcular datas baseado no período
+    const agora = new Date()
+    let dataInicio = new Date()
+    
+    switch (periodo) {
+      case '7d':
+        dataInicio.setDate(agora.getDate() - 7)
+        break
+      case '30d':
+        dataInicio.setDate(agora.getDate() - 30)
+        break
+      case '90d':
+        dataInicio.setDate(agora.getDate() - 90)
+        break
+      case '1y':
+        dataInicio.setFullYear(agora.getFullYear() - 1)
+        break
+      default:
+        dataInicio.setDate(agora.getDate() - 30)
+    }
+
+    // Filtros base
+    const whereAgendamentos = {
+      criadoEm: {
+        gte: dataInicio,
+        lte: agora
+      }
+    }
+
+    const whereEstabelecimentos = {}
+    const whereClientes = {}
+
+    // Aplicar filtros específicos
+    if (estabelecimento) {
+      whereAgendamentos.estabelecimentoId = estabelecimento
+      whereEstabelecimentos.id = estabelecimento
+    }
+
+    if (plano) {
+      whereEstabelecimentos.planoId = plano
+    }
+
+    // Buscar dados básicos
+    const [
+      totalClientes,
+      totalEstabelecimentos,
+      totalAgendamentos,
+      agendamentosPorStatus,
+      receitaTotal
+    ] = await Promise.all([
+      prisma.cliente.count({ where: whereClientes }),
+      prisma.estabelecimento.count({ where: whereEstabelecimentos }),
+      prisma.agendamento.count({ where: whereAgendamentos }),
+      prisma.agendamento.groupBy({
+        by: ['status'],
+        where: whereAgendamentos,
+        _count: true
+      }),
+      prisma.agendamento.aggregate({
+        where: {
+          ...whereAgendamentos,
+          status: 'CONCLUIDO'
+        },
+        _sum: {
+          // Assumindo que temos um campo preco no agendamento ou precisamos calcular via serviço
+        }
+      })
+    ])
+
+    // Calcular receita real dos agendamentos concluídos
+    const agendamentosConcluidos = await prisma.agendamento.findMany({
+      where: {
+        ...whereAgendamentos,
+        status: 'CONCLUIDO'
+      },
+      include: {
+        servico: {
+          select: { preco: true }
+        }
+      }
+    })
+
+    const receitaCalculada = agendamentosConcluidos.reduce((sum, ag) => sum + (ag.servico?.preco || 0), 0)
+
+    // Dados de crescimento (comparar com período anterior)
+    const dataInicioAnterior = new Date(dataInicio)
+    dataInicioAnterior.setTime(dataInicioAnterior.getTime() - (agora.getTime() - dataInicio.getTime()))
+
+    const [
+      clientesAnterior,
+      estabelecimentosAnterior,
+      agendamentosAnterior
+    ] = await Promise.all([
+      prisma.cliente.count({
+        where: {
+          ...whereClientes,
+          criadoEm: {
+            gte: dataInicioAnterior,
+            lt: dataInicio
+          }
+        }
+      }),
+      prisma.estabelecimento.count({
+        where: {
+          ...whereEstabelecimentos,
+          criadoEm: {
+            gte: dataInicioAnterior,
+            lt: dataInicio
+          }
+        }
+      }),
+      prisma.agendamento.count({
+        where: {
+          ...whereAgendamentos,
+          criadoEm: {
+            gte: dataInicioAnterior,
+            lt: dataInicio
+          }
+        }
+      })
+    ])
+
+    // Calcular percentuais de crescimento
+    const crescimentoUsuarios = clientesAnterior > 0 
+      ? ((totalClientes - clientesAnterior) / clientesAnterior * 100).toFixed(1)
+      : 0
+
+    const crescimentoEstabelecimentos = estabelecimentosAnterior > 0
+      ? ((totalEstabelecimentos - estabelecimentosAnterior) / estabelecimentosAnterior * 100).toFixed(1)
+      : 0
+
+    const crescimentoAgendamentos = agendamentosAnterior > 0
+      ? ((totalAgendamentos - agendamentosAnterior) / agendamentosAnterior * 100).toFixed(1)
+      : 0
+
+    // Top estabelecimentos por agendamentos
+    const topEstabelecimentos = await prisma.agendamento.groupBy({
+      by: ['estabelecimentoId'],
+      where: whereAgendamentos,
+      _count: true,
+      orderBy: {
+        _count: {
+          estabelecimentoId: 'desc'
+        }
+      },
+      take: 5
+    })
+
+    // Buscar dados dos estabelecimentos
+    const estabelecimentosComDados = await Promise.all(
+      topEstabelecimentos.map(async (est) => {
+        const estabelecimento = await prisma.estabelecimento.findUnique({
+          where: { id: est.estabelecimentoId },
+          select: { nome: true }
+        })
+
+        // Calcular receita do estabelecimento
+        const receitaEstabelecimento = await prisma.agendamento.findMany({
+          where: {
+            estabelecimentoId: est.estabelecimentoId,
+            status: 'CONCLUIDO',
+            criadoEm: {
+              gte: dataInicio,
+              lte: agora
+            }
+          },
+          include: {
+            servico: { select: { preco: true } }
+          }
+        })
+
+        const receita = receitaEstabelecimento.reduce((sum, ag) => sum + (ag.servico?.preco || 0), 0)
+
+        return {
+          nome: estabelecimento?.nome || 'Estabelecimento não encontrado',
+          agendamentos: est._count.estabelecimentoId,
+          receita: Math.round(receita * 100) / 100
+        }
+      })
+    )
+
+    // Dados por mês (últimos 6 meses)
+    const dadosPorMes = []
+    for (let i = 5; i >= 0; i--) {
+      const dataMes = new Date()
+      dataMes.setMonth(dataMes.getMonth() - i)
+      dataMes.setDate(1)
+      dataMes.setHours(0, 0, 0, 0)
+
+      const proximoMes = new Date(dataMes)
+      proximoMes.setMonth(proximoMes.getMonth() + 1)
+
+      const [usuariosMes, estabelecimentosMes] = await Promise.all([
+        prisma.cliente.count({
+          where: {
+            criadoEm: {
+              gte: dataMes,
+              lt: proximoMes
+            }
+          }
+        }),
+        prisma.estabelecimento.count({
+          where: {
+            criadoEm: {
+              gte: dataMes,
+              lt: proximoMes
+            }
+          }
+        })
+      ])
+
+      dadosPorMes.push({
+        mes: dataMes.toLocaleDateString('pt-BR', { month: 'short' }),
+        usuarios: usuariosMes,
+        estabelecimentos: estabelecimentosMes
+      })
+    }
+
+    // Dados de receita por plano
+    const receitaPorPlano = await prisma.assinatura.groupBy({
+      by: ['planoId'],
+      where: { ativo: true },
+      _count: true
+    })
+
+    const planosComReceita = await Promise.all(
+      receitaPorPlano.map(async (plano) => {
+        const planoData = await prisma.plano.findUnique({
+          where: { id: plano.planoId },
+          select: { nome: true, preco: true }
+        })
+
+        return {
+          plano: planoData?.nome || 'Plano não encontrado',
+          quantidade: plano._count.planoId,
+          receita: (planoData?.preco || 0) * plano._count.planoId
+        }
+      })
+    )
+
+    // Formatar agendamentos por status
+    const agendamentosPorStatusFormatado = agendamentosPorStatus.map(item => {
+      const total = agendamentosPorStatus.reduce((sum, i) => sum + i._count.status, 0)
+      return {
+        status: item.status,
+        quantidade: item._count.status,
+        porcentagem: total > 0 ? ((item._count.status / total) * 100).toFixed(1) : 0
+      }
+    })
+
+    const resultado = {
+      resumo: {
+        totalUsuarios: totalClientes,
+        totalEstabelecimentos,
+        totalAgendamentos,
+        receitaTotal: Math.round(receitaCalculada * 100) / 100,
+        crescimentoUsuarios: parseFloat(crescimentoUsuarios),
+        crescimentoEstabelecimentos: parseFloat(crescimentoEstabelecimentos),
+        crescimentoAgendamentos: parseFloat(crescimentoAgendamentos)
+      },
+      usuariosPorMes: dadosPorMes,
+      agendamentosPorStatus: agendamentosPorStatusFormatado,
+      receitaPorPlano: planosComReceita,
+      topEstabelecimentos: estabelecimentosComDados
+    }
+
+    res.json(resultado)
+  } catch (error) {
+    console.error('Erro ao buscar relatórios avançados:', error)
+    res.status(500).json({ error: 'Erro ao buscar relatórios avançados' })
+  }
+}
+
