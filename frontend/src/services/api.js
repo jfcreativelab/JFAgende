@@ -10,6 +10,10 @@ const getApiBaseURL = () => {
   // Se estiver acessando via IP da rede (não localhost), usa o mesmo IP para a API
   const hostname = window.location.hostname
   if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+    // Se estiver em produção (Vercel), usar a API do Railway
+    if (hostname.includes('vercel.app')) {
+      return 'https://jfagende-production.up.railway.app/api'
+    }
     return `http://${hostname}:5000/api`
   }
   
