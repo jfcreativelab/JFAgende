@@ -113,6 +113,28 @@ router.get('/database-status', async (req, res) => {
   }
 })
 
+// Endpoint para verificar variáveis de ambiente
+router.get('/env-status', async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      env: {
+        STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? 'Configurada' : 'Não configurada',
+        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY ? 'Configurada' : 'Não configurada',
+        DATABASE_URL: process.env.DATABASE_URL ? 'Configurada' : 'Não configurada',
+        JWT_SECRET: process.env.JWT_SECRET ? 'Configurada' : 'Não configurada',
+        NODE_ENV: process.env.NODE_ENV || 'Não definida'
+      }
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao verificar variáveis de ambiente',
+      error: error.message
+    })
+  }
+})
+
 // Endpoint para configurar Stripe
 router.post('/setup-stripe', async (req, res) => {
   try {

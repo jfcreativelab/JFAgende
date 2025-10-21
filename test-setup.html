@@ -18,6 +18,7 @@
     
     <button onclick="checkStatus()">1. Verificar Status do Banco</button>
     <button onclick="populateDatabase()">2. Popular Banco de Dados</button>
+    <button onclick="setupStripe()">3. Configurar Stripe</button>
     
     <div id="result" class="result" style="display: none;"></div>
 
@@ -116,6 +117,37 @@
                     <h3>🎉 Banco Populado com Sucesso!</h3>
                     <p>Planos criados: ${planosCriados} de ${planos.length}</p>
                 `);
+            } catch (error) {
+                showResult(`❌ Erro de conexão: ${error.message}`, false);
+            }
+        }
+
+        async function setupStripe() {
+            try {
+                const response = await fetch(`${API_BASE}/setup/setup-stripe`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(`
+                        <h3>🎉 Stripe Configurado com Sucesso!</h3>
+                        <p>${data.message}</p>
+                        <h4>Produtos criados:</h4>
+                        <ul>
+                            ${data.resultados.map(r => 
+                                r.sucesso ? 
+                                    `<li><strong>${r.plano}</strong> - Price ID: ${r.priceId}</li>` :
+                                    `<li><strong>${r.plano}</strong> - ❌ ${r.erro}</li>`
+                            ).join('')}
+                        </ul>
+                    `);
+                } else {
+                    showResult(`❌ Erro: ${data.message}`, false);
+                }
             } catch (error) {
                 showResult(`❌ Erro de conexão: ${error.message}`, false);
             }
