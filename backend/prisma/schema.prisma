@@ -38,6 +38,7 @@ model Estabelecimento {
   telefone     String
   email        String        @unique
   senhaHash    String
+  fotoPerfilUrl String?      // URL da foto de perfil/logo
   imagemCapa   String?
   galeria      String?       // JSON array de URLs de imagens
   criadoEm     DateTime      @default(now())

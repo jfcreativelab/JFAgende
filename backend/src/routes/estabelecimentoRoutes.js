@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate, isEstabelecimento } from '../middleware/auth.js';
+import { upload } from '../utils/upload.js';
 import {
   getEstabelecimentos,
   getEstabelecimentoById,
@@ -8,7 +9,9 @@ import {
   getServicos,
   updateServico,
   deleteServico,
-  createHorario
+  createHorario,
+  uploadLogo,
+  removeLogo
 } from '../controllers/estabelecimentoController.js';
 
 const router = express.Router();
@@ -68,6 +71,20 @@ router.delete('/:id/servicos/:servicoId', authenticate, isEstabelecimento, delet
  * @access  Private (Estabelecimento)
  */
 router.post('/:id/horarios', authenticate, isEstabelecimento, createHorario);
+
+/**
+ * @route   POST /estabelecimentos/:id/logo
+ * @desc    Upload de logo do estabelecimento
+ * @access  Private (Estabelecimento)
+ */
+router.post('/:id/logo', authenticate, isEstabelecimento, upload.single('logo'), uploadLogo);
+
+/**
+ * @route   DELETE /estabelecimentos/:id/logo
+ * @desc    Remove logo do estabelecimento
+ * @access  Private (Estabelecimento)
+ */
+router.delete('/:id/logo', authenticate, isEstabelecimento, removeLogo);
 
 export default router;
 

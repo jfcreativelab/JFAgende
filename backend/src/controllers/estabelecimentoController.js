@@ -32,6 +32,7 @@ export const getEstabelecimentos = async (req, res) => {
         descricao: true,
         endereco: true,
         telefone: true,
+        fotoPerfilUrl: true,
         imagemCapa: true,
         criadoEm: true
       },
@@ -285,6 +286,96 @@ export const createHorario = async (req, res) => {
   } catch (error) {
     console.error('Erro ao criar horário:', error);
     res.status(500).json({ error: 'Erro ao criar horário' });
+  }
+};
+
+/**
+ * Upload de logo/foto de perfil do estabelecimento
+ */
+export const uploadLogo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const estabelecimentoId = req.user.id;
+
+    // Verificar se o estabelecimento existe e pertence ao usuário
+    const estabelecimento = await prisma.estabelecimento.findFirst({
+      where: {
+        id: estabelecimentoId,
+        id: id // Verificar se o ID da URL corresponde ao ID do usuário
+      }
+    });
+
+    if (!estabelecimento) {
+      return res.status(404).json({ error: 'Estabelecimento não encontrado' });
+    }
+
+    // Verificar se há arquivo enviado
+    if (!req.file) {
+      return res.status(400).json({ error: 'Nenhuma imagem foi enviada' });
+    }
+
+    // URL da imagem (em produção, seria salva no cloud storage)
+    const logoUrl = `/uploads/estabelecimentos/${req.file.filename}`;
+
+    // Atualizar o estabelecimento com a URL da logo
+    const estabelecimentoAtualizado = await prisma.estabelecimento.update({
+      where: { id: estabelecimentoId },
+      data: { fotoPerfilUrl: logoUrl },
+      select: {
+        id: true,
+        nome: true,
+        fotoPerfilUrl: true
+      }
+    });
+
+    res.json({
+      message: 'Logo atualizada com sucesso',
+      estabelecimento: estabelecimentoAtualizado
+    });
+  } catch (error) {
+    console.error('Erro ao fazer upload da logo:', error);
+    res.status(500).json({ error: 'Erro ao fazer upload da logo' });
+  }
+};
+
+/**
+ * Remover logo do estabelecimento
+ */
+export const removeLogo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const estabelecimentoId = req.user.id;
+
+    // Verificar se o estabelecimento existe e pertence ao usuário
+    const estabelecimento = await prisma.estabelecimento.findFirst({
+      where: {
+        id: estabelecimentoId,
+        id: id
+      }
+    });
+
+    if (!estabelecimento) {
+      return res.status(404).json({ error: 'Estabelecimento não encontrado' });
+    }
+
+    // Remover a URL da logo
+    const estabelecimentoAtualizado = await prisma.estabelecimento.update({
+      where: { id: estabelecimentoId },
+      data: { fotoPerfilUrl: null },
+      select: {
+        id: true,
+        nome: true,
+        fotoPerfilUrl: true
+      }
+    });
+
+    res.json({
+      message: 'Logo removida com sucesso',
+      estabelecimento: estabelecimentoAtualizado
+    });
+  } catch (error) {
+    console.error('Erro ao remover logo:', error);
+    res.status(500).json({ error: 'Erro ao remover logo' });
   }
 };
 
