@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Image as ImageIcon, Plus, BarChart2, Upload, User } from 'lucide-react'
+import { ArrowLeft, Image as ImageIcon, Plus, BarChart2, Upload, X, CheckCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
 import UploadImagem from '../components/UploadImagem'
 import GaleriaPortfolio from '../components/GaleriaPortfolio'
-import LogoUpload from '../components/LogoUpload'
 import Modal from '../components/Modal'
 import Input from '../components/Input'
 import Select from '../components/Select'
@@ -13,6 +12,7 @@ import Button from '../components/Button'
 import Toast from '../components/Toast'
 import Loading from '../components/Loading'
 import StatCard from '../components/StatCard'
+import LogoUpload from '../components/LogoUpload'
 import Card from '../components/Card'
 import portfolioService from '../services/portfolioService'
 
@@ -252,40 +252,65 @@ const PortfolioEstabelecimento = () => {
 
         {/* Seção de Logo do Estabelecimento */}
         <div className="mb-8">
-          <Card className="p-6">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
-                <User className="w-6 h-6 text-primary-600" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  🏷️ Logo do Estabelecimento
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Sua logo aparecerá nos cards da tela inicial e em todos os lugares do app
-                </p>
-              </div>
-            </div>
-            
-            <div className="max-w-md">
-              <LogoUpload
-                currentLogo={user.fotoPerfilUrl}
-                onLogoUpload={(logoUrl) => {
-                  setToast({ type: 'success', message: 'Logo atualizada com sucesso!' })
-                }}
-                onLogoRemove={() => {
-                  setToast({ type: 'success', message: 'Logo removida com sucesso!' })
-                }}
-                estabelecimentoId={user.id}
-              />
-            </div>
-          </Card>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            🏷️ Logo do Estabelecimento
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            Sua logo aparecerá nos cards da tela inicial e em todos os lugares do app
+          </p>
+          
+          <div className="max-w-md">
+            <LogoUpload
+              currentLogo={user.fotoPerfilUrl}
+              onLogoUpload={(logoUrl) => {
+                setToast({ type: 'success', message: 'Logo atualizada com sucesso!' })
+              }}
+              onLogoRemove={() => {
+                setToast({ type: 'success', message: 'Logo removida com sucesso!' })
+              }}
+              estabelecimentoId={user.id}
+            />
+          </div>
         </div>
+
+        {/* Dicas de Marketing Visual */}
+        <Card className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 mb-8">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                <span className="text-2xl">💡</span>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                Dicas para uma Identidade Visual Atraente
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <li className="flex items-start gap-2">
+                  <span className="text-green-500 mt-1">✓</span>
+                  <span>Use uma logo clara e legível, mesmo em tamanhos pequenos</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-500 mt-1">✓</span>
+                  <span>Escolha cores que representem sua marca e categoria</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-500 mt-1">✓</span>
+                  <span>Mantenha consistência visual em todas as suas fotos</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-500 mt-1">✓</span>
+                  <span>Mostre o ambiente e equipamentos do seu estabelecimento</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </Card>
 
         {/* Ações */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Galeria de Fotos
+            📸 Galeria de Fotos
           </h2>
 
           <Button onClick={() => setModalOpen(true)}>
