@@ -4,11 +4,11 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
-  // Para produção (Railway), use PostgreSQL:
-  // provider = "postgresql"
-  // url      = env("DATABASE_URL")
+  // Para desenvolvimento local, use SQLite:
+  // provider = "sqlite"
+  // url      = "file:./dev.db"
 }
 
 // Modelo Cliente
