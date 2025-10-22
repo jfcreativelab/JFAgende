@@ -445,7 +445,9 @@ const AgendamentoNaoCadastrado = ({
         agendamento={{
           id: 'temp-' + Date.now(), // ID temporário
           servico: servico,
-          dataHora: new Date(`${dadosAgendamento.data}T${dadosAgendamento.hora}`).toISOString()
+          dataHora: dadosAgendamento.data && dadosAgendamento.hora 
+            ? new Date(`${dadosAgendamento.data}T${dadosAgendamento.hora}`).toISOString()
+            : new Date().toISOString()
         }}
         estabelecimento={estabelecimento}
         onConfirmarPagamento={() => {

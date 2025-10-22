@@ -75,8 +75,10 @@ const DashboardEstabelecimento = () => {
 
   const carregarDados = async () => {
     try {
-      const inicioMes = startOfMonth(mesAtual)
-      const fimMes = endOfMonth(addMonths(mesAtual, 1))
+      // Validar se mesAtual é uma data válida
+      const dataValida = mesAtual instanceof Date && !isNaN(mesAtual) ? mesAtual : new Date()
+      const inicioMes = startOfMonth(dataValida)
+      const fimMes = endOfMonth(addMonths(dataValida, 1))
 
       // Carregar agendamentos e serviços
       const [agendamentosData, servicosData] = await Promise.all([

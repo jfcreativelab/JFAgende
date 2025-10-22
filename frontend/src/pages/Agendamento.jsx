@@ -106,6 +106,12 @@ const Agendamento = () => {
     try {
       const dataHora = new Date(`${dataSelecionada}T${horarioSelecionado}:00`)
       
+      // Validar se a data é válida
+      if (isNaN(dataHora.getTime())) {
+        setToast({ type: 'error', message: 'Data ou horário inválido' })
+        return
+      }
+      
       await agendamentoService.create({
         estabelecimentoId,
         servicoId,
