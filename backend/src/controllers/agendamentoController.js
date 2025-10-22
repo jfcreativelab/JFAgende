@@ -28,17 +28,21 @@ export const createAgendamento = async (req, res) => {
     }
 
     // Verifica se já existe um agendamento nesse horário
+    // Mas permite agendamentos com pagamento antecipado (PIX)
     const agendamentoExistente = await prisma.agendamento.findFirst({
       where: {
         estabelecimentoId,
         dataHora: new Date(dataHora),
         status: {
           in: ['PENDENTE', 'CONFIRMADO']
-        }
+        },
+        // Se for pagamento antecipado, não verificar conflito
+        ...(req.body.pagamentoAntecipado ? {} : {})
       }
     });
 
-    if (agendamentoExistente) {
+    // Só bloqueia se não for pagamento antecipado
+    if (agendamentoExistente && !req.body.pagamentoAntecipado) {
       return res.status(400).json({ error: 'Horário já está ocupado' });
     }
 
@@ -49,7 +53,12 @@ export const createAgendamento = async (req, res) => {
         estabelecimentoId,
         servicoId,
         dataHora: new Date(dataHora),
-        observacoes
+        observacoes,
+        // Campos de pagamento PIX
+        pagamentoAntecipado: req.body.pagamentoAntecipado || false,
+        valorTaxa: req.body.valorTaxa || null,
+        valorTotal: req.body.valorTotal || null,
+        status: req.body.pagamentoAntecipado ? 'AGUARDANDO_APROVACAO_PAGAMENTO' : 'PENDENTE'
       },
       include: {
         cliente: {

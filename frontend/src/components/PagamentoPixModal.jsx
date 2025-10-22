@@ -39,21 +39,12 @@ const PagamentoPixModal = ({
     
     setLoadingQrCode(true)
     try {
-      // Usar biblioteca específica para PIX
-      const { PixPayload } = await import('pix-payload')
-      
-      const pixPayload = new PixPayload()
-        .setPixKey(estabelecimento.chavePix)
-        .setDescription(`JFAgende - ${agendamento.servico?.nome || 'Serviço'}`)
-        .setMerchantName('JFAgende')
-        .setMerchantCity('SAO PAULO')
-        .setAmount(valorTotal)
-        .setTxid(agendamento.id)
-      
-      const qrCodeData = pixPayload.getPayload()
-      
-      // Gerar QR Code usando a biblioteca
+      // Usar formato simples e funcional para PIX
       const QRCode = (await import('qrcode')).default
+      
+      // Formato simples que funciona com apps de pagamento
+      const qrCodeData = `PIX:${estabelecimento.chavePix}|${valorTotal.toFixed(2)}|JFAgende|${agendamento.id}`
+      
       const qrCodeImage = await QRCode.toDataURL(qrCodeData, {
         width: 256,
         margin: 2,
@@ -66,23 +57,7 @@ const PagamentoPixModal = ({
       setQrCodeImage(qrCodeImage)
     } catch (error) {
       console.error('Erro ao gerar QR Code:', error)
-      // Fallback: usar formato simples
-      try {
-        const QRCode = (await import('qrcode')).default
-        const qrCodeData = `PIX:${estabelecimento.chavePix}|${valorTotal.toFixed(2)}|JFAgende`
-        const qrCodeImage = await QRCode.toDataURL(qrCodeData, {
-          width: 256,
-          margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          }
-        })
-        setQrCodeImage(qrCodeImage)
-      } catch (fallbackError) {
-        console.error('Erro no fallback QR Code:', fallbackError)
-        setToast({ type: 'error', message: 'Erro ao gerar QR Code' })
-      }
+      setToast({ type: 'error', message: 'Erro ao gerar QR Code' })
     } finally {
       setLoadingQrCode(false)
     }
@@ -129,39 +104,45 @@ const PagamentoPixModal = ({
 
     setLoading(true)
     try {
-      // Primeiro, criar o agendamento com status de pagamento pendente
-      const agendamentoData = {
-        estabelecimentoId: estabelecimento.id,
-        servicoId: agendamento.servico.id,
-        dataHora: agendamento.dataHora,
-        observacoes: '',
-        pagamentoAntecipado: true,
-        valorTaxa: 5.00,
-        valorTotal: valorTotal
+      // Usar o ID do agendamento que já foi passado como prop
+      // Se for um ID temporário, criar um agendamento real primeiro
+      let agendamentoId = agendamento.id
+      
+      if (agendamento.id.startsWith('temp-')) {
+        // Criar agendamento real
+        const agendamentoData = {
+          estabelecimentoId: estabelecimento.id,
+          servicoId: agendamento.servico.id,
+          dataHora: agendamento.dataHora,
+          observacoes: 'Pagamento antecipado via PIX',
+          pagamentoAntecipado: true,
+          valorTaxa: 5.00,
+          valorTotal: valorTotal
+        }
+
+        const agendamentoResponse = await fetch('https://jfagende-production.up.railway.app/api/agendamentos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify(agendamentoData)
+        })
+
+        if (!agendamentoResponse.ok) {
+          const errorData = await agendamentoResponse.json()
+          throw new Error(errorData.error || 'Erro ao criar agendamento.')
+        }
+
+        const novoAgendamento = await agendamentoResponse.json()
+        agendamentoId = novoAgendamento.id
       }
 
-      // Criar agendamento
-      const agendamentoResponse = await fetch('https://jfagende-production.up.railway.app/api/agendamentos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(agendamentoData)
-      })
-
-      if (!agendamentoResponse.ok) {
-        const errorData = await agendamentoResponse.json()
-        throw new Error(errorData.error || 'Erro ao criar agendamento.')
-      }
-
-      const novoAgendamento = await agendamentoResponse.json()
-
-      // Agora fazer upload do comprovante
+      // Fazer upload do comprovante
       const formData = new FormData()
       formData.append('comprovante', comprovante)
 
-      const response = await fetch(`https://jfagende-production.up.railway.app/api/pagamento/${novoAgendamento.id}/comprovante`, {
+      const response = await fetch(`https://jfagende-production.up.railway.app/api/pagamento/${agendamentoId}/comprovante`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -176,11 +157,12 @@ const PagamentoPixModal = ({
         setComprovante(null)
         setComprovantePreview(null)
       } else {
-        throw new Error('Erro ao enviar comprovante')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao enviar comprovante')
       }
     } catch (error) {
       console.error('Erro ao enviar comprovante:', error)
-      setToast({ type: 'error', message: 'Erro ao enviar comprovante.' })
+      setToast({ type: 'error', message: error.message || 'Erro ao enviar comprovante.' })
     } finally {
       setLoading(false)
     }
