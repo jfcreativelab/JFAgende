@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Upload Logo - JFAgende</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #7b2cbf;
+            display: flex;
+            align-items: center;
+        }
+        h1::before {
+            content: '🔧';
+            margin-right: 10px;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #7b2cbf;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #5a189a;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid;
+        }
+        .result.success {
+            background-color: #e6ffe6;
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+        .result.error {
+            background-color: #ffe6e6;
+            border-color: #f44336;
+            color: #f44336;
+        }
+        .result h3 {
+            margin-top: 0;
+            color: inherit;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        .logo-preview {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .logo-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Teste Upload Logo JFAgende</h1>
+    
+    <div class="test-section">
+        <h2>1. Teste de Conexão com API</h2>
+        <button onclick="testApiConnection()">Testar Conexão API</button>
+        <div id="apiResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Teste de Upload de Logo</h2>
+        <p>Selecione uma imagem para testar o upload:</p>
+        <input type="file" id="logoFile" accept="image/*" onchange="previewLogo()">
+        <div class="logo-preview" id="logoPreview">
+            <span>Nenhuma imagem selecionada</span>
+        </div>
+        <button onclick="testLogoUpload()">Testar Upload</button>
+        <div id="uploadResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Verificar Estabelecimentos</h2>
+        <button onclick="checkEstablishments()">Verificar Estabelecimentos</button>
+        <div id="establishmentsResult" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://jfagende-production.up.railway.app/api';
+        
+        function showResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${isSuccess ? 'success' : 'error'}`;
+            element.innerHTML = `<h3>${isSuccess ? '✅' : '❌'} ${isSuccess ? 'Sucesso' : 'Erro'}</h3><p>${message}</p>`;
+        }
+
+        async function testApiConnection() {
+            try {
+                const response = await fetch(`${API_BASE}/estabelecimentos`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('apiResult', `API funcionando! Encontrados ${data.length} estabelecimentos.`);
+                } else {
+                    showResult('apiResult', `Erro na API: ${response.status} - ${data.error || 'Erro desconhecido'}`, false);
+                }
+            } catch (error) {
+                showResult('apiResult', `Erro de conexão: ${error.message}`, false);
+            }
+        }
+
+        function previewLogo() {
+            const file = document.getElementById('logoFile').files[0];
+            const preview = document.getElementById('logoPreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '<span>Nenhuma imagem selecionada</span>';
+            }
+        }
+
+        async function testLogoUpload() {
+            const fileInput = document.getElementById('logoFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showResult('uploadResult', 'Por favor, selecione uma imagem primeiro.', false);
+                return;
+            }
+
+            // Simular ID de estabelecimento (você pode alterar)
+            const estabelecimentoId = 'test-id';
+            
+            try {
+                const formData = new FormData();
+                formData.append('logo', file);
+
+                const response = await fetch(`${API_BASE}/estabelecimentos/${estabelecimentoId}/logo`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('uploadResult', `Upload realizado! Resposta: ${JSON.stringify(data)}`);
+                } else {
+                    showResult('uploadResult', `Erro no upload: ${response.status} - ${data.error || 'Erro desconhecido'}`, false);
+                }
+            } catch (error) {
+                showResult('uploadResult', `Erro de conexão: ${error.message}`, false);
+            }
+        }
+
+        async function checkEstablishments() {
+            try {
+                const response = await fetch(`${API_BASE}/estabelecimentos`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let html = `<h3>✅ Estabelecimentos Encontrados (${data.length})</h3>`;
+                    data.forEach((est, index) => {
+                        html += `<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                            <strong>${est.nome}</strong><br>
+                            <small>Categoria: ${est.categoria}</small><br>
+                            <small>Logo: ${est.fotoPerfilUrl ? '✅ Tem logo' : '❌ Sem logo'}</small>
+                        </div>`;
+                    });
+                    document.getElementById('establishmentsResult').innerHTML = html;
+                    document.getElementById('establishmentsResult').style.display = 'block';
+                    document.getElementById('establishmentsResult').className = 'result success';
+                } else {
+                    showResult('establishmentsResult', `Erro na API: ${response.status}`, false);
+                }
+            } catch (error) {
+                showResult('establishmentsResult', `Erro de conexão: ${error.message}`, false);
+            }
+        }
+
+        // Testar conexão automaticamente
+        window.onload = function() {
+            testApiConnection();
+        };
+    </script>
+</body>
+</html>

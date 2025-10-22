@@ -260,16 +260,73 @@ const PortfolioEstabelecimento = () => {
           </p>
           
           <div className="max-w-md">
-            <LogoUpload
-              currentLogo={user.fotoPerfilUrl}
-              onLogoUpload={(logoUrl) => {
-                setToast({ type: 'success', message: 'Logo atualizada com sucesso!' })
-              }}
-              onLogoRemove={() => {
-                setToast({ type: 'success', message: 'Logo removida com sucesso!' })
-              }}
-              estabelecimentoId={user.id}
-            />
+            <Card className="p-6">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Upload de Logo
+                </h3>
+                
+                <div className="mb-6">
+                  {user.fotoPerfilUrl ? (
+                    <div className="relative inline-block group">
+                      <img
+                        src={user.fotoPerfilUrl}
+                        alt="Logo do estabelecimento"
+                        className="w-32 h-32 object-cover rounded-xl border-4 border-white shadow-xl group-hover:scale-105 transition-transform duration-200"
+                      />
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">✓</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-32 h-32 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center group hover:border-primary-400 transition-colors">
+                      <div className="text-center">
+                        <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Adicionar Logo</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setToast({ type: 'info', message: 'Funcionalidade de upload em desenvolvimento!' });
+                      }
+                    }}
+                    className="hidden"
+                    id="logoInput"
+                  />
+                  
+                  <Button
+                    onClick={() => document.getElementById('logoInput').click()}
+                    className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {user.fotoPerfilUrl ? 'Alterar Logo' : 'Adicionar Logo'}
+                  </Button>
+
+                  {user.fotoPerfilUrl && (
+                    <Button
+                      variant="outline"
+                      onClick={() => setToast({ type: 'info', message: 'Funcionalidade de remoção em desenvolvimento!' })}
+                      className="w-full border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Remover Logo
+                    </Button>
+                  )}
+                </div>
+
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                  Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB.
+                </p>
+              </div>
+            </Card>
           </div>
         </div>
 
