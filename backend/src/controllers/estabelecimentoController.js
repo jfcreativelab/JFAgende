@@ -339,7 +339,9 @@ export const uploadLogo = async (req, res) => {
     try { await fs.unlink(tempPath); } catch {}
 
     // URL pública
-    const logoUrl = `/uploads/estabelecimentos/${baseName}.webp`;
+    // URL da logo (URL completa para garantir persistência)
+    const baseUrl = process.env.BASE_URL || 'https://jfagende-production.up.railway.app';
+    const logoUrl = `${baseUrl}/uploads/estabelecimentos/${baseName}.webp`;
 
     // Remover logo antiga se existir
     const atual = await prisma.estabelecimento.findUnique({

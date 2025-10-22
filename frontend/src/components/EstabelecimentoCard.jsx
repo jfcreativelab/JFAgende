@@ -68,6 +68,10 @@ const EstabelecimentoCard = ({
               src={estabelecimento.fotoPerfilUrl} 
               alt={`Logo ${estabelecimento.nome}`}
               className="w-full h-full object-cover"
+              crossOrigin="anonymous"
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
             />
           </div>
         )}

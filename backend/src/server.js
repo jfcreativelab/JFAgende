@@ -86,8 +86,18 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/pagamento', pagamentoRoutes);
 app.use('/api/setup', setupRoutes);
 
-// Servir arquivos estáticos (imagens do portfólio)
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Servir arquivos estáticos (imagens do portfólio) com cache
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
+  maxAge: '30d', // Cache de 30 dias
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    // Headers de cache agressivos para imagens
+    res.setHeader('Cache-Control', 'public, max-age=2592000, immutable'); // 30 dias
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
+}));
 
 // Middleware de tratamento de erros 404
 app.use((req, res) => {

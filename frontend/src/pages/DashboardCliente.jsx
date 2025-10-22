@@ -425,7 +425,7 @@ const DashboardCliente = () => {
                         <div className="flex-shrink-0 w-24 h-24 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-xl flex items-center justify-center overflow-hidden shadow-md">
                           {estabelecimento.fotoPerfilUrl ? (
                             <img 
-                              src={estabelecimento.fotoPerfilUrl.startsWith('http') ? estabelecimento.fotoPerfilUrl : `${import.meta.env.VITE_API_URL || 'https://jfagende-production.up.railway.app'}${estabelecimento.fotoPerfilUrl}`}
+                              src={estabelecimento.fotoPerfilUrl}
                               alt={estabelecimento.nome}
                               className="w-full h-full object-cover"
                               onError={(e) => {

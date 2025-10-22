@@ -381,9 +381,10 @@ const HistoricoAgendamentos = () => {
                     <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 flex items-center justify-center shadow-lg ring-2 ring-primary-500/30">
                       {agendamento.estabelecimento?.fotoPerfilUrl ? (
                         <img 
-                          src={agendamento.estabelecimento.fotoPerfilUrl.startsWith('http') ? agendamento.estabelecimento.fotoPerfilUrl : `${import.meta.env.VITE_API_URL || 'https://jfagende-production.up.railway.app'}${agendamento.estabelecimento.fotoPerfilUrl}`}
+                          src={agendamento.estabelecimento.fotoPerfilUrl}
                           alt={agendamento.estabelecimento.nome}
                           className="w-full h-full object-cover"
+                          crossOrigin="anonymous"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.style.display = 'none';
