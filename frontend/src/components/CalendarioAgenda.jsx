@@ -230,15 +230,6 @@ const AgendaProfissional = ({
         </div>
       )}
 
-      {/* Teste Simples */}
-      <div className="bg-blue-100 border border-blue-400 rounded-lg p-4 mb-4">
-        <h3 className="text-lg font-bold text-blue-800 mb-2">✅ Agenda Profissional Funcionando!</h3>
-        <p className="text-blue-700">
-          Agendamentos: {agendamentos?.length || 0} | 
-          Bloqueios: {bloqueios?.length || 0} | 
-          Serviços: {servicos?.length || 0}
-        </p>
-      </div>
 
       {/* Header da Agenda */}
       <div className="bg-gradient-to-r from-primary-600 to-purple-600 rounded-2xl p-6 text-white">
