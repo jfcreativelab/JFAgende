@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, TrendingUp, Calendar, DollarSign, Star, Users, Package, Award, Download } from 'lucide-react'
+import { ArrowLeft, TrendingUp, Calendar, DollarSign, Star, Users, Package, Award, Download, Receipt, Eye, CheckCircle, XCircle, Clock } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import estatisticasService from '../services/estatisticasService'
 import agendamentoService from '../services/agendamentoService'
@@ -19,10 +19,19 @@ const RelatoriosEstabelecimento = () => {
   const [agendamentos, setAgendamentos] = useState([])
   const [loading, setLoading] = useState(true)
   const [periodo, setPeriodo] = useState('mes')
+  const [abaAtiva, setAbaAtiva] = useState('geral')
+  const [recibos, setRecibos] = useState([])
+  const [loadingRecibos, setLoadingRecibos] = useState(false)
 
   useEffect(() => {
     carregarDados()
   }, [])
+
+  useEffect(() => {
+    if (abaAtiva === 'recibos' && agendamentos.length > 0) {
+      carregarRecibos()
+    }
+  }, [abaAtiva, agendamentos])
 
   const carregarDados = async () => {
     try {
@@ -59,6 +68,43 @@ const RelatoriosEstabelecimento = () => {
     }
   }
 
+  const carregarRecibos = async () => {
+    setLoadingRecibos(true)
+    try {
+      // Buscar agendamentos com comprovante PIX
+      const agendamentosComComprovante = agendamentos.filter(ag => 
+        ag.comprovantePix && ag.pagamentoAntecipado
+      )
+      setRecibos(agendamentosComComprovante)
+    } catch (error) {
+      console.error('Erro ao carregar recibos:', error)
+    } finally {
+      setLoadingRecibos(false)
+    }
+  }
+
+  const aprovarPagamento = async (agendamentoId) => {
+    try {
+      // Aqui você implementaria a lógica para aprovar o pagamento
+      console.log('Aprovar pagamento:', agendamentoId)
+      // Atualizar lista de recibos
+      carregarRecibos()
+    } catch (error) {
+      console.error('Erro ao aprovar pagamento:', error)
+    }
+  }
+
+  const rejeitarPagamento = async (agendamentoId) => {
+    try {
+      // Aqui você implementaria a lógica para rejeitar o pagamento
+      console.log('Rejeitar pagamento:', agendamentoId)
+      // Atualizar lista de recibos
+      carregarRecibos()
+    } catch (error) {
+      console.error('Erro ao rejeitar pagamento:', error)
+    }
+  }
+
   if (loading) {
     return <Loading fullScreen />
   }
@@ -91,14 +137,45 @@ const RelatoriosEstabelecimento = () => {
               Acompanhe o desempenho do seu negócio
             </p>
           </div>
-
-          <Button variant="outline">
-            <Download size={18} />
-            Exportar PDF
-          </Button>
         </div>
 
-        {/* Estatísticas Principais */}
+        {/* Abas */}
+        <div className="flex space-x-1 mb-8">
+          <button
+            onClick={() => setAbaAtiva('geral')}
+            className={`px-6 py-3 font-medium transition-all ${
+              abaAtiva === 'geral'
+                ? 'text-primary-600 border-b-2 border-primary-600'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+            }`}
+          >
+            <TrendingUp className="inline mr-2" size={20} />
+            Geral
+          </button>
+          <button
+            onClick={() => setAbaAtiva('recibos')}
+            className={`px-6 py-3 font-medium transition-all ${
+              abaAtiva === 'recibos'
+                ? 'text-primary-600 border-b-2 border-primary-600'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+            }`}
+          >
+            <Receipt className="inline mr-2" size={20} />
+            Recibos PIX ({recibos.length})
+          </button>
+        </div>
+
+        {/* Conteúdo das Abas */}
+        {abaAtiva === 'geral' && (
+          <>
+            <div className="flex justify-end mb-8">
+              <Button variant="outline">
+                <Download size={18} />
+                Exportar PDF
+              </Button>
+            </div>
+
+            {/* Estatísticas Principais */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Total de Agendamentos"
@@ -248,6 +325,150 @@ const RelatoriosEstabelecimento = () => {
             </div>
           </Card>
         </div>
+          </>
+        )}
+
+        {/* Aba de Recibos PIX */}
+        {abaAtiva === 'recibos' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Recibos de Pagamento PIX
+              </h2>
+              <Badge variant="info">
+                {recibos.length} comprovante{recibos.length !== 1 ? 's' : ''}
+              </Badge>
+            </div>
+
+            {loadingRecibos ? (
+              <div className="flex justify-center py-12">
+                <Loading size="lg" />
+              </div>
+            ) : recibos.length === 0 ? (
+              <Card className="text-center py-12">
+                <Receipt size={48} className="mx-auto text-gray-400 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Nenhum comprovante PIX
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Ainda não há comprovantes de pagamento PIX para revisar.
+                </p>
+              </Card>
+            ) : (
+              <div className="grid gap-4">
+                {recibos.map((recibo) => (
+                  <Card key={recibo.id} className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                            <Receipt className="text-blue-600 dark:text-blue-400" size={20} />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900 dark:text-white">
+                              Comprovante PIX - {recibo.servico?.nome || 'Serviço'}
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {new Date(recibo.dataHora).toLocaleDateString('pt-BR', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4 mb-4">
+                          <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Cliente</p>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {recibo.cliente?.nome || 'Cliente não cadastrado'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Valor Total</p>
+                            <p className="font-bold text-green-600 dark:text-green-400">
+                              R$ {recibo.valorTotal?.toFixed(2) || '0,00'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Taxa da Plataforma</p>
+                            <p className="text-gray-900 dark:text-white">
+                              R$ {recibo.valorTaxa?.toFixed(2) || '0,00'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Status</p>
+                            <Badge 
+                              variant={
+                                recibo.status === 'AGUARDANDO_APROVACAO_PAGAMENTO' ? 'warning' :
+                                recibo.status === 'CONFIRMADO' ? 'success' : 'danger'
+                              }
+                            >
+                              {recibo.status === 'AGUARDANDO_APROVACAO_PAGAMENTO' ? 'Aguardando Aprovação' :
+                               recibo.status === 'CONFIRMADO' ? 'Aprovado' : 'Rejeitado'}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        {recibo.comprovantePix && (
+                          <div className="mb-4">
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Comprovante:</p>
+                            <div className="flex items-center gap-2">
+                              <img 
+                                src={`https://jfagende-production.up.railway.app${recibo.comprovantePix}`}
+                                alt="Comprovante PIX"
+                                className="w-32 h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                                onError={(e) => {
+                                  e.target.style.display = 'none'
+                                  e.target.nextSibling.style.display = 'block'
+                                }}
+                              />
+                              <div style={{display: 'none'}} className="w-32 h-32 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                                <Eye size={24} className="text-gray-400" />
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => window.open(`https://jfagende-production.up.railway.app${recibo.comprovantePix}`, '_blank')}
+                              >
+                                <Eye size={16} />
+                                Ver Completo
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {recibo.status === 'AGUARDANDO_APROVACAO_PAGAMENTO' && (
+                        <div className="flex gap-2 ml-4">
+                          <Button
+                            size="sm"
+                            variant="success"
+                            onClick={() => aprovarPagamento(recibo.id)}
+                          >
+                            <CheckCircle size={16} />
+                            Aprovar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            onClick={() => rejeitarPagamento(recibo.id)}
+                          >
+                            <XCircle size={16} />
+                            Rejeitar
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

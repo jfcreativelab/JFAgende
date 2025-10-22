@@ -33,6 +33,7 @@ const PORT = process.env.PORT || 5000;
 const uploadsDir = path.join(__dirname, '../uploads');
 const estabelecimentosDir = path.join(uploadsDir, 'estabelecimentos');
 const portfolioDir = path.join(uploadsDir, 'portfolio');
+const comprovantesDir = path.join(uploadsDir, 'comprovantes');
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -47,6 +48,11 @@ if (!fs.existsSync(estabelecimentosDir)) {
 if (!fs.existsSync(portfolioDir)) {
   fs.mkdirSync(portfolioDir, { recursive: true });
   console.log('📁 Pasta uploads/portfolio criada');
+}
+
+if (!fs.existsSync(comprovantesDir)) {
+  fs.mkdirSync(comprovantesDir, { recursive: true });
+  console.log('📁 Pasta uploads/comprovantes criada');
 }
 
 // Middlewares globais

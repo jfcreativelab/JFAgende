@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import sharp from 'sharp';
+import QRCode from 'qrcode';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,14 +64,37 @@ export const gerarQrCodePix = async (req, res) => {
       valorTotal: valorTotal
     };
 
-    // TODO: Implementar geração real de QR Code PIX
-    // Por enquanto, retornamos os dados para o frontend gerar o QR Code
-    res.json({
-      success: true,
-      pixData,
-      qrCodeData: `PIX:${pixData.chavePix}|${pixData.valor}|${pixData.descricao}`,
-      message: 'Dados do PIX gerados com sucesso'
-    });
+    // Gerar QR Code real
+    const qrCodeData = `pix://copiaecola?chave=${pixData.chavePix}&valor=${pixData.valor.toFixed(2)}&txid=${agendamento.id}`;
+    
+    try {
+      const qrCodeImage = await QRCode.toDataURL(qrCodeData, {
+        width: 256,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+
+      res.json({
+        success: true,
+        pixData,
+        qrCodeData,
+        qrCodeImage,
+        message: 'QR Code PIX gerado com sucesso'
+      });
+    } catch (qrError) {
+      console.error('Erro ao gerar QR Code:', qrError);
+      // Fallback: retornar dados sem QR Code
+      res.json({
+        success: true,
+        pixData,
+        qrCodeData,
+        qrCodeImage: null,
+        message: 'Dados do PIX gerados (QR Code não disponível)'
+      });
+    }
 
   } catch (error) {
     console.error('Erro ao gerar QR Code PIX:', error);

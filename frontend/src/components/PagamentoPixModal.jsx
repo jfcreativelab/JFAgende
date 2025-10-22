@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, QrCode, Upload, CreditCard, AlertCircle, CheckCircle, Copy, DollarSign } from 'lucide-react'
 import Modal from './Modal'
 import Button from './Button'
 import Card from './Card'
 import Badge from './Badge'
 import Toast from './Toast'
+import Loading from './Loading'
 
 const PagamentoPixModal = ({ 
   isOpen, 
@@ -18,10 +19,55 @@ const PagamentoPixModal = ({
   const [comprovantePreview, setComprovantePreview] = useState(null)
   const [toast, setToast] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [qrCodeImage, setQrCodeImage] = useState(null)
+  const [loadingQrCode, setLoadingQrCode] = useState(false)
+  const [pixCopiado, setPixCopiado] = useState(false)
 
   const TAXA_PLATAFORMA = 5.00
   const valorServico = agendamento?.servico?.preco || 0
   const valorTotal = valorServico + TAXA_PLATAFORMA
+
+  // Gerar QR Code quando o modal abrir
+  useEffect(() => {
+    if (isOpen && estabelecimento?.chavePix) {
+      gerarQrCode()
+    }
+  }, [isOpen, estabelecimento?.chavePix])
+
+  const gerarQrCode = async () => {
+    if (!estabelecimento?.chavePix) return
+    
+    setLoadingQrCode(true)
+    try {
+      // Dados para o QR Code PIX
+      const qrCodeData = `pix://copiaecola?chave=${estabelecimento.chavePix}&valor=${valorTotal.toFixed(2)}&txid=${agendamento.id}`
+      
+      // Gerar QR Code usando a biblioteca
+      const QRCode = (await import('qrcode')).default
+      const qrCodeImage = await QRCode.toDataURL(qrCodeData, {
+        width: 256,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      })
+      
+      setQrCodeImage(qrCodeImage)
+    } catch (error) {
+      console.error('Erro ao gerar QR Code:', error)
+      setToast({ type: 'error', message: 'Erro ao gerar QR Code' })
+    } finally {
+      setLoadingQrCode(false)
+    }
+  }
+
+  const copiarChavePix = () => {
+    navigator.clipboard.writeText(estabelecimento?.chavePix || '')
+    setPixCopiado(true)
+    setTimeout(() => setPixCopiado(false), 2000)
+    setToast({ type: 'info', message: 'Chave PIX copiada!' })
+  }
 
   const handleComprovanteChange = (e) => {
     const file = e.target.files[0]
@@ -85,12 +131,6 @@ const PagamentoPixModal = ({
     }
   }
 
-  const copiarChavePix = () => {
-    if (estabelecimento?.chavePix) {
-      navigator.clipboard.writeText(estabelecimento.chavePix)
-      setToast({ type: 'success', message: 'Chave PIX copiada!' })
-    }
-  }
 
   const copiarValor = () => {
     navigator.clipboard.writeText(valorTotal.toFixed(2))
@@ -204,8 +244,26 @@ const PagamentoPixModal = ({
           <div className="space-y-4">
             <div className="text-center">
               <div className="inline-block p-4 bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-700">
-                <QrCode size={120} className="text-gray-400" />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">QR Code PIX</p>
+                {loadingQrCode ? (
+                  <div className="flex flex-col items-center">
+                    <Loading size="lg" />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Gerando QR Code...</p>
+                  </div>
+                ) : qrCodeImage ? (
+                  <div>
+                    <img 
+                      src={qrCodeImage} 
+                      alt="QR Code PIX" 
+                      className="w-48 h-48 mx-auto"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">QR Code PIX</p>
+                  </div>
+                ) : (
+                  <div>
+                    <QrCode size={120} className="text-gray-400" />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">QR Code não disponível</p>
+                  </div>
+                )}
               </div>
             </div>
 
