@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Image as ImageIcon, Plus, BarChart2, Upload, X, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Image as ImageIcon, Plus, BarChart2, Upload, X, CheckCircle, Camera, Settings, User, Edit3, Save, Trash2, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
 import UploadImagem from '../components/UploadImagem'
@@ -12,13 +12,13 @@ import Button from '../components/Button'
 import Toast from '../components/Toast'
 import Loading from '../components/Loading'
 import StatCard from '../components/StatCard'
-import LogoUpload from '../components/LogoUpload'
 import Card from '../components/Card'
+import Badge from '../components/Badge'
 import portfolioService from '../services/portfolioService'
 
 const PortfolioEstabelecimento = () => {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
 
   const [fotos, setFotos] = useState([])
   const [categorias, setCategorias] = useState([])
@@ -27,6 +27,8 @@ const PortfolioEstabelecimento = () => {
   const [uploading, setUploading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [toast, setToast] = useState(null)
+  const [logoFile, setLogoFile] = useState(null)
+  const [logoPreview, setLogoPreview] = useState(null)
   
   const [fotoData, setFotoData] = useState({
     titulo: '',
@@ -50,11 +52,103 @@ const PortfolioEstabelecimento = () => {
       setFotos(fotosData)
       setCategorias(categoriasData)
       setEstatisticas(statsData)
+      setLogoPreview(user.fotoPerfilUrl)
     } catch (error) {
       console.error('Erro ao carregar dados:', error)
       setToast({ type: 'error', message: 'Erro ao carregar portfólio' })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleLogoSelect = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      // Validar tipo de arquivo
+      if (!file.type.startsWith('image/')) {
+        setToast({ type: 'error', message: 'Por favor, selecione apenas arquivos de imagem.' })
+        return
+      }
+
+      // Validar tamanho (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setToast({ type: 'error', message: 'A imagem deve ter no máximo 5MB.' })
+        return
+      }
+
+      setLogoFile(file)
+      
+      // Criar preview
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setLogoPreview(e.target.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleLogoUpload = async () => {
+    if (!logoFile) return
+
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('logo', logoFile)
+      
+      const response = await fetch(`https://jfagende-production.up.railway.app/api/estabelecimentos/${user.id}/logo`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('estabelecimentoToken')}`
+        },
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('Erro ao fazer upload da logo')
+      }
+
+      const data = await response.json()
+      setToast({ type: 'success', message: 'Logo atualizada com sucesso!' })
+      setLogoFile(null)
+      
+      // Atualizar contexto do usuário
+      updateUser({ ...user, fotoPerfilUrl: data.estabelecimento.fotoPerfilUrl })
+      
+    } catch (error) {
+      console.error('Erro ao fazer upload da logo:', error)
+      setToast({ type: 'error', message: 'Erro ao fazer upload da logo' })
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleLogoRemove = async () => {
+    setUploading(true)
+    try {
+      const response = await fetch(`https://jfagende-production.up.railway.app/api/estabelecimentos/${user.id}/logo`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('estabelecimentoToken')}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Erro ao remover logo')
+      }
+
+      setToast({ type: 'success', message: 'Logo removida com sucesso!' })
+      setLogoPreview(null)
+      setLogoFile(null)
+      
+      // Atualizar contexto do usuário
+      updateUser({ ...user, fotoPerfilUrl: null })
+      
+    } catch (error) {
+      console.error('Erro ao remover logo:', error)
+      setToast({ type: 'error', message: 'Erro ao remover logo' })
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -252,12 +346,23 @@ const PortfolioEstabelecimento = () => {
 
         {/* Seção de Logo do Estabelecimento */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            🏷️ Logo do Estabelecimento
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Sua logo aparecerá nos cards da tela inicial e em todos os lugares do app
-          </p>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                🏷️ Logo do Estabelecimento
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                Sua logo aparecerá nos cards da tela inicial e em todos os lugares do app
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/estabelecimento/perfil')}
+            >
+              <User size={18} className="mr-2" />
+              Meu Perfil
+            </Button>
+          </div>
           
           <div className="max-w-md">
             <Card className="p-6">
@@ -267,10 +372,10 @@ const PortfolioEstabelecimento = () => {
                 </h3>
                 
                 <div className="mb-6">
-                  {user.fotoPerfilUrl ? (
+                  {logoPreview ? (
                     <div className="relative inline-block group">
                       <img
-                        src={user.fotoPerfilUrl}
+                        src={logoPreview}
                         alt="Logo do estabelecimento"
                         className="w-32 h-32 object-cover rounded-xl border-4 border-white shadow-xl group-hover:scale-105 transition-transform duration-200"
                       />
@@ -281,7 +386,7 @@ const PortfolioEstabelecimento = () => {
                   ) : (
                     <div className="w-32 h-32 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center group hover:border-primary-400 transition-colors">
                       <div className="text-center">
-                        <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                        <Camera className="w-12 h-12 text-gray-400 mx-auto mb-2" />
                         <p className="text-xs text-gray-500 dark:text-gray-400">Adicionar Logo</p>
                       </div>
                     </div>
@@ -292,31 +397,45 @@ const PortfolioEstabelecimento = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        setToast({ type: 'info', message: 'Funcionalidade de upload em desenvolvimento!' });
-                      }
-                    }}
+                    onChange={handleLogoSelect}
                     className="hidden"
                     id="logoInput"
                   />
                   
                   <Button
                     onClick={() => document.getElementById('logoInput').click()}
+                    disabled={uploading}
                     className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-lg hover:shadow-xl transition-all duration-200"
                   >
-                    <Upload className="w-4 h-4 mr-2" />
-                    {user.fotoPerfilUrl ? 'Alterar Logo' : 'Adicionar Logo'}
+                    {uploading ? (
+                      <Loading size="sm" />
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 mr-2" />
+                        {logoPreview ? 'Alterar Logo' : 'Adicionar Logo'}
+                      </>
+                    )}
                   </Button>
 
-                  {user.fotoPerfilUrl && (
+                  {logoFile && (
+                    <Button
+                      onClick={handleLogoUpload}
+                      disabled={uploading}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      Salvar Logo
+                    </Button>
+                  )}
+
+                  {logoPreview && (
                     <Button
                       variant="outline"
-                      onClick={() => setToast({ type: 'info', message: 'Funcionalidade de remoção em desenvolvimento!' })}
+                      onClick={handleLogoRemove}
+                      disabled={uploading}
                       className="w-full border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
                     >
-                      <X className="w-4 h-4 mr-2" />
+                      <Trash2 className="w-4 h-4 mr-2" />
                       Remover Logo
                     </Button>
                   )}

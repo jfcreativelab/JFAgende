@@ -17,6 +17,7 @@ import PerfilCliente from './pages/PerfilCliente'
 import HistoricoAgendamentos from './pages/HistoricoAgendamentos'
 import RelatoriosEstabelecimento from './pages/RelatoriosEstabelecimento'
 import PortfolioEstabelecimento from './pages/PortfolioEstabelecimento'
+import PerfilEstabelecimento from './pages/PerfilEstabelecimento'
 import GestaoEquipe from './pages/GestaoEquipe'
 import PlanosPage from './pages/PlanosPage'
 import AssinaturaEstabelecimento from './pages/AssinaturaEstabelecimento'
@@ -131,6 +132,14 @@ function App() {
             element={
               <ProtectedRoute tipo="estabelecimento">
                 <PortfolioEstabelecimento />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/estabelecimento/perfil"
+            element={
+              <ProtectedRoute tipo="estabelecimento">
+                <PerfilEstabelecimento />
               </ProtectedRoute>
             }
           />

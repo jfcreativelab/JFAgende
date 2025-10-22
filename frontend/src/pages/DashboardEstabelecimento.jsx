@@ -683,8 +683,12 @@ const DashboardEstabelecimento = () => {
                 onMarkAsRead={marcarComoLida}
                 onMarkAllAsRead={marcarTodasComoLidas}
               />
-              <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/assinatura')}>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/perfil')}>
                 <User size={18} />
+                Meu Perfil
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/assinatura')}>
+                <CreditCard size={18} />
                 Plano
               </Button>
               <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/equipe')}>
