@@ -248,17 +248,17 @@ const DashboardCliente = () => {
           </div>
         </header>
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid lg:grid-cols-3 gap-8">
+        <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
+          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             {/* Coluna Principal - Estabelecimentos */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
                   Encontre Estabelecimentos
                 </h2>
 
                 {/* Busca Avançada */}
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6">
                   <AdvancedSearch
                     onSearch={handleAdvancedSearch}
                     onFilterChange={handleFilterChange}
@@ -267,37 +267,40 @@ const DashboardCliente = () => {
                 </div>
 
                 {/* Filtros Rápidos */}
-                <div className="flex flex-wrap items-center gap-3 mb-6">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
                   <button
                     onClick={() => setFiltros({ ...filtros, disponivelAgora: !filtros.disponivelAgora })}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                       filtros.disponivelAgora
                         ? 'bg-green-500 text-white shadow-md'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
-                    <Clock className="inline mr-1" size={16} />
-                    Aberto Agora
+                    <Clock className="inline mr-1" size={14} />
+                    <span className="hidden sm:inline">Aberto Agora</span>
+                    <span className="sm:hidden">Aberto</span>
                   </button>
                   
                   <button
                     onClick={() => setFiltros({ ...filtros, mostrarFavoritos: !filtros.mostrarFavoritos })}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                       filtros.mostrarFavoritos
                           ? 'bg-red-500 text-white shadow-md'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
-                      <Heart className="inline mr-1" size={16} />
-                      Favoritos
+                      <Heart className="inline mr-1" size={14} />
+                      <span className="hidden sm:inline">Favoritos</span>
+                      <span className="sm:hidden">Fav</span>
                     </button>
                     
                     <button
                       onClick={() => setMostrarFiltrosAvancados(!mostrarFiltrosAvancados)}
                       className="px-4 py-2 rounded-lg text-sm font-medium bg-primary-500 text-white hover:bg-primary-600 transition-all"
                     >
-                      <Filter className="inline mr-1" size={16} />
-                      Filtros Avançados
+                      <Filter className="inline mr-1" size={14} />
+                      <span className="hidden sm:inline">Filtros Avançados</span>
+                      <span className="sm:hidden">Filtros</span>
                       {(filtros.precoMin || filtros.precoMax || filtros.avaliacaoMin) && (
                         <span className="ml-2 px-2 py-0.5 bg-white text-primary-600 rounded-full text-xs font-bold">
                           {[filtros.precoMin, filtros.precoMax, filtros.avaliacaoMin].filter(Boolean).length}
@@ -476,18 +479,20 @@ const DashboardCliente = () => {
           </div>
 
           {/* Sidebar - Meus Agendamentos */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                   Meus Agendamentos
                 </h2>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => navigate('/cliente/historico')}
+                  className="text-xs sm:text-sm"
                 >
-                  Ver Todos
+                  <span className="hidden sm:inline">Ver Todos</span>
+                  <span className="sm:hidden">Todos</span>
                 </Button>
               </div>
 

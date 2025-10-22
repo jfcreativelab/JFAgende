@@ -114,13 +114,13 @@ const EstabelecimentoDetalhes = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
+      <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {/* Informações do Estabelecimento */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             <Card>
-              <div className="flex gap-6 mb-6">
-                <div className="flex-shrink-0 w-32 h-32 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-2xl flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-primary-500/20">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <div className="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-2xl flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-primary-500/20 mx-auto sm:mx-0">
                   {estabelecimento.fotoPerfilUrl ? (
                     <img 
                       src={estabelecimento.fotoPerfilUrl} 
@@ -143,13 +143,13 @@ const EstabelecimentoDetalhes = () => {
                   )}
                 </div>
                 
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h1 className="font-display text-3xl font-bold text-gray-900 mb-2">
+                <div className="flex-1 text-center sm:text-left">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3">
+                    <div className="flex-1">
+                      <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                         {estabelecimento.nome}
                       </h1>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center sm:justify-start gap-3">
                         <Badge variant="primary">
                           {estabelecimento.categoria}
                         </Badge>
@@ -168,10 +168,10 @@ const EstabelecimentoDetalhes = () => {
                     <Button
                       variant="ghost"
                       onClick={handleToggleFavorito}
-                      className="!p-2"
+                      className="!p-2 mt-2 sm:mt-0"
                     >
                       <Heart 
-                        size={24}
+                        size={20}
                         className={`transition-colors ${
                           isFavorito 
                             ? 'fill-red-500 text-red-500' 
@@ -182,23 +182,23 @@ const EstabelecimentoDetalhes = () => {
                   </div>
                   
                   {estabelecimento.descricao && (
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-gray-600 mb-4 text-sm sm:text-base">
                       {estabelecimento.descricao}
                     </p>
                   )}
                   
-                  <div className="space-y-2 text-sm text-gray-600">
+                  <div className="space-y-2 text-xs sm:text-sm text-gray-600">
                     <div className="flex items-center gap-2">
-                      <MapPin size={18} />
-                      <span>{estabelecimento.endereco}</span>
+                      <MapPin size={16} />
+                      <span className="break-words">{estabelecimento.endereco}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Phone size={18} />
+                      <Phone size={16} />
                       <span>{estabelecimento.telefone}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Mail size={18} />
-                      <span>{estabelecimento.email}</span>
+                      <Mail size={16} />
+                      <span className="break-all">{estabelecimento.email}</span>
                     </div>
                   </div>
                 </div>
@@ -207,43 +207,45 @@ const EstabelecimentoDetalhes = () => {
 
             {/* Tabs */}
             <div>
-              <div className="flex gap-2 mb-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex gap-1 sm:gap-2 mb-4 sm:mb-6 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
                 <button
                   onClick={() => setAbaAtiva('servicos')}
-                  className={`px-6 py-3 font-medium transition-all ${
+                  className={`px-3 py-2 sm:px-6 sm:py-3 font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
                     abaAtiva === 'servicos'
                       ? 'text-primary-600 border-b-2 border-primary-600'
                       : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
                   }`}
                 >
-                  <DollarSign className="inline mr-2" size={18} />
+                  <DollarSign className="inline mr-1 sm:mr-2" size={16} />
                   Serviços
                 </button>
 
                 {fotosPortfolio.length > 0 && (
                   <button
                     onClick={() => setAbaAtiva('portfolio')}
-                    className={`px-6 py-3 font-medium transition-all ${
+                    className={`px-3 py-2 sm:px-6 sm:py-3 font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
                       abaAtiva === 'portfolio'
                         ? 'text-primary-600 border-b-2 border-primary-600'
                         : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
                     }`}
                   >
-                    <ImageIcon className="inline mr-2" size={18} />
-                    Portfólio ({fotosPortfolio.length})
+                    <ImageIcon className="inline mr-1 sm:mr-2" size={16} />
+                    <span className="hidden sm:inline">Portfólio ({fotosPortfolio.length})</span>
+                    <span className="sm:hidden">Fotos ({fotosPortfolio.length})</span>
                   </button>
                 )}
 
                 <button
                   onClick={() => setAbaAtiva('avaliacoes')}
-                  className={`px-6 py-3 font-medium transition-all ${
+                  className={`px-3 py-2 sm:px-6 sm:py-3 font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
                     abaAtiva === 'avaliacoes'
                       ? 'text-primary-600 border-b-2 border-primary-600'
                       : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
                   }`}
                 >
-                  <Star className="inline mr-2" size={18} />
-                  Avaliações ({avaliacoes.total})
+                  <Star className="inline mr-1 sm:mr-2" size={16} />
+                  <span className="hidden sm:inline">Avaliações ({avaliacoes.total})</span>
+                  <span className="sm:hidden">Aval. ({avaliacoes.total})</span>
                 </button>
               </div>
 

@@ -115,71 +115,71 @@ const Home = () => {
             </button>
           </div>
 
-          {/* Estatísticas em Tempo Real */}
-          <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-              <div className="relative glass-strong rounded-3xl p-6 border-2 border-blue-500/30 hover:border-blue-500/60 transition-all duration-300 card-hover">
-                <div className="flex justify-center mb-4">
-                  <div className="p-4 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Store className="text-white" size={28} />
+              {/* Estatísticas em Tempo Real */}
+              <div className="mt-12 sm:mt-16 md:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto">
+                <div className="group relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl sm:rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+                  <div className="relative glass-strong rounded-2xl sm:rounded-3xl p-4 sm:p-6 border-2 border-blue-500/30 hover:border-blue-500/60 transition-all duration-300 card-hover">
+                    <div className="flex justify-center mb-3 sm:mb-4">
+                      <div className="p-3 sm:p-4 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl sm:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <Store className="text-white" size={20} />
+                      </div>
+                    </div>
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-1 sm:mb-2">
+                      <AnimatedNumber value={stats.estabelecimentos} />+
+                    </div>
+                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                      Estabelecimentos
+                    </div>
                   </div>
                 </div>
-                <div className="text-4xl font-black bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
-                  <AnimatedNumber value={stats.estabelecimentos} />+
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">
-                  Estabelecimentos
-                </div>
-              </div>
-            </div>
 
             <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-              <div className="relative glass-strong rounded-3xl p-6 border-2 border-green-500/30 hover:border-green-500/60 transition-all duration-300 card-hover">
-                <div className="flex justify-center mb-4">
-                  <div className="p-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Calendar className="text-white" size={28} />
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl sm:rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+              <div className="relative glass-strong rounded-2xl sm:rounded-3xl p-4 sm:p-6 border-2 border-green-500/30 hover:border-green-500/60 transition-all duration-300 card-hover">
+                <div className="flex justify-center mb-3 sm:mb-4">
+                  <div className="p-3 sm:p-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl sm:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Calendar className="text-white" size={20} />
                   </div>
                 </div>
-                <div className="text-4xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1 sm:mb-2">
                   <AnimatedNumber value={stats.agendamentos} />+
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold">
                   Agendamentos
                 </div>
               </div>
             </div>
 
             <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-              <div className="relative glass-strong rounded-3xl p-6 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-300 card-hover">
-                <div className="flex justify-center mb-4">
-                  <div className="p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Star className="text-white" size={28} />
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl sm:rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+              <div className="relative glass-strong rounded-2xl sm:rounded-3xl p-4 sm:p-6 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-300 card-hover">
+                <div className="flex justify-center mb-3 sm:mb-4">
+                  <div className="p-3 sm:p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl sm:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Star className="text-white" size={20} />
                   </div>
                 </div>
-                <div className="text-4xl font-black bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-2">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-1 sm:mb-2">
                   <AnimatedNumber value={stats.avaliacoes} />+
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold">
                   Avaliações
                 </div>
               </div>
             </div>
 
             <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-              <div className="relative glass-strong rounded-3xl p-6 border-2 border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 card-hover">
-                <div className="flex justify-center mb-4">
-                  <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Users className="text-white" size={28} />
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl sm:rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+              <div className="relative glass-strong rounded-2xl sm:rounded-3xl p-4 sm:p-6 border-2 border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 card-hover">
+                <div className="flex justify-center mb-3 sm:mb-4">
+                  <div className="p-3 sm:p-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl sm:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Users className="text-white" size={20} />
                   </div>
                 </div>
-                <div className="text-4xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1 sm:mb-2">
                   <AnimatedNumber value={stats.usuarios} />+
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold">
                   Usuários Ativos
                 </div>
               </div>
@@ -188,56 +188,56 @@ const Home = () => {
         </div>
 
         {/* Features Section */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-24">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto mt-16 sm:mt-20 md:mt-24">
           <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-purple-500 rounded-3xl blur-2xl opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-purple-500 rounded-2xl sm:rounded-3xl blur-2xl opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
             <Card glass hoverable className="text-center cursor-pointer border-2 border-primary-500/20 hover:border-primary-500/60 group-hover:shadow-2xl">
-              <div className="relative mb-6">
+              <div className="relative mb-4 sm:mb-6">
                 <div className="absolute inset-0 bg-primary-600/20 rounded-full blur-3xl group-hover:bg-primary-600/40 transition-all duration-500"></div>
-                <div className="relative bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
-                  <Calendar className="text-white drop-shadow-lg" size={40} />
+                <div className="relative bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 rounded-2xl sm:rounded-3xl w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
+                  <Calendar className="text-white drop-shadow-lg" size={28} />
                 </div>
               </div>
-              <h3 className="font-display font-black text-2xl mb-4 bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
+              <h3 className="font-display font-black text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
                 Agendamento Fácil
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed font-medium">
+              <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed font-medium">
                 Encontre estabelecimentos e agende seus serviços de forma <span className="text-primary-600 dark:text-primary-400 font-bold">rápida e intuitiva</span>
               </p>
             </Card>
           </div>
 
           <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl blur-2xl opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl sm:rounded-3xl blur-2xl opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
             <Card glass hoverable className="text-center cursor-pointer border-2 border-emerald-500/20 hover:border-emerald-500/60 group-hover:shadow-2xl">
-              <div className="relative mb-6">
+              <div className="relative mb-4 sm:mb-6">
                 <div className="absolute inset-0 bg-emerald-600/20 rounded-full blur-3xl group-hover:bg-emerald-600/40 transition-all duration-500"></div>
-                <div className="relative bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
-                  <Store className="text-white drop-shadow-lg" size={40} />
+                <div className="relative bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500 rounded-2xl sm:rounded-3xl w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
+                  <Store className="text-white drop-shadow-lg" size={28} />
                 </div>
               </div>
-              <h3 className="font-display font-black text-2xl mb-4 bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
+              <h3 className="font-display font-black text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
                 Gestão Completa
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed font-medium">
+              <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed font-medium">
                 Gerencie agenda, serviços e clientes em um único lugar de forma <span className="text-emerald-600 dark:text-emerald-400 font-bold">profissional</span>
               </p>
             </Card>
           </div>
 
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl blur-2xl opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
+          <div className="group relative sm:col-span-2 lg:col-span-1">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl sm:rounded-3xl blur-2xl opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
             <Card glass hoverable className="text-center cursor-pointer border-2 border-purple-500/20 hover:border-purple-500/60 group-hover:shadow-2xl">
-              <div className="relative mb-6">
+              <div className="relative mb-4 sm:mb-6">
                 <div className="absolute inset-0 bg-purple-600/20 rounded-full blur-3xl group-hover:bg-purple-600/40 transition-all duration-500"></div>
-                <div className="relative bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
-                  <Sparkles className="text-white drop-shadow-lg" size={40} />
+                <div className="relative bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 rounded-2xl sm:rounded-3xl w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
+                  <Sparkles className="text-white drop-shadow-lg" size={28} />
                 </div>
               </div>
-              <h3 className="font-display font-black text-2xl mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
+              <h3 className="font-display font-black text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
                 Interface Moderna
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed font-medium">
+              <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed font-medium">
                 Design limpo e responsivo para a melhor experiência em <span className="text-purple-600 dark:text-purple-400 font-bold">qualquer dispositivo</span>
               </p>
             </Card>
@@ -245,39 +245,39 @@ const Home = () => {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-32 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl blur-3xl"></div>
+        <div className="mt-20 sm:mt-24 md:mt-32 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl sm:rounded-3xl blur-3xl"></div>
           <Card glass className="relative border-2 border-primary-500/30 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-primary-500/5 via-purple-500/5 to-pink-500/5 animate-gradient"></div>
-            <div className="relative text-center py-16 px-8">
-              <div className="inline-block mb-6">
-                <div className="p-4 bg-gradient-to-r from-primary-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl animate-float">
-                  <Sparkles className="text-white" size={40} />
+            <div className="relative text-center py-12 sm:py-16 px-4 sm:px-8">
+              <div className="inline-block mb-4 sm:mb-6">
+                <div className="p-3 sm:p-4 bg-gradient-to-r from-primary-500 via-purple-500 to-pink-500 rounded-xl sm:rounded-2xl shadow-2xl animate-float">
+                  <Sparkles className="text-white" size={32} />
                 </div>
               </div>
-              <h2 className="font-display text-4xl md:text-5xl font-black mb-6 bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Pronto para começar?
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto font-medium">
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-10 max-w-2xl mx-auto font-medium">
                 Crie sua conta <span className="text-primary-600 dark:text-primary-400 font-bold">gratuitamente</span> e comece a agendar hoje mesmo
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <Button 
                   variant="secondary"
                   size="lg"
                   onClick={() => navigate('/cadastro/cliente')}
-                  className="group"
+                  className="group w-full sm:w-auto"
                 >
-                  <Users size={20} className="group-hover:scale-110 transition-transform" />
+                  <Users size={18} className="group-hover:scale-110 transition-transform" />
                   Cadastro Cliente
                 </Button>
                 <Button 
                   variant="secondary"
                   size="lg"
                   onClick={() => navigate('/cadastro/estabelecimento')}
-                  className="group"
+                  className="group w-full sm:w-auto"
                 >
-                  <Store size={20} className="group-hover:scale-110 transition-transform" />
+                  <Store size={18} className="group-hover:scale-110 transition-transform" />
                   Cadastro Estabelecimento
                 </Button>
               </div>
