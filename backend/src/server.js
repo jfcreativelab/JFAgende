@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,26 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Criar pastas necessárias se não existirem
+const uploadsDir = path.join(__dirname, '../uploads');
+const estabelecimentosDir = path.join(uploadsDir, 'estabelecimentos');
+const portfolioDir = path.join(uploadsDir, 'portfolio');
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('📁 Pasta uploads criada');
+}
+
+if (!fs.existsSync(estabelecimentosDir)) {
+  fs.mkdirSync(estabelecimentosDir, { recursive: true });
+  console.log('📁 Pasta uploads/estabelecimentos criada');
+}
+
+if (!fs.existsSync(portfolioDir)) {
+  fs.mkdirSync(portfolioDir, { recursive: true });
+  console.log('📁 Pasta uploads/portfolio criada');
+}
 
 // Middlewares globais
 app.use(cors());
