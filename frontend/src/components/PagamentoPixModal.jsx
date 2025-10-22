@@ -140,7 +140,7 @@ const PagamentoPixModal = ({
       const novoAgendamento = await agendamentoResponse.json()
       console.log('🔍 Debug - Novo agendamento criado:', novoAgendamento)
       
-      const agendamentoId = novoAgendamento.id
+      const agendamentoId = novoAgendamento.agendamento.id
       console.log('🔍 Debug - ID do agendamento:', agendamentoId)
 
       // Fazer upload do comprovante
