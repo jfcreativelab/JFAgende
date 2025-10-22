@@ -181,6 +181,14 @@ const PortfolioEstabelecimento = () => {
     setUploading(true)
     
     try {
+      // Verificar se o token está válido
+      const token = localStorage.getItem('token')
+      if (!token) {
+        setToast({ type: 'error', message: 'Sessão expirada. Faça login novamente.' })
+        setTimeout(() => navigate('/login/estabelecimento'), 2000)
+        return
+      }
+
       const formData = new FormData()
       formData.append('imagem', file)
       formData.append('titulo', fotoData.titulo)
@@ -190,7 +198,7 @@ const PortfolioEstabelecimento = () => {
 
       await portfolioService.uploadFoto(formData)
       
-      setToast({ type: 'success', message: 'Foto adicionada com sucesso!' })
+      setToast({ type: 'success', message: '✨ Foto adicionada com sucesso!' })
       setModalOpen(false)
       setFotoData({
         titulo: '',
@@ -198,12 +206,25 @@ const PortfolioEstabelecimento = () => {
         categoria: '',
         tipo: 'portfolio'
       })
-      carregarDados()
+      
+      // Recarregar dados após pequeno delay para garantir que o backend processou
+      setTimeout(() => carregarDados(), 500)
     } catch (error) {
       console.error('Erro ao fazer upload:', error)
+      
+      // Tratar erro de token expirado
+      if (error.response?.status === 401) {
+        setToast({ type: 'error', message: 'Sessão expirada. Faça login novamente.' })
+        setTimeout(() => {
+          localStorage.clear()
+          navigate('/login/estabelecimento')
+        }, 2000)
+        return
+      }
+      
       setToast({ 
         type: 'error', 
-        message: error.response?.data?.error || 'Erro ao fazer upload' 
+        message: error.response?.data?.error || 'Erro ao fazer upload. Tente novamente.' 
       })
     } finally {
       setUploading(false)
