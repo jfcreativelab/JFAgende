@@ -81,13 +81,6 @@ const Home = () => {
             </span>
           </div>
           
-          {/* Título principal com gradiente */}
-          <h1 className="text-5xl md:text-7xl font-display font-black mb-6 leading-tight">
-            <span className="bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
-              Agende com Estilo
-            </span>
-          </h1>
-          
           <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
             Plataforma <span className="text-primary-600 dark:text-primary-400 font-bold">completa e moderna</span> para agendamento de horários entre clientes e estabelecimentos de estética
           </p>

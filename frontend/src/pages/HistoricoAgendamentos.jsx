@@ -376,13 +376,22 @@ const HistoricoAgendamentos = () => {
             {agendamentosFiltrados.map((agendamento, index) => (
               <Card key={agendamento.id} hoverable className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                 <div className="flex gap-6">
-                  {/* Data Timeline */}
-                  <div className="flex-shrink-0 text-center">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-lg">
-                      {formatDataCurta(agendamento.dataHora)}
-                    </div>
-                    <div className="mt-2 text-xs text-gray-500">
-                      {new Date(agendamento.dataHora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                  {/* Logo do Estabelecimento */}
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 flex items-center justify-center shadow-lg ring-2 ring-primary-500/30">
+                      {agendamento.estabelecimento?.fotoPerfilUrl ? (
+                        <img 
+                          src={agendamento.estabelecimento.fotoPerfilUrl.startsWith('http') ? agendamento.estabelecimento.fotoPerfilUrl : `${import.meta.env.VITE_API_URL || 'https://jfagende-production.up.railway.app'}${agendamento.estabelecimento.fotoPerfilUrl}`}
+                          alt={agendamento.estabelecimento.nome}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <MapPin className="text-primary-600 dark:text-primary-400" size={28} />
+                      )}
                     </div>
                   </div>
 
