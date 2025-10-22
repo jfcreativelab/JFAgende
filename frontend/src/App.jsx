@@ -29,6 +29,7 @@ import LogsAuditoria from './pages/LogsAuditoria'
 import GerenciarAdmins from './pages/GerenciarAdmins'
 import ConfiguracoesAdmin from './pages/ConfiguracoesAdmin'
 import RelatoriosAvancados from './pages/RelatoriosAvancados'
+import Notificacoes from './pages/Notificacoes'
 import PagamentoSucesso from './pages/PagamentoSucesso'
 import PagamentoCancelado from './pages/PagamentoCancelado'
 
@@ -173,6 +174,8 @@ function App() {
           <Route path="/admin/logs" element={<LogsAuditoria />} />
           <Route path="/admin/admins" element={<GerenciarAdmins />} />
           <Route path="/admin/configuracoes" element={<ConfiguracoesAdmin />} />
+          {/* Notificações (cliente/estabelecimento) */}
+          <Route path="/notificacoes" element={<Notificacoes />} />
 
           {/* Páginas de Pagamento */}
           <Route path="/assinatura/sucesso" element={<PagamentoSucesso />} />

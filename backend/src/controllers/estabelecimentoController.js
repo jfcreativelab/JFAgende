@@ -1,4 +1,11 @@
 import { PrismaClient } from '@prisma/client';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs/promises';
+import sharp from 'sharp';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const prisma = new PrismaClient();
 
@@ -315,8 +322,34 @@ export const uploadLogo = async (req, res) => {
       return res.status(400).json({ error: 'Nenhuma imagem foi enviada' });
     }
 
-    // URL da imagem (em produção, seria salva no cloud storage)
-    const logoUrl = `/uploads/estabelecimentos/${req.file.filename}`;
+    // Processar imagem e mover de temp para uploads/estabelecimentos
+    const tempPath = req.file.path; // caminho salvo pelo multer
+    const destDir = path.join(__dirname, '../../uploads/estabelecimentos');
+    await fs.mkdir(destDir, { recursive: true });
+
+    const baseName = `logo-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const finalPath = path.join(destDir, `${baseName}.webp`);
+
+    await sharp(tempPath)
+      .resize(512, 512, { fit: 'cover' })
+      .webp({ quality: 85 })
+      .toFile(finalPath);
+
+    // apagar arquivo temp
+    try { await fs.unlink(tempPath); } catch {}
+
+    // URL pública
+    const logoUrl = `/uploads/estabelecimentos/${baseName}.webp`;
+
+    // Remover logo antiga se existir
+    const atual = await prisma.estabelecimento.findUnique({
+      where: { id: estabelecimentoId },
+      select: { fotoPerfilUrl: true }
+    });
+    if (atual?.fotoPerfilUrl) {
+      const oldPath = path.join(__dirname, '../../', atual.fotoPerfilUrl.replace(/^\/+/, ''));
+      try { await fs.unlink(oldPath); } catch {}
+    }
 
     // Atualizar o estabelecimento com a URL da logo
     const estabelecimentoAtualizado = await prisma.estabelecimento.update({
@@ -357,6 +390,12 @@ export const removeLogo = async (req, res) => {
 
     if (!estabelecimento) {
       return res.status(404).json({ error: 'Estabelecimento não encontrado' });
+    }
+
+    // Remover arquivo físico se existir
+    if (estabelecimento.fotoPerfilUrl) {
+      const filePath = path.join(__dirname, '../../', estabelecimento.fotoPerfilUrl.replace(/^\/+/, ''));
+      try { await fs.unlink(filePath); } catch {}
     }
 
     // Remover a URL da logo
