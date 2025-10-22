@@ -6,7 +6,7 @@ import { useNotifications } from '../hooks/useNotifications'
 import { startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import ThemeToggle from '../components/ThemeToggle'
 import NotificationCenter from '../components/NotificationCenter'
-import CalendarioAgenda from '../components/CalendarioAgenda'
+import AgendaProfissional from '../components/CalendarioAgenda'
 import estabelecimentoService from '../services/estabelecimentoService'
 import agendamentoService from '../services/agendamentoService'
 import agendaService from '../services/agendaService'
@@ -112,6 +112,32 @@ const DashboardEstabelecimento = () => {
   const handleLogout = () => {
     logout()
     navigate('/')
+  }
+
+  const handleCriarAgendamento = async (dadosAgendamento) => {
+    try {
+      setLoading(true)
+      
+      // Criar agendamento via API
+      const agendamentoData = {
+        ...dadosAgendamento,
+        estabelecimentoId: user.id,
+        status: dadosAgendamento.status || 'confirmado'
+      }
+      
+      await agendamentoService.create(agendamentoData)
+      setToast({ type: 'success', message: 'Agendamento criado com sucesso!' })
+      
+      // Recarregar dados
+      await carregarDados()
+      
+    } catch (error) {
+      console.error('Erro ao criar agendamento:', error)
+      setToast({ type: 'error', message: 'Erro ao criar agendamento' })
+      throw error
+    } finally {
+      setLoading(false)
+    }
   }
 
   const abrirModalServico = (servico = null) => {
@@ -749,7 +775,7 @@ const DashboardEstabelecimento = () => {
             }`}
           >
             <CalendarDays className="inline mr-2" size={18} />
-            Calendário
+            Agenda
           </button>
 
           <button
@@ -1281,7 +1307,7 @@ const DashboardEstabelecimento = () => {
           </div>
         )}
 
-        {/* Conteúdo da Aba Calendário */}
+        {/* Conteúdo da Aba Agenda */}
         {abaAtiva === 'calendario' && (
           <div>
             <div className="mb-6">
@@ -1293,13 +1319,16 @@ const DashboardEstabelecimento = () => {
               </p>
             </div>
 
-            <CalendarioAgenda
+            <AgendaProfissional
               agendamentos={agendamentos}
               bloqueios={bloqueios}
+              servicos={servicos}
+              estabelecimento={user}
               onRefresh={carregarDados}
               onCreateBloqueio={handleCreateBloqueio}
               onDeleteBloqueio={handleDeleteBloqueio}
               onWhatsAppClick={handleWhatsAppClick}
+              onCriarAgendamento={handleCriarAgendamento}
             />
           </div>
         )}

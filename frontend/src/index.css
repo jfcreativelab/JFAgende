@@ -393,7 +393,7 @@
     @apply text-gray-100;
   }
 
-  /* Melhorias gerais do calendário */
+  /* Melhorias gerais da agenda */
   .rbc-calendar {
     @apply rounded-lg overflow-hidden;
   }

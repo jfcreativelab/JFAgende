@@ -3,12 +3,13 @@ import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, addHours, startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { Clock, Ban, User, MessageSquare, X, Phone } from 'lucide-react'
+import { Clock, Ban, User, MessageSquare, X, Phone, Plus, Calendar as CalendarIcon, Users, DollarSign, AlertCircle, CheckCircle } from 'lucide-react'
 import Modal from './Modal'
 import Button from './Button'
 import Input from './Input'
 import Badge from './Badge'
 import Toast from './Toast'
+import AgendamentoNaoCadastrado from './AgendamentoNaoCadastrado'
 
 const locales = { 'pt-BR': ptBR }
 
@@ -20,17 +21,22 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-const CalendarioAgenda = ({ 
+const AgendaProfissional = ({ 
   agendamentos = [], 
   bloqueios = [], 
+  servicos = [],
+  estabelecimento = {},
   onRefresh,
   onCreateBloqueio,
   onDeleteBloqueio,
-  onWhatsAppClick
+  onWhatsAppClick,
+  onCriarAgendamento
 }) => {
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [showBloqueioModal, setShowBloqueioModal] = useState(false)
+  const [showAgendamentoModal, setShowAgendamentoModal] = useState(false)
+  const [selectedServico, setSelectedServico] = useState(null)
   const [bloqueioData, setBloqueioData] = useState({
     dataInicio: '',
     dataFim: '',
@@ -38,6 +44,7 @@ const CalendarioAgenda = ({
   })
   const [toast, setToast] = useState(null)
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [view, setView] = useState('month')
 
   // Converte agendamentos e bloqueios para eventos do calendário
   const events = useMemo(() => {
@@ -65,6 +72,44 @@ const CalendarioAgenda = ({
 
     return [...agendamentosEvents, ...bloqueiosEvents]
   }, [agendamentos, bloqueios])
+
+  // Estatísticas da agenda
+  const estatisticas = useMemo(() => {
+    const hoje = new Date()
+    const agendamentosHoje = agendamentos.filter(ag => 
+      new Date(ag.dataHora).toDateString() === hoje.toDateString()
+    )
+    
+    const agendamentosPendentes = agendamentos.filter(ag => 
+      ag.status === 'pendente_pagamento'
+    )
+
+    const totalAgendamentos = agendamentos.length
+    const totalFaturamento = agendamentos.reduce((total, ag) => total + (ag.servico.preco || 0), 0)
+
+    return {
+      hoje: agendamentosHoje.length,
+      pendentes: agendamentosPendentes.length,
+      total: totalAgendamentos,
+      faturamento: totalFaturamento
+    }
+  }, [agendamentos])
+
+  const handleCriarAgendamento = (servico) => {
+    setSelectedServico(servico)
+    setShowAgendamentoModal(true)
+  }
+
+  const handleConfirmarAgendamento = async (dadosAgendamento) => {
+    try {
+      await onCriarAgendamento(dadosAgendamento)
+      setToast({ type: 'success', message: 'Agendamento criado com sucesso!' })
+      setShowAgendamentoModal(false)
+      onRefresh()
+    } catch (error) {
+      setToast({ type: 'error', message: 'Erro ao criar agendamento' })
+    }
+  }
 
   // Estilo dos eventos
   const eventStyleGetter = (event) => {
@@ -172,7 +217,7 @@ const CalendarioAgenda = ({
   }
 
   return (
-    <div className="h-[700px] bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="space-y-6">
       {/* Toast */}
       {toast && (
         <div className="fixed top-4 right-4 z-50">
@@ -184,53 +229,164 @@ const CalendarioAgenda = ({
         </div>
       )}
 
-      {/* Legenda */}
-      <div className="flex items-center gap-4 mb-4 flex-wrap">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-          <span className="text-sm text-gray-700 dark:text-gray-300">Pendente</span>
+      {/* Header da Agenda */}
+      <div className="bg-gradient-to-r from-primary-600 to-purple-600 rounded-2xl p-6 text-white">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">📅 Agenda Profissional</h2>
+            <p className="text-primary-100">Gerencie seus agendamentos de forma inteligente</p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => setView('month')}
+              className={view === 'month' ? 'bg-white/20 text-white' : 'bg-white/10 text-white hover:bg-white/20'}
+            >
+              <CalendarIcon size={16} className="mr-2" />
+              Mês
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setView('week')}
+              className={view === 'week' ? 'bg-white/20 text-white' : 'bg-white/10 text-white hover:bg-white/20'}
+            >
+              <Clock size={16} className="mr-2" />
+              Semana
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setView('day')}
+              className={view === 'day' ? 'bg-white/20 text-white' : 'bg-white/10 text-white hover:bg-white/20'}
+            >
+              <Users size={16} className="mr-2" />
+              Dia
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-500 rounded"></div>
-          <span className="text-sm text-gray-700 dark:text-gray-300">Confirmado</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-red-500 rounded"></div>
-          <span className="text-sm text-gray-700 dark:text-gray-300">Bloqueado</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-gray-500 rounded"></div>
-          <span className="text-sm text-gray-700 dark:text-gray-300">Cancelado</span>
+
+        {/* Estatísticas */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white/10 rounded-lg p-3">
+            <div className="flex items-center gap-2">
+              <CalendarIcon size={20} />
+              <div>
+                <p className="text-sm text-primary-100">Hoje</p>
+                <p className="text-xl font-bold">{estatisticas.hoje}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white/10 rounded-lg p-3">
+            <div className="flex items-center gap-2">
+              <AlertCircle size={20} />
+              <div>
+                <p className="text-sm text-primary-100">Pendentes</p>
+                <p className="text-xl font-bold">{estatisticas.pendentes}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white/10 rounded-lg p-3">
+            <div className="flex items-center gap-2">
+              <Users size={20} />
+              <div>
+                <p className="text-sm text-primary-100">Total</p>
+                <p className="text-xl font-bold">{estatisticas.total}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white/10 rounded-lg p-3">
+            <div className="flex items-center gap-2">
+              <DollarSign size={20} />
+              <div>
+                <p className="text-sm text-primary-100">Faturamento</p>
+                <p className="text-xl font-bold">R$ {estatisticas.faturamento.toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Serviços Rápidos */}
+      {servicos.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Agendamento Rápido</h3>
+            <Badge variant="primary">Cliente Não Cadastrado</Badge>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {servicos.map(servico => (
+              <Card key={servico.id} className="p-4 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleCriarAgendamento(servico)}>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-semibold text-gray-900 dark:text-white">{servico.nome}</h4>
+                  <Badge variant="success">R$ {servico.preco?.toFixed(2)}</Badge>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{servico.descricao}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <Clock size={14} />
+                    {servico.duracaoMin} min
+                  </div>
+                  <Button size="sm" variant="primary">
+                    <Plus size={14} className="mr-1" />
+                    Agendar
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Calendário */}
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: '600px' }}
-        onSelectEvent={handleSelectEvent}
-        onSelectSlot={handleSelectSlot}
-        selectable
-        eventPropGetter={eventStyleGetter}
-        messages={{
-          next: 'Próximo',
-          previous: 'Anterior',
-          today: 'Hoje',
-          month: 'Mês',
-          week: 'Semana',
-          day: 'Dia',
-          agenda: 'Agenda',
-          date: 'Data',
-          time: 'Hora',
-          event: 'Evento',
-          noEventsInRange: 'Nenhum evento neste período',
-        }}
-        views={['month', 'week', 'day', 'agenda']}
-        defaultView="week"
-      />
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        {/* Legenda */}
+        <div className="flex items-center gap-4 mb-4 flex-wrap">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Pendente</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-500 rounded"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Confirmado</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-500 rounded"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Bloqueado</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-gray-500 rounded"></div>
+            <span className="text-sm text-gray-700 dark:text-gray-300">Cancelado</span>
+          </div>
+        </div>
+
+        {/* Calendário */}
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: '600px' }}
+          onSelectEvent={handleSelectEvent}
+          onSelectSlot={handleSelectSlot}
+          selectable
+          eventPropGetter={eventStyleGetter}
+          view={view}
+          onView={setView}
+          messages={{
+            next: 'Próximo',
+            previous: 'Anterior',
+            today: 'Hoje',
+            month: 'Mês',
+            week: 'Semana',
+            day: 'Dia',
+            agenda: 'Agenda',
+            date: 'Data',
+            time: 'Hora',
+            event: 'Evento',
+            noEventsInRange: 'Nenhum evento neste período',
+          }}
+          views={['month', 'week', 'day', 'agenda']}
+        />
+      </div>
 
       {/* Modal de Detalhes do Evento */}
       <Modal
@@ -375,9 +531,18 @@ const CalendarioAgenda = ({
           )}
         </div>
       </Modal>
+
+      {/* Modal de Agendamento para Cliente Não Cadastrado */}
+      <AgendamentoNaoCadastrado
+        isOpen={showAgendamentoModal}
+        onClose={() => setShowAgendamentoModal(false)}
+        servico={selectedServico}
+        estabelecimento={estabelecimento}
+        onConfirmarAgendamento={handleConfirmarAgendamento}
+      />
     </div>
   )
 }
 
-export default CalendarioAgenda
+export default AgendaProfissional
 
