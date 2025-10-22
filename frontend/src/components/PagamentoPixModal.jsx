@@ -39,8 +39,18 @@ const PagamentoPixModal = ({
     
     setLoadingQrCode(true)
     try {
-      // Dados para o QR Code PIX
-      const qrCodeData = `pix://copiaecola?chave=${estabelecimento.chavePix}&valor=${valorTotal.toFixed(2)}&txid=${agendamento.id}`
+      // Usar biblioteca específica para PIX
+      const { PixPayload } = await import('pix-payload')
+      
+      const pixPayload = new PixPayload()
+        .setPixKey(estabelecimento.chavePix)
+        .setDescription(`JFAgende - ${agendamento.servico?.nome || 'Serviço'}`)
+        .setMerchantName('JFAgende')
+        .setMerchantCity('SAO PAULO')
+        .setAmount(valorTotal)
+        .setTxid(agendamento.id)
+      
+      const qrCodeData = pixPayload.getPayload()
       
       // Gerar QR Code usando a biblioteca
       const QRCode = (await import('qrcode')).default
@@ -56,7 +66,23 @@ const PagamentoPixModal = ({
       setQrCodeImage(qrCodeImage)
     } catch (error) {
       console.error('Erro ao gerar QR Code:', error)
-      setToast({ type: 'error', message: 'Erro ao gerar QR Code' })
+      // Fallback: usar formato simples
+      try {
+        const QRCode = (await import('qrcode')).default
+        const qrCodeData = `PIX:${estabelecimento.chavePix}|${valorTotal.toFixed(2)}|JFAgende`
+        const qrCodeImage = await QRCode.toDataURL(qrCodeData, {
+          width: 256,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        })
+        setQrCodeImage(qrCodeImage)
+      } catch (fallbackError) {
+        console.error('Erro no fallback QR Code:', fallbackError)
+        setToast({ type: 'error', message: 'Erro ao gerar QR Code' })
+      }
     } finally {
       setLoadingQrCode(false)
     }
@@ -103,10 +129,39 @@ const PagamentoPixModal = ({
 
     setLoading(true)
     try {
+      // Primeiro, criar o agendamento com status de pagamento pendente
+      const agendamentoData = {
+        estabelecimentoId: estabelecimento.id,
+        servicoId: agendamento.servico.id,
+        dataHora: agendamento.dataHora,
+        observacoes: '',
+        pagamentoAntecipado: true,
+        valorTaxa: 5.00,
+        valorTotal: valorTotal
+      }
+
+      // Criar agendamento
+      const agendamentoResponse = await fetch('https://jfagende-production.up.railway.app/api/agendamentos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(agendamentoData)
+      })
+
+      if (!agendamentoResponse.ok) {
+        const errorData = await agendamentoResponse.json()
+        throw new Error(errorData.error || 'Erro ao criar agendamento.')
+      }
+
+      const novoAgendamento = await agendamentoResponse.json()
+
+      // Agora fazer upload do comprovante
       const formData = new FormData()
       formData.append('comprovante', comprovante)
 
-      const response = await fetch(`https://jfagende-production.up.railway.app/api/pagamento/${agendamento.id}/comprovante`, {
+      const response = await fetch(`https://jfagende-production.up.railway.app/api/pagamento/${novoAgendamento.id}/comprovante`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
