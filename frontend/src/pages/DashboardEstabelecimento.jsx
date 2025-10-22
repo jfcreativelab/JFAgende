@@ -691,10 +691,10 @@ const DashboardEstabelecimento = () => {
 
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="font-display text-2xl font-bold text-primary-600">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <h1 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-primary-600">
                 JFAgende
               </h1>
               <div className="hidden md:flex items-center gap-2 text-gray-600 dark:text-gray-400">
@@ -703,103 +703,110 @@ const DashboardEstabelecimento = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <NotificationCenter 
                 notifications={notifications}
                 onMarkAsRead={marcarComoLida}
                 onMarkAllAsRead={marcarTodasComoLidas}
               />
-              <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/perfil')}>
-                <User size={18} />
-                Meu Perfil
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/assinatura')}>
-                <CreditCard size={18} />
-                Plano
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/equipe')}>
-                <Users size={18} />
-                Equipe
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/portfolio')}>
-                <ImageIcon size={18} />
-                Portfólio
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/relatorios')}>
-                <BarChart3 size={18} />
-                Relatórios
-              </Button>
+              <div className="hidden sm:flex items-center gap-1 sm:gap-2">
+                <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/perfil')} className="hidden lg:flex">
+                  <User size={16} />
+                  <span className="hidden xl:inline">Meu Perfil</span>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/assinatura')} className="hidden lg:flex">
+                  <CreditCard size={16} />
+                  <span className="hidden xl:inline">Plano</span>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/equipe')} className="hidden lg:flex">
+                  <Users size={16} />
+                  <span className="hidden xl:inline">Equipe</span>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/portfolio')} className="hidden lg:flex">
+                  <ImageIcon size={16} />
+                  <span className="hidden xl:inline">Portfólio</span>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate('/estabelecimento/relatorios')} className="hidden lg:flex">
+                  <BarChart3 size={16} />
+                  <span className="hidden xl:inline">Relatórios</span>
+                </Button>
+              </div>
               <ThemeToggle />
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                <LogOut size={18} />
-                Sair
+              <Button variant="outline" size="sm" onClick={handleLogout} className="text-xs sm:text-sm">
+                <LogOut size={16} />
+                <span className="hidden sm:inline">Sair</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
         {/* Tabs */}
-        <div className="flex gap-2 mb-8 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+        <div className="flex gap-1 sm:gap-2 mb-6 sm:mb-8 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
           <button
             onClick={() => setAbaAtiva('estatisticas')}
-            className={`px-6 py-3 font-medium transition-all whitespace-nowrap ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
               abaAtiva === 'estatisticas'
                 ? 'text-primary-600 border-b-2 border-primary-600'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             }`}
           >
-            <BarChart3 className="inline mr-2" size={18} />
-            Estatísticas
+            <BarChart3 className="inline mr-1 sm:mr-2" size={16} />
+            <span className="hidden sm:inline">Estatísticas</span>
+            <span className="sm:hidden">Stats</span>
           </button>
 
           <button
             onClick={() => setAbaAtiva('financeiro')}
-            className={`px-6 py-3 font-medium transition-all whitespace-nowrap ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
               abaAtiva === 'financeiro'
                 ? 'text-primary-600 border-b-2 border-primary-600'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             }`}
           >
-            <Wallet className="inline mr-2" size={18} />
-            Financeiro
+            <Wallet className="inline mr-1 sm:mr-2" size={16} />
+            <span className="hidden sm:inline">Financeiro</span>
+            <span className="sm:hidden">Financeiro</span>
           </button>
 
           <button
             onClick={() => setAbaAtiva('agenda')}
-            className={`px-6 py-3 font-medium transition-all whitespace-nowrap ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
               abaAtiva === 'agenda'
                 ? 'text-primary-600 border-b-2 border-primary-600'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             }`}
           >
-            <CalendarDays className="inline mr-2" size={18} />
-            Agenda
+            <CalendarDays className="inline mr-1 sm:mr-2" size={16} />
+            <span className="hidden sm:inline">Agenda</span>
+            <span className="sm:hidden">Agenda</span>
           </button>
 
           <button
             onClick={() => setAbaAtiva('lista')}
-            className={`px-6 py-3 font-medium transition-all whitespace-nowrap ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
               abaAtiva === 'lista'
                 ? 'text-primary-600 border-b-2 border-primary-600'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             }`}
           >
-            <CalendarIcon className="inline mr-2" size={18} />
-            Lista de Agendamentos
+            <CalendarIcon className="inline mr-1 sm:mr-2" size={16} />
+            <span className="hidden sm:inline">Lista de Agendamentos</span>
+            <span className="sm:hidden">Lista</span>
           </button>
           
           <button
             onClick={() => setAbaAtiva('servicos')}
-            className={`px-6 py-3 font-medium transition-all whitespace-nowrap ${
+            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
               abaAtiva === 'servicos'
                 ? 'text-primary-600 border-b-2 border-primary-600'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             }`}
           >
-            <Package className="inline mr-2" size={18} />
-            Serviços
+            <Package className="inline mr-1 sm:mr-2" size={16} />
+            <span className="hidden sm:inline">Meus Serviços</span>
+            <span className="sm:hidden">Serviços</span>
           </button>
         </div>
 
@@ -816,18 +823,18 @@ const DashboardEstabelecimento = () => {
             </div>
 
             {/* KPIs Principais */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {/* Total de Agendamentos */}
-              <Card className="relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-primary-100 dark:bg-primary-900/20 rounded-full -mr-12 -mt-12"></div>
+              <Card className="relative overflow-hidden p-3 sm:p-4">
+                <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-primary-100 dark:bg-primary-900/20 rounded-full -mr-8 sm:-mr-10 md:-mr-12 -mt-8 sm:-mt-10 md:-mt-12"></div>
                 <div className="relative">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center justify-between mb-1 sm:mb-2">
+                    <span className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
                       Total Agendamentos
                     </span>
-                    <CalendarIcon className="text-primary-600" size={20} />
+                    <CalendarIcon className="text-primary-600" size={16} />
                   </div>
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                  <div className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
                     {estatisticas.totalAgendamentos}
                   </div>
                   <div className="flex items-center text-xs text-gray-500">

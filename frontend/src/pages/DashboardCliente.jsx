@@ -231,9 +231,9 @@ const DashboardCliente = () => {
       <div className="md:ml-64">
         {/* Header Mobile */}
         <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 md:hidden">
-          <div className="px-4 py-4">
+          <div className="px-4 py-3">
             <div className="flex items-center justify-between">
-              <h1 className="font-display text-xl font-bold text-primary-600">
+              <h1 className="font-display text-lg sm:text-xl font-bold text-primary-600">
                 JFAgende
               </h1>
               <div className="flex items-center gap-2">
@@ -248,17 +248,17 @@ const DashboardCliente = () => {
           </div>
         </header>
 
-        <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
-          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 md:py-6 lg:py-8">
+          <div className="grid lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
             {/* Coluna Principal - Estabelecimentos */}
-            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            <div className="lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-6">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3 md:mb-4">
                   Encontre Estabelecimentos
                 </h2>
 
                 {/* Busca Avançada */}
-                <div className="mb-4 sm:mb-6">
+                <div className="mb-3 sm:mb-4 md:mb-6">
                   <AdvancedSearch
                     onSearch={handleAdvancedSearch}
                     onFilterChange={handleFilterChange}
@@ -267,7 +267,7 @@ const DashboardCliente = () => {
                 </div>
 
                 {/* Filtros Rápidos */}
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
                   <button
                     onClick={() => setFiltros({ ...filtros, disponivelAgora: !filtros.disponivelAgora })}
                     className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
@@ -311,8 +311,8 @@ const DashboardCliente = () => {
 
                   {/* Filtros Avançados (Expansível) */}
                   {mostrarFiltrosAvancados && (
-                    <div className="border-t border-gray-200 pt-4 animate-fade-in">
-                      <div className="grid md:grid-cols-3 gap-4">
+                    <div className="border-t border-gray-200 pt-3 sm:pt-4 animate-fade-in">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             <DollarSign className="inline" size={14} /> Preço Mínimo
@@ -406,7 +406,7 @@ const DashboardCliente = () => {
                 </div>
 
               {/* Lista de Estabelecimentos */}
-              <div className="grid gap-4">
+              <div className="grid gap-3 sm:gap-4">
                 {loading ? (
                   <SkeletonCard variant="estabelecimento" count={3} />
                 ) : estabelecimentos.length === 0 ? (
@@ -422,10 +422,10 @@ const DashboardCliente = () => {
                       key={estabelecimento.id}
                       hoverable
                       onClick={() => navigate(`/estabelecimento/${estabelecimento.id}`)}
-                      className="cursor-pointer"
+                      className="cursor-pointer p-3 sm:p-4"
                     >
-                      <div className="flex gap-4">
-                        <div className="flex-shrink-0 w-24 h-24 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-xl flex items-center justify-center overflow-hidden shadow-md">
+                      <div className="flex gap-3 sm:gap-4">
+                        <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-lg sm:rounded-xl flex items-center justify-center overflow-hidden shadow-md">
                           {estabelecimento.fotoPerfilUrl ? (
                             <img 
                               src={estabelecimento.fotoPerfilUrl}
@@ -447,13 +447,13 @@ const DashboardCliente = () => {
                           )}
                         </div>
                         
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <h3 className="font-bold text-lg text-gray-900">
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-bold text-base sm:text-lg text-gray-900 dark:text-white truncate">
                                 {estabelecimento.nome}
                               </h3>
-                              <Badge variant="primary" size="sm">
+                              <Badge variant="primary" size="sm" className="mt-1">
                                 {estabelecimento.categoria}
                               </Badge>
                             </div>
@@ -479,10 +479,10 @@ const DashboardCliente = () => {
           </div>
 
           {/* Sidebar - Meus Agendamentos */}
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-3 sm:space-y-4 md:space-y-6">
             <div>
-              <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+              <div className="flex items-center justify-between mb-2 sm:mb-3 md:mb-4">
+                <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white">
                   Meus Agendamentos
                 </h2>
                 <Button
@@ -496,7 +496,7 @@ const DashboardCliente = () => {
                 </Button>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {loading ? (
                   <SkeletonCard variant="agendamento" count={3} />
                 ) : agendamentos.length === 0 ? (
@@ -508,30 +508,30 @@ const DashboardCliente = () => {
                   />
                 ) : (
                   agendamentos.slice(0, 5).map((agendamento) => (
-                    <Card key={agendamento.id} padding="sm">
+                    <Card key={agendamento.id} padding="sm" className="p-3">
                       <div className="space-y-2">
                         <div className="flex items-start justify-between">
-                          <h4 className="font-semibold text-sm text-gray-900">
+                          <h4 className="font-semibold text-xs sm:text-sm text-gray-900 dark:text-white truncate flex-1 mr-2">
                             {agendamento.estabelecimento.nome}
                           </h4>
-                          <Badge variant={getStatusColor(agendamento.status)} size="sm">
+                          <Badge variant={getStatusColor(agendamento.status)} size="sm" className="flex-shrink-0">
                             {agendamento.status}
                           </Badge>
                         </div>
                         
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
                           {agendamento.servico.nome}
                         </p>
                         
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <Calendar size={14} />
-                          <span>{formatData(agendamento.dataHora)}</span>
+                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                          <Calendar size={12} />
+                          <span className="truncate">{formatData(agendamento.dataHora)}</span>
                         </div>
                         
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <Clock size={14} />
+                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                          <Clock size={12} />
                           <span>{agendamento.servico.duracaoMin} min</span>
-                          <span className="ml-auto font-semibold text-primary-600">
+                          <span className="ml-auto font-semibold text-primary-600 dark:text-primary-400">
                             R$ {agendamento.servico.preco.toFixed(2)}
                           </span>
                         </div>
