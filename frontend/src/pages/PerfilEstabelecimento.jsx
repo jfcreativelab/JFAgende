@@ -26,11 +26,14 @@ const PerfilEstabelecimento = () => {
     descricao: '',
     endereco: '',
     telefone: '',
-    email: ''
+    email: '',
+    chavePix: ''
   })
 
   const [logoFile, setLogoFile] = useState(null)
   const [logoPreview, setLogoPreview] = useState(null)
+  const [horarios, setHorarios] = useState([])
+  const [loadingHorarios, setLoadingHorarios] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -40,11 +43,35 @@ const PerfilEstabelecimento = () => {
         descricao: user.descricao || '',
         endereco: user.endereco || '',
         telefone: user.telefone || '',
-        email: user.email || ''
+        email: user.email || '',
+        chavePix: user.chavePix || ''
       })
       setLogoPreview(user.fotoPerfilUrl || null)
+      carregarHorarios()
     }
   }, [user])
+
+  const carregarHorarios = async () => {
+    if (!user?.id) return
+    
+    setLoadingHorarios(true)
+    try {
+      const response = await fetch(`/api/estabelecimentos/${user.id}/horarios`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      
+      if (response.ok) {
+        const horariosData = await response.json()
+        setHorarios(horariosData)
+      }
+    } catch (error) {
+      console.error('Erro ao carregar horários:', error)
+    } finally {
+      setLoadingHorarios(false)
+    }
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -126,12 +153,93 @@ const PerfilEstabelecimento = () => {
       descricao: user.descricao || '',
       endereco: user.endereco || '',
       telefone: user.telefone || '',
-      email: user.email || ''
+      email: user.email || '',
+      chavePix: user.chavePix || ''
     })
     setLogoPreview(user.fotoPerfilUrl ? `https://jfagende-production.up.railway.app${user.fotoPerfilUrl}` : null)
     setLogoFile(null)
     setEditing(false)
   }
+
+  const salvarHorarios = async () => {
+    setLoadingHorarios(true)
+    try {
+      const response = await fetch(`https://jfagende-production.up.railway.app/api/estabelecimentos/${user.id}/horarios`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ horarios })
+      })
+
+      if (response.ok) {
+        setToast({ type: 'success', message: 'Horários salvos com sucesso!' })
+      } else {
+        throw new Error('Erro ao salvar horários')
+      }
+    } catch (error) {
+      console.error('Erro ao salvar horários:', error)
+      setToast({ type: 'error', message: 'Erro ao salvar horários' })
+    } finally {
+      setLoadingHorarios(false)
+    }
+  }
+
+  const salvarChavePix = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`https://jfagende-production.up.railway.app/api/estabelecimentos/${user.id}/pix`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ chavePix: formData.chavePix })
+      })
+
+      if (response.ok) {
+        setToast({ type: 'success', message: 'Chave PIX salva com sucesso!' })
+        updateUser({ ...user, chavePix: formData.chavePix })
+      } else {
+        throw new Error('Erro ao salvar chave PIX')
+      }
+    } catch (error) {
+      console.error('Erro ao salvar chave PIX:', error)
+      setToast({ type: 'error', message: 'Erro ao salvar chave PIX' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const adicionarHorario = () => {
+    setHorarios([...horarios, {
+      diaSemana: 1,
+      horaInicio: '09:00',
+      horaFim: '18:00',
+      ativo: true
+    }])
+  }
+
+  const removerHorario = (index) => {
+    setHorarios(horarios.filter((_, i) => i !== index))
+  }
+
+  const atualizarHorario = (index, campo, valor) => {
+    const novosHorarios = [...horarios]
+    novosHorarios[index] = { ...novosHorarios[index], [campo]: valor }
+    setHorarios(novosHorarios)
+  }
+
+  const diasSemana = [
+    { valor: 0, nome: 'Domingo' },
+    { valor: 1, nome: 'Segunda-feira' },
+    { valor: 2, nome: 'Terça-feira' },
+    { valor: 3, nome: 'Quarta-feira' },
+    { valor: 4, nome: 'Quinta-feira' },
+    { valor: 5, nome: 'Sexta-feira' },
+    { valor: 6, nome: 'Sábado' }
+  ]
 
   const categorias = [
     { value: 'barbearia', label: 'Barbearia' },
@@ -352,6 +460,38 @@ const PerfilEstabelecimento = () => {
                   </div>
                 </div>
 
+                {/* Chave PIX */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <CreditCard className="inline w-4 h-4 mr-1" />
+                    Chave PIX (para pagamentos antecipados)
+                  </label>
+                  <div className="flex gap-2">
+                    <Input
+                      name="chavePix"
+                      value={formData.chavePix}
+                      onChange={handleInputChange}
+                      disabled={!editing}
+                      placeholder="Ex: 11999999999 ou email@exemplo.com"
+                      className="flex-1"
+                    />
+                    {editing && (
+                      <Button
+                        type="button"
+                        onClick={salvarChavePix}
+                        disabled={loading}
+                        size="sm"
+                        className="px-4"
+                      >
+                        {loading ? 'Salvando...' : 'Salvar PIX'}
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Permite que clientes paguem antecipadamente via PIX
+                  </p>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <MapPin className="inline w-4 h-4 mr-1" />
@@ -383,6 +523,129 @@ const PerfilEstabelecimento = () => {
                     </>
                   )}
                 </Button>
+              </div>
+            )}
+          </Card>
+
+          {/* Horários de Funcionamento */}
+          <Card className="p-8 mb-8">
+            <div className="flex items-start justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Horários de Funcionamento
+              </h2>
+              <Button
+                onClick={adicionarHorario}
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Plus size={18} />
+                Adicionar Horário
+              </Button>
+            </div>
+
+            {loadingHorarios ? (
+              <div className="text-center py-8">
+                <Loading size="lg" />
+                <p className="text-gray-600 dark:text-gray-400 mt-2">Carregando horários...</p>
+              </div>
+            ) : horarios.length === 0 ? (
+              <div className="text-center py-8">
+                <Clock size={48} className="mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-600 dark:text-gray-400 mb-4">Nenhum horário cadastrado</p>
+                <Button onClick={adicionarHorario} size="sm">
+                  <Plus size={18} className="mr-2" />
+                  Adicionar Primeiro Horário
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {horarios.map((horario, index) => (
+                  <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Dia da Semana
+                        </label>
+                        <select
+                          value={horario.diaSemana}
+                          onChange={(e) => atualizarHorario(index, 'diaSemana', parseInt(e.target.value))}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                        >
+                          {diasSemana.map(dia => (
+                            <option key={dia.valor} value={dia.valor}>
+                              {dia.nome}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Início
+                        </label>
+                        <input
+                          type="time"
+                          value={horario.horaInicio}
+                          onChange={(e) => atualizarHorario(index, 'horaInicio', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Fim
+                        </label>
+                        <input
+                          type="time"
+                          value={horario.horaFim}
+                          onChange={(e) => atualizarHorario(index, 'horaFim', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+
+                      <div className="flex items-end">
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={horario.ativo}
+                            onChange={(e) => atualizarHorario(index, 'ativo', e.target.checked)}
+                            className="mr-2 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">Ativo</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={() => removerHorario(index)}
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <X size={18} />
+                    </Button>
+                  </div>
+                ))}
+
+                <div className="flex justify-end pt-4">
+                  <Button
+                    onClick={salvarHorarios}
+                    disabled={loadingHorarios}
+                    className="px-6"
+                  >
+                    {loadingHorarios ? (
+                      <>
+                        <Loading size="sm" className="mr-2" />
+                        Salvando...
+                      </>
+                    ) : (
+                      <>
+                        <Save size={18} className="mr-2" />
+                        Salvar Horários
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             )}
           </Card>

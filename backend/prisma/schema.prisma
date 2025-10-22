@@ -4,11 +4,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // Para desenvolvimento local, use SQLite:
-  // provider = "sqlite"
-  // url      = "file:./dev.db"
+  provider = "sqlite"
+  url      = "file:./dev.db"
+  // Para produção, use PostgreSQL:
+  // provider = "postgresql"
+  // url      = env("DATABASE_URL")
 }
 
 // Modelo Cliente
@@ -41,6 +41,7 @@ model Estabelecimento {
   fotoPerfilUrl String?      // URL da foto de perfil/logo
   imagemCapa   String?
   galeria      String?       // JSON array de URLs de imagens
+  chavePix     String?       // Chave PIX do estabelecimento
   criadoEm     DateTime      @default(now())
   atualizadoEm DateTime      @updatedAt
   servicos     Servico[]
@@ -187,6 +188,10 @@ model Agendamento {
   status             String          @default("PENDENTE")
   formaPagamento     String?         // "DINHEIRO", "DEBITO", "CREDITO", "PIX", null se ainda não pago
   observacoes        String?
+  pagamentoAntecipado Boolean        @default(false) // Se foi pago antecipadamente
+  comprovantePix     String?         // URL do comprovante PIX
+  valorTaxa          Float?          // Taxa da plataforma (R$ 5,00)
+  valorTotal         Float?          // Valor total incluindo taxa
   criadoEm           DateTime        @default(now())
   atualizadoEm       DateTime        @updatedAt
   avaliacao          Avaliacao?

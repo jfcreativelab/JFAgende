@@ -11,7 +11,10 @@ import {
   deleteServico,
   createHorario,
   uploadLogo,
-  removeLogo
+  removeLogo,
+  getHorarios,
+  updateHorarios,
+  updateChavePix
 } from '../controllers/estabelecimentoController.js';
 
 const router = express.Router();
@@ -85,6 +88,27 @@ router.post('/:id/logo', authenticate, isEstabelecimento, upload.single('logo'),
  * @access  Private (Estabelecimento)
  */
 router.delete('/:id/logo', authenticate, isEstabelecimento, removeLogo);
+
+/**
+ * @route   GET /estabelecimentos/:id/horarios
+ * @desc    Obtém horários de funcionamento do estabelecimento
+ * @access  Private (Estabelecimento)
+ */
+router.get('/:id/horarios', authenticate, isEstabelecimento, getHorarios);
+
+/**
+ * @route   PUT /estabelecimentos/:id/horarios
+ * @desc    Atualiza horários de funcionamento do estabelecimento
+ * @access  Private (Estabelecimento)
+ */
+router.put('/:id/horarios', authenticate, isEstabelecimento, updateHorarios);
+
+/**
+ * @route   PUT /estabelecimentos/:id/pix
+ * @desc    Atualiza chave PIX do estabelecimento
+ * @access  Private (Estabelecimento)
+ */
+router.put('/:id/pix', authenticate, isEstabelecimento, updateChavePix);
 
 export default router;
 

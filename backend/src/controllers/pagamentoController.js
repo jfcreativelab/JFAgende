@@ -1,255 +1,306 @@
-import { PrismaClient } from '@prisma/client'
-import stripe from '../config/stripe.js'
+import { PrismaClient } from '@prisma/client';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs/promises';
+import sharp from 'sharp';
 
-const prisma = new PrismaClient()
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const prisma = new PrismaClient();
+
+// Taxa da plataforma
+const TAXA_PLATAFORMA = 5.00;
 
 /**
- * Criar sessão de pagamento do Stripe
+ * Gerar QR Code para pagamento PIX
  */
-export const criarSessaoPagamento = async (req, res) => {
+export const gerarQrCodePix = async (req, res) => {
   try {
-    const { planoId, estabelecimentoId } = req.body
+    const { agendamentoId } = req.params;
+    const clienteId = req.user.id;
 
-    console.log('[PAGAMENTO] Criando sessão:', { planoId, estabelecimentoId })
-
-    if (!planoId || !estabelecimentoId) {
-      return res.status(400).json({ error: 'planoId e estabelecimentoId são obrigatórios' })
-    }
-
-    // Buscar o plano (UUID, não parseInt!)
-    const plano = await prisma.plano.findUnique({
-      where: { id: planoId }
-    })
-
-    if (!plano) {
-      console.error('[PAGAMENTO] Plano não encontrado:', planoId)
-      return res.status(404).json({ error: 'Plano não encontrado' })
-    }
-
-    // Buscar o estabelecimento (UUID, não parseInt!)
-    const estabelecimento = await prisma.estabelecimento.findUnique({
-      where: { id: estabelecimentoId }
-    })
-
-    if (!estabelecimento) {
-      console.error('[PAGAMENTO] Estabelecimento não encontrado:', estabelecimentoId)
-      return res.status(404).json({ error: 'Estabelecimento não encontrado' })
-    }
-
-    console.log('[PAGAMENTO] Plano encontrado:', plano.nome, 'Preço:', plano.preco)
-
-    // Verificar se o plano tem stripePriceId
-    if (!plano.stripePriceId) {
-      console.error('[PAGAMENTO] ❌ Plano sem Price ID do Stripe:', plano.nome)
-      return res.status(400).json({ 
-        error: 'Plano não configurado corretamente. Execute: npm run setup-stripe' 
-      })
-    }
-
-    console.log('[PAGAMENTO] Usando Price ID:', plano.stripePriceId)
-
-    // Criar sessão de pagamento no Stripe usando Price ID pré-criado
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: plano.stripePriceId, // Usar Price ID pré-criado
-          quantity: 1,
-        },
-      ],
-      mode: 'subscription',
-      success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/assinatura/sucesso?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/assinatura/cancelado`,
-      metadata: {
-        planoId: plano.id,
-        estabelecimentoId: estabelecimento.id,
+    // Buscar agendamento
+    const agendamento = await prisma.agendamento.findFirst({
+      where: {
+        id: agendamentoId,
+        clienteId: clienteId
       },
-    })
-
-    console.log('[PAGAMENTO] Sessão criada com sucesso:', session.id)
-    res.json({ sessionId: session.id, url: session.url })
-  } catch (error) {
-    console.error('Erro ao criar sessão de pagamento:', error)
-    res.status(500).json({ error: 'Erro ao criar sessão de pagamento' })
-  }
-}
-
-/**
- * Webhook do Stripe para processar pagamentos
- */
-export const webhookStripe = async (req, res) => {
-  const sig = req.headers['stripe-signature']
-  let event
-
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET || 'whsec_placeholder')
-  } catch (err) {
-    console.error('Webhook signature verification failed:', err.message)
-    return res.status(400).send(`Webhook Error: ${err.message}`)
-  }
-
-  try {
-    // Processar o evento
-    switch (event.type) {
-      case 'checkout.session.completed':
-        await processarPagamentoConcluido(event.data.object)
-        break
-      case 'invoice.payment_succeeded':
-        await processarRenovacaoAssinatura(event.data.object)
-        break
-      case 'invoice.payment_failed':
-        await processarFalhaPagamento(event.data.object)
-        break
-      default:
-        console.log(`Evento não tratado: ${event.type}`)
-    }
-
-    res.json({ received: true })
-  } catch (error) {
-    console.error('Erro ao processar webhook:', error)
-    res.status(500).json({ error: 'Erro ao processar webhook' })
-  }
-}
-
-/**
- * Processar pagamento concluído
- */
-async function processarPagamentoConcluido(session) {
-  const { planoId, estabelecimentoId } = session.metadata
-
-  console.log('[WEBHOOK] Processando pagamento concluído:', { planoId, estabelecimentoId })
-
-  try {
-    // Buscar o plano para obter informações de destaque
-    const plano = await prisma.plano.findUnique({
-      where: { id: planoId }
-    })
-
-    if (!plano) {
-      console.error('[WEBHOOK] Plano não encontrado:', planoId)
-      return
-    }
-
-    const dataInicio = new Date()
-    const dataFim = plano.nome === 'FREE' ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    const destaqueAte = plano.diasDestaque > 0 
-      ? new Date(dataInicio.getTime() + plano.diasDestaque * 24 * 60 * 60 * 1000) 
-      : null
-
-    // Atualizar assinatura do estabelecimento
-    await prisma.assinatura.upsert({
-      where: { estabelecimentoId: estabelecimentoId },
-      update: {
-        planoId: planoId,
-        ativo: true,
-        status: 'ATIVA',
-        dataInicio: dataInicio,
-        dataFim: dataFim,
-        destaqueAte: destaqueAte,
-        stripeCustomerId: session.customer,
-        stripeSubscriptionId: session.subscription,
-        autoRenovar: true,
-      },
-      create: {
-        estabelecimentoId: estabelecimentoId,
-        planoId: planoId,
-        ativo: true,
-        status: 'ATIVA',
-        dataInicio: dataInicio,
-        dataFim: dataFim,
-        destaqueAte: destaqueAte,
-        stripeCustomerId: session.customer,
-        stripeSubscriptionId: session.subscription,
-        autoRenovar: true,
-      }
-    })
-
-    console.log(`✅ Assinatura ativada para estabelecimento ${estabelecimentoId}, plano ${plano.nome}`)
-  } catch (error) {
-    console.error('[WEBHOOK] Erro ao processar pagamento:', error)
-    throw error
-  }
-}
-
-/**
- * Processar renovação de assinatura
- */
-async function processarRenovacaoAssinatura(invoice) {
-  const subscriptionId = invoice.subscription
-
-  // Atualizar data de fim da assinatura
-  await prisma.assinatura.updateMany({
-    where: { stripeSubscriptionId: subscriptionId },
-    data: {
-      dataFim: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
-      status: 'ATIVA'
-    }
-  })
-
-  console.log(`✅ Assinatura renovada: ${subscriptionId}`)
-}
-
-/**
- * Processar falha de pagamento
- */
-async function processarFalhaPagamento(invoice) {
-  const subscriptionId = invoice.subscription
-
-  // Marcar assinatura como suspensa
-  await prisma.assinatura.updateMany({
-    where: { stripeSubscriptionId: subscriptionId },
-    data: { status: 'SUSPENSA' }
-  })
-
-  console.log(`❌ Falha no pagamento da assinatura: ${subscriptionId}`)
-}
-
-/**
- * Obter status da assinatura
- */
-export const obterStatusAssinatura = async (req, res) => {
-  try {
-    const { estabelecimentoId } = req.params
-
-    console.log('[PAGAMENTO] Buscando status da assinatura:', estabelecimentoId)
-
-    const assinatura = await prisma.assinatura.findUnique({
-      where: { estabelecimentoId: estabelecimentoId },
       include: {
-        plano: true
+        servico: true,
+        estabelecimento: {
+          select: {
+            chavePix: true,
+            nome: true
+          }
+        }
       }
-    })
+    });
 
-    if (!assinatura) {
-      console.log('[PAGAMENTO] Nenhuma assinatura encontrada para:', estabelecimentoId)
-      
-      // Buscar plano FREE padrão
-      const planoFree = await prisma.plano.findFirst({
-        where: { nome: 'FREE' }
-      })
-
-      return res.json({ 
-        status: 'INATIVA',
-        plano: planoFree,
-        dataFim: null,
-        mensagem: 'Nenhuma assinatura ativa. Usando plano FREE.'
-      })
+    if (!agendamento) {
+      return res.status(404).json({ error: 'Agendamento não encontrado' });
     }
 
-    console.log('[PAGAMENTO] Assinatura encontrada:', assinatura.status, 'Plano:', assinatura.plano?.nome)
+    if (!agendamento.estabelecimento.chavePix) {
+      return res.status(400).json({ error: 'Estabelecimento não possui chave PIX cadastrada' });
+    }
+
+    // Calcular valores
+    const valorServico = agendamento.servico.preco;
+    const valorTaxa = TAXA_PLATAFORMA;
+    const valorTotal = valorServico + valorTaxa;
+
+    // Gerar dados do PIX
+    const pixData = {
+      chavePix: agendamento.estabelecimento.chavePix,
+      valor: valorTotal,
+      descricao: `JFAgende - ${agendamento.servico.nome} - ${agendamento.estabelecimento.nome}`,
+      estabelecimento: agendamento.estabelecimento.nome,
+      servico: agendamento.servico.nome,
+      dataHora: agendamento.dataHora,
+      valorServico: valorServico,
+      valorTaxa: valorTaxa,
+      valorTotal: valorTotal
+    };
+
+    // TODO: Implementar geração real de QR Code PIX
+    // Por enquanto, retornamos os dados para o frontend gerar o QR Code
+    res.json({
+      success: true,
+      pixData,
+      qrCodeData: `PIX:${pixData.chavePix}|${pixData.valor}|${pixData.descricao}`,
+      message: 'Dados do PIX gerados com sucesso'
+    });
+
+  } catch (error) {
+    console.error('Erro ao gerar QR Code PIX:', error);
+    res.status(500).json({ error: 'Erro ao gerar QR Code PIX' });
+  }
+};
+
+/**
+ * Upload de comprovante PIX
+ */
+export const uploadComprovantePix = async (req, res) => {
+  try {
+    const { agendamentoId } = req.params;
+    const clienteId = req.user.id;
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'Comprovante é obrigatório' });
+    }
+
+    // Buscar agendamento
+    const agendamento = await prisma.agendamento.findFirst({
+      where: {
+        id: agendamentoId,
+        clienteId: clienteId
+      },
+      include: {
+        servico: true
+      }
+    });
+
+    if (!agendamento) {
+      return res.status(404).json({ error: 'Agendamento não encontrado' });
+    }
+
+    // Processar imagem
+    const filename = `comprovante_${agendamentoId}_${Date.now()}.webp`;
+    const uploadPath = path.join(__dirname, '../../uploads/comprovantes');
+    
+    // Criar diretório se não existir
+    await fs.mkdir(uploadPath, { recursive: true });
+    
+    const filePath = path.join(uploadPath, filename);
+
+    // Otimizar imagem
+    await sharp(req.file.buffer)
+      .resize(800, 600, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 80 })
+      .toFile(filePath);
+
+    // Calcular valores
+    const valorServico = agendamento.servico.preco;
+    const valorTaxa = TAXA_PLATAFORMA;
+    const valorTotal = valorServico + valorTaxa;
+
+    // Atualizar agendamento
+    const agendamentoAtualizado = await prisma.agendamento.update({
+      where: {
+        id: agendamentoId
+      },
+      data: {
+        pagamentoAntecipado: true,
+        comprovantePix: `/uploads/comprovantes/${filename}`,
+        valorTaxa: valorTaxa,
+        valorTotal: valorTotal,
+        status: 'PENDENTE_PAGAMENTO' // Aguardando confirmação do pagamento
+      },
+      include: {
+        servico: true,
+        estabelecimento: {
+          select: {
+            nome: true,
+            chavePix: true
+          }
+        }
+      }
+    });
 
     res.json({
-      status: assinatura.status,
-      ativo: assinatura.ativo,
-      plano: assinatura.plano,
-      dataInicio: assinatura.dataInicio,
-      dataFim: assinatura.dataFim,
-      destaqueAte: assinatura.destaqueAte,
-      autoRenovar: assinatura.autoRenovar,
-    })
-  } catch (error) {
-    console.error('[PAGAMENTO] Erro ao obter status da assinatura:', error)
-    res.status(500).json({ error: 'Erro ao obter status da assinatura', details: error.message })
-  }
-}
+      success: true,
+      message: 'Comprovante enviado com sucesso! Aguarde a confirmação do pagamento.',
+      agendamento: agendamentoAtualizado
+    });
 
+  } catch (error) {
+    console.error('Erro ao fazer upload do comprovante:', error);
+    res.status(500).json({ error: 'Erro ao fazer upload do comprovante' });
+  }
+};
+
+/**
+ * Confirmar pagamento PIX (para estabelecimento)
+ */
+export const confirmarPagamentoPix = async (req, res) => {
+  try {
+    const { agendamentoId } = req.params;
+    const estabelecimentoId = req.user.id;
+
+    // Buscar agendamento
+    const agendamento = await prisma.agendamento.findFirst({
+      where: {
+        id: agendamentoId,
+        estabelecimentoId: estabelecimentoId,
+        pagamentoAntecipado: true,
+        status: 'PENDENTE_PAGAMENTO'
+      }
+    });
+
+    if (!agendamento) {
+      return res.status(404).json({ error: 'Agendamento não encontrado ou já processado' });
+    }
+
+    // Atualizar status do agendamento
+    const agendamentoAtualizado = await prisma.agendamento.update({
+      where: {
+        id: agendamentoId
+      },
+      data: {
+        status: 'CONFIRMADO',
+        formaPagamento: 'PIX'
+      },
+      include: {
+        servico: true,
+        cliente: {
+          select: {
+            nome: true,
+            telefone: true
+          }
+        }
+      }
+    });
+
+    res.json({
+      success: true,
+      message: 'Pagamento confirmado com sucesso!',
+      agendamento: agendamentoAtualizado
+    });
+
+  } catch (error) {
+    console.error('Erro ao confirmar pagamento:', error);
+    res.status(500).json({ error: 'Erro ao confirmar pagamento' });
+  }
+};
+
+/**
+ * Rejeitar pagamento PIX (para estabelecimento)
+ */
+export const rejeitarPagamentoPix = async (req, res) => {
+  try {
+    const { agendamentoId } = req.params;
+    const { motivo } = req.body;
+    const estabelecimentoId = req.user.id;
+
+    // Buscar agendamento
+    const agendamento = await prisma.agendamento.findFirst({
+      where: {
+        id: agendamentoId,
+        estabelecimentoId: estabelecimentoId,
+        pagamentoAntecipado: true,
+        status: 'PENDENTE_PAGAMENTO'
+      }
+    });
+
+    if (!agendamento) {
+      return res.status(404).json({ error: 'Agendamento não encontrado ou já processado' });
+    }
+
+    // Atualizar status do agendamento
+    const agendamentoAtualizado = await prisma.agendamento.update({
+      where: {
+        id: agendamentoId
+      },
+      data: {
+        status: 'CANCELADO',
+        observacoes: motivo ? `Pagamento rejeitado: ${motivo}` : 'Pagamento rejeitado'
+      },
+      include: {
+        servico: true,
+        cliente: {
+          select: {
+            nome: true,
+            telefone: true
+          }
+        }
+      }
+    });
+
+    res.json({
+      success: true,
+      message: 'Pagamento rejeitado',
+      agendamento: agendamentoAtualizado
+    });
+
+  } catch (error) {
+    console.error('Erro ao rejeitar pagamento:', error);
+    res.status(500).json({ error: 'Erro ao rejeitar pagamento' });
+  }
+};
+
+/**
+ * Listar pagamentos pendentes (para estabelecimento)
+ */
+export const listarPagamentosPendentes = async (req, res) => {
+  try {
+    const estabelecimentoId = req.user.id;
+
+    const pagamentosPendentes = await prisma.agendamento.findMany({
+      where: {
+        estabelecimentoId: estabelecimentoId,
+        pagamentoAntecipado: true,
+        status: 'PENDENTE_PAGAMENTO'
+      },
+      include: {
+        servico: true,
+        cliente: {
+          select: {
+            nome: true,
+            telefone: true,
+            email: true
+          }
+        }
+      },
+      orderBy: {
+        criadoEm: 'desc'
+      }
+    });
+
+    res.json(pagamentosPendentes);
+
+  } catch (error) {
+    console.error('Erro ao listar pagamentos pendentes:', error);
+    res.status(500).json({ error: 'Erro ao listar pagamentos pendentes' });
+  }
+};

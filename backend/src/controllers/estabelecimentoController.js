@@ -433,3 +433,152 @@ export const removeLogo = async (req, res) => {
   }
 };
 
+/**
+ * Obter horários de funcionamento do estabelecimento
+ */
+export const getHorarios = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const estabelecimentoId = req.user.id;
+
+    // Verificar se o estabelecimento existe e pertence ao usuário
+    const estabelecimento = await prisma.estabelecimento.findFirst({
+      where: {
+        id: estabelecimentoId
+      }
+    });
+
+    if (!estabelecimento) {
+      return res.status(404).json({ error: 'Estabelecimento não encontrado' });
+    }
+
+    const horarios = await prisma.horario.findMany({
+      where: {
+        estabelecimentoId: estabelecimentoId
+      },
+      orderBy: { diaSemana: 'asc' }
+    });
+
+    res.json(horarios);
+  } catch (error) {
+    console.error('Erro ao buscar horários:', error);
+    res.status(500).json({ error: 'Erro ao buscar horários' });
+  }
+};
+
+/**
+ * Atualizar horários de funcionamento do estabelecimento
+ */
+export const updateHorarios = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const estabelecimentoId = req.user.id;
+    const { horarios } = req.body;
+
+    // Verificar se o estabelecimento existe e pertence ao usuário
+    const estabelecimento = await prisma.estabelecimento.findFirst({
+      where: {
+        id: estabelecimentoId
+      }
+    });
+
+    if (!estabelecimento) {
+      return res.status(404).json({ error: 'Estabelecimento não encontrado' });
+    }
+
+    // Validar dados dos horários
+    if (!Array.isArray(horarios)) {
+      return res.status(400).json({ error: 'Horários devem ser um array' });
+    }
+
+    // Validar cada horário
+    for (const horario of horarios) {
+      if (typeof horario.diaSemana !== 'number' || horario.diaSemana < 0 || horario.diaSemana > 6) {
+        return res.status(400).json({ error: 'Dia da semana deve ser um número de 0 a 6' });
+      }
+      if (!horario.horaInicio || !horario.horaFim) {
+        return res.status(400).json({ error: 'Horário de início e fim são obrigatórios' });
+      }
+      if (!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(horario.horaInicio) || 
+          !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(horario.horaFim)) {
+        return res.status(400).json({ error: 'Formato de horário inválido. Use HH:mm' });
+      }
+    }
+
+    // Remover horários existentes
+    await prisma.horario.deleteMany({
+      where: {
+        estabelecimentoId: estabelecimentoId
+      }
+    });
+
+    // Criar novos horários
+    const horariosCriados = await prisma.horario.createMany({
+      data: horarios.map(horario => ({
+        estabelecimentoId: estabelecimentoId,
+        diaSemana: horario.diaSemana,
+        horaInicio: horario.horaInicio,
+        horaFim: horario.horaFim,
+        ativo: horario.ativo !== false // default true
+      }))
+    });
+
+    res.json({
+      message: 'Horários atualizados com sucesso',
+      horarios: horariosCriados
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar horários:', error);
+    res.status(500).json({ error: 'Erro ao atualizar horários' });
+  }
+};
+
+/**
+ * Atualizar chave PIX do estabelecimento
+ */
+export const updateChavePix = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const estabelecimentoId = req.user.id;
+    const { chavePix } = req.body;
+
+    // Verificar se o estabelecimento existe e pertence ao usuário
+    const estabelecimento = await prisma.estabelecimento.findFirst({
+      where: {
+        id: estabelecimentoId
+      }
+    });
+
+    if (!estabelecimento) {
+      return res.status(404).json({ error: 'Estabelecimento não encontrado' });
+    }
+
+    // Validar chave PIX
+    if (!chavePix || chavePix.trim().length === 0) {
+      return res.status(400).json({ error: 'Chave PIX é obrigatória' });
+    }
+
+    const estabelecimentoAtualizado = await prisma.estabelecimento.update({
+      where: {
+        id: estabelecimentoId
+      },
+      data: {
+        chavePix: chavePix.trim()
+      },
+      select: {
+        id: true,
+        nome: true,
+        chavePix: true
+      }
+    });
+
+    res.json({
+      message: 'Chave PIX atualizada com sucesso',
+      estabelecimento: estabelecimentoAtualizado
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar chave PIX:', error);
+    res.status(500).json({ error: 'Erro ao atualizar chave PIX' });
+  }
+};
+
