@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, User, Mail, Phone, MapPin, Edit3, Save, X, Upload, Camera, Settings, Shield, Bell, CreditCard, BarChart3, Image as ImageIcon, CheckCircle } from 'lucide-react'
+import { ArrowLeft, User, Mail, Phone, MapPin, Edit3, Save, X, Upload, Camera, Settings, Shield, Bell, CreditCard, BarChart3, Image as ImageIcon, CheckCircle, Plus, Clock } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
 import Button from '../components/Button'
