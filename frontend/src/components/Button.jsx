@@ -39,20 +39,24 @@ const Button = ({
     if (onClick) onClick(e)
   }
 
-  const baseStyles = 'relative overflow-hidden font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2 transform active:scale-95'
+  const baseStyles = 'relative overflow-hidden font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 transform active:scale-95 disabled:cursor-not-allowed'
   
   const variants = {
-    primary: 'bg-gradient-to-r from-primary-600 to-primary-700 dark:from-primary-500 dark:to-primary-600 text-white hover:from-primary-700 hover:to-primary-800 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl',
-    secondary: 'bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 border-2 border-primary-600 dark:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 active:bg-primary-100 dark:active:bg-primary-900/30 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:text-gray-400 disabled:border-gray-300 dark:disabled:border-gray-600 disabled:cursor-not-allowed shadow-md hover:shadow-lg',
-    outline: 'bg-transparent text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed',
-    danger: 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl',
-    ghost: 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed',
+    primary: 'bg-gradient-to-r from-primary-600 via-primary-700 to-purple-600 dark:from-primary-500 dark:via-primary-600 dark:to-purple-500 text-white hover:from-primary-700 hover:via-primary-800 hover:to-purple-700 hover:shadow-2xl hover:shadow-primary-500/50 disabled:from-gray-300 disabled:via-gray-300 disabled:to-gray-400 disabled:opacity-50 shadow-lg shadow-primary-500/30 animate-gradient',
+    secondary: 'glass-strong text-primary-600 dark:text-primary-400 border-2 border-primary-500/30 dark:border-primary-500/50 hover:border-primary-500 dark:hover:border-primary-400 hover:shadow-xl hover:shadow-primary-500/20 disabled:opacity-50 disabled:text-gray-400 disabled:border-gray-300 dark:disabled:border-gray-600 shimmer',
+    outline: 'bg-transparent text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-gray-600 hover:bg-white/50 dark:hover:bg-gray-800/50 hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-lg disabled:text-gray-400 disabled:opacity-50 backdrop-blur-sm',
+    danger: 'bg-gradient-to-r from-red-600 via-red-700 to-pink-600 text-white hover:from-red-700 hover:via-red-800 hover:to-pink-700 hover:shadow-2xl hover:shadow-red-500/50 disabled:from-gray-300 disabled:via-gray-300 disabled:to-gray-400 disabled:opacity-50 shadow-lg shadow-red-500/30 animate-gradient',
+    ghost: 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-gray-100/80 hover:to-gray-200/80 dark:hover:from-gray-800/80 dark:hover:to-gray-700/80 hover:shadow-md disabled:text-gray-400 disabled:opacity-50 backdrop-blur-sm',
+    success: 'bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 text-white hover:from-emerald-700 hover:via-green-700 hover:to-teal-700 hover:shadow-2xl hover:shadow-emerald-500/50 disabled:from-gray-300 disabled:via-gray-300 disabled:to-gray-400 disabled:opacity-50 shadow-lg shadow-emerald-500/30 animate-gradient',
+    warning: 'bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 text-white hover:from-amber-700 hover:via-orange-700 hover:to-yellow-700 hover:shadow-2xl hover:shadow-amber-500/50 disabled:from-gray-300 disabled:via-gray-300 disabled:to-gray-400 disabled:opacity-50 shadow-lg shadow-amber-500/30 animate-gradient',
   }
   
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-5 py-2.5 text-base',
+    xs: 'px-2 py-1 text-xs',
+    sm: 'px-4 py-2 text-sm',
+    md: 'px-6 py-3 text-base',
     lg: 'px-8 py-4 text-lg',
+    xl: 'px-10 py-5 text-xl',
   }
   
   const widthClass = fullWidth ? 'w-full' : ''
