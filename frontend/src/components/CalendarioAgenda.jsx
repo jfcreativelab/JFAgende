@@ -218,16 +218,6 @@ const AgendaProfissional = ({
 
   return (
     <div className="space-y-6">
-      {/* Debug Info */}
-      <div className="bg-yellow-100 border border-yellow-400 rounded-lg p-4 mb-4">
-        <p className="text-sm text-yellow-800">
-          <strong>Debug:</strong> AgendaProfissional renderizando - 
-          Agendamentos: {agendamentos?.length || 0}, 
-          Bloqueios: {bloqueios?.length || 0}, 
-          Serviços: {servicos?.length || 0}
-        </p>
-      </div>
-
       {/* Toast */}
       {toast && (
         <div className="fixed top-4 right-4 z-50">
@@ -238,6 +228,16 @@ const AgendaProfissional = ({
           />
         </div>
       )}
+
+      {/* Teste Simples */}
+      <div className="bg-blue-100 border border-blue-400 rounded-lg p-4 mb-4">
+        <h3 className="text-lg font-bold text-blue-800 mb-2">✅ Agenda Profissional Funcionando!</h3>
+        <p className="text-blue-700">
+          Agendamentos: {agendamentos?.length || 0} | 
+          Bloqueios: {bloqueios?.length || 0} | 
+          Serviços: {servicos?.length || 0}
+        </p>
+      </div>
 
       {/* Header da Agenda */}
       <div className="bg-gradient-to-r from-primary-600 to-purple-600 rounded-2xl p-6 text-white">
@@ -316,7 +316,7 @@ const AgendaProfissional = ({
       </div>
 
       {/* Serviços Rápidos */}
-      {servicos.length > 0 && (
+      {servicos && servicos.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">Agendamento Rápido</h3>
@@ -369,33 +369,35 @@ const AgendaProfissional = ({
         </div>
 
         {/* Calendário */}
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: '600px' }}
-          onSelectEvent={handleSelectEvent}
-          onSelectSlot={handleSelectSlot}
-          selectable
-          eventPropGetter={eventStyleGetter}
-          view={view}
-          onView={setView}
-          messages={{
-            next: 'Próximo',
-            previous: 'Anterior',
-            today: 'Hoje',
-            month: 'Mês',
-            week: 'Semana',
-            day: 'Dia',
-            agenda: 'Agenda',
-            date: 'Data',
-            time: 'Hora',
-            event: 'Evento',
-            noEventsInRange: 'Nenhum evento neste período',
-          }}
-          views={['month', 'week', 'day', 'agenda']}
-        />
+        <div className="rbc-calendar">
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: '600px' }}
+            onSelectEvent={handleSelectEvent}
+            onSelectSlot={handleSelectSlot}
+            selectable
+            eventPropGetter={eventStyleGetter}
+            view={view}
+            onView={setView}
+            messages={{
+              next: 'Próximo',
+              previous: 'Anterior',
+              today: 'Hoje',
+              month: 'Mês',
+              week: 'Semana',
+              day: 'Dia',
+              agenda: 'Agenda',
+              date: 'Data',
+              time: 'Hora',
+              event: 'Evento',
+              noEventsInRange: 'Nenhum evento neste período',
+            }}
+            views={['month', 'week', 'day', 'agenda']}
+          />
+        </div>
       </div>
 
       {/* Modal de Detalhes do Evento */}
