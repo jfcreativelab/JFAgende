@@ -216,6 +216,8 @@ const AgendaProfissional = ({
     return colors[status] || 'default'
   }
 
+  console.log('AgendaProfissional renderizando:', { agendamentos, bloqueios, servicos, estabelecimento })
+
   return (
     <div className="space-y-6">
       {/* Toast */}

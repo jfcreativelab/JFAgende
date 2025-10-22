@@ -767,9 +767,9 @@ const DashboardEstabelecimento = () => {
           </button>
 
           <button
-            onClick={() => setAbaAtiva('calendario')}
+            onClick={() => setAbaAtiva('agenda')}
             className={`px-6 py-3 font-medium transition-all whitespace-nowrap ${
-              abaAtiva === 'calendario'
+              abaAtiva === 'agenda'
                 ? 'text-primary-600 border-b-2 border-primary-600'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             }`}
@@ -779,9 +779,9 @@ const DashboardEstabelecimento = () => {
           </button>
 
           <button
-            onClick={() => setAbaAtiva('agenda')}
+            onClick={() => setAbaAtiva('lista')}
             className={`px-6 py-3 font-medium transition-all whitespace-nowrap ${
-              abaAtiva === 'agenda'
+              abaAtiva === 'lista'
                 ? 'text-primary-600 border-b-2 border-primary-600'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             }`}
@@ -1308,7 +1308,7 @@ const DashboardEstabelecimento = () => {
         )}
 
         {/* Conteúdo da Aba Agenda */}
-        {abaAtiva === 'calendario' && (
+        {abaAtiva === 'agenda' && (
           <div>
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -1333,8 +1333,8 @@ const DashboardEstabelecimento = () => {
           </div>
         )}
 
-        {/* Conteúdo da Aba Agenda (Lista) */}
-        {abaAtiva === 'agenda' && (
+        {/* Conteúdo da Aba Lista de Agendamentos */}
+        {abaAtiva === 'lista' && (
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
