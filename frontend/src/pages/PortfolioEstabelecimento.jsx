@@ -92,19 +92,36 @@ const PortfolioEstabelecimento = () => {
 
     setUploading(true)
     try {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        setToast({ type: 'error', message: 'Sessão expirada. Faça login novamente.' })
+        setTimeout(() => navigate('/login/estabelecimento'), 2000)
+        return
+      }
+
       const formData = new FormData()
       formData.append('logo', logoFile)
       
       const response = await fetch(`https://jfagende-production.up.railway.app/api/estabelecimentos/${user.id}/logo`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: formData
       })
 
+      if (response.status === 401) {
+        setToast({ type: 'error', message: 'Sessão expirada. Faça login novamente.' })
+        setTimeout(() => {
+          localStorage.clear()
+          navigate('/login/estabelecimento')
+        }, 2000)
+        return
+      }
+
       if (!response.ok) {
-        throw new Error('Erro ao fazer upload da logo')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao fazer upload da logo')
       }
 
       const data = await response.json()
@@ -119,7 +136,7 @@ const PortfolioEstabelecimento = () => {
       
     } catch (error) {
       console.error('Erro ao fazer upload da logo:', error)
-      setToast({ type: 'error', message: 'Erro ao fazer upload da logo' })
+      setToast({ type: 'error', message: error.message || 'Erro ao fazer upload da logo' })
     } finally {
       setUploading(false)
     }
