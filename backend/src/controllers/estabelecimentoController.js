@@ -41,7 +41,17 @@ export const getEstabelecimentos = async (req, res) => {
         telefone: true,
         fotoPerfilUrl: true,
         imagemCapa: true,
-        criadoEm: true
+        chavePix: true,
+        criadoEm: true,
+        horarios: {
+          where: { ativo: true },
+          select: {
+            diaSemana: true,
+            horaInicio: true,
+            horaFim: true
+          },
+          orderBy: { diaSemana: 'asc' }
+        }
       },
       orderBy: { nome: 'asc' }
     });
@@ -72,6 +82,7 @@ export const getEstabelecimentoById = async (req, res) => {
         email: true,
         fotoPerfilUrl: true,
         imagemCapa: true,
+        chavePix: true,
         criadoEm: true,
         servicos: {
           where: { ativo: true },

@@ -6,6 +6,7 @@ import Input from './Input'
 import Card from './Card'
 import Badge from './Badge'
 import Toast from './Toast'
+import PagamentoPixModal from './PagamentoPixModal'
 
 const AgendamentoNaoCadastrado = ({ 
   isOpen, 
@@ -31,6 +32,9 @@ const AgendamentoNaoCadastrado = ({
     servicoId: servico?.id || '',
     valor: servico?.preco || 0
   })
+
+  const [pagamentoAntecipado, setPagamentoAntecipado] = useState(false)
+  const [showPagamentoModal, setShowPagamentoModal] = useState(false)
 
   const isBronzeamento = estabelecimento?.categoria?.toLowerCase().includes('bronze')
   const valorEntrada = isBronzeamento ? (dadosAgendamento.valor * 0.5) : 0
@@ -323,6 +327,57 @@ const AgendamentoNaoCadastrado = ({
                 </div>
               </Card>
 
+              {/* Opção de Pagamento Antecipado */}
+              {estabelecimento?.chavePix && (
+                <Card className="p-4 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700">
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-3 flex items-center gap-2">
+                    <CreditCard size={20} />
+                    Pagamento Antecipado via PIX
+                  </h4>
+                  <div className="space-y-3">
+                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                      Pague antecipadamente e garante seu horário! Inclui taxa de R$ 5,00 da plataforma.
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="pagamento-antecipado"
+                        checked={pagamentoAntecipado}
+                        onChange={(e) => setPagamentoAntecipado(e.target.checked)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="pagamento-antecipado" className="text-sm text-blue-700 dark:text-blue-300">
+                        Quero pagar antecipadamente via PIX
+                      </label>
+                    </div>
+                    {pagamentoAntecipado && (
+                      <div className="mt-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-600">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Valor do serviço:</span>
+                          <span className="font-medium">R$ {dadosAgendamento.valor?.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Taxa da plataforma:</span>
+                          <span className="font-medium">R$ 5,00</span>
+                        </div>
+                        <div className="flex justify-between items-center border-t pt-2">
+                          <span className="font-semibold text-gray-900 dark:text-white">Total a pagar:</span>
+                          <span className="font-bold text-blue-600 dark:text-blue-400">R$ {(dadosAgendamento.valor + 5).toFixed(2)}</span>
+                        </div>
+                        <Button
+                          onClick={() => setShowPagamentoModal(true)}
+                          size="sm"
+                          className="w-full mt-3"
+                        >
+                          <QrCode size={16} className="mr-2" />
+                          Pagar via PIX
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              )}
+
               {/* Status do Agendamento */}
               <div className="text-center">
                 {isBronzeamento ? (
@@ -382,6 +437,22 @@ const AgendamentoNaoCadastrado = ({
           </div>
         </form>
       </Modal>
+
+      {/* Modal de Pagamento PIX */}
+      <PagamentoPixModal
+        isOpen={showPagamentoModal}
+        onClose={() => setShowPagamentoModal(false)}
+        agendamento={{
+          id: 'temp-' + Date.now(), // ID temporário
+          servico: servico,
+          dataHora: new Date(`${dadosAgendamento.data}T${dadosAgendamento.hora}`).toISOString()
+        }}
+        estabelecimento={estabelecimento}
+        onConfirmarPagamento={() => {
+          setShowPagamentoModal(false)
+          setToast({ type: 'success', message: 'Pagamento processado! Aguarde a confirmação.' })
+        }}
+      />
     </>
   )
 }

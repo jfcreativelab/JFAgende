@@ -34,10 +34,35 @@ const EstabelecimentoCard = ({
 
   const aberto = isAbertoAgora()
 
-  // Pegar próximo horário disponível (simulado - pode ser melhorado com API)
+  // Formatar horários de funcionamento
+  const formatarHorarios = () => {
+    if (!estabelecimento.horarios || estabelecimento.horarios.length === 0) {
+      return 'Horários não informados'
+    }
+
+    const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+    const hoje = new Date().getDay()
+    
+    // Encontrar horário de hoje
+    const horarioHoje = estabelecimento.horarios.find(h => h.diaSemana === hoje)
+    
+    if (horarioHoje) {
+      return `${diasSemana[hoje]}: ${horarioHoje.horaInicio} - ${horarioHoje.horaFim}`
+    }
+
+    // Se não tem horário hoje, pegar o próximo
+    const proximoHorario = estabelecimento.horarios
+      .sort((a, b) => a.diaSemana - b.diaSemana)
+      .find(h => h.diaSemana > hoje) || estabelecimento.horarios[0]
+
+    const proximoDia = proximoHorario.diaSemana
+    return `${diasSemana[proximoDia]}: ${proximoHorario.horaInicio} - ${proximoHorario.horaFim}`
+  }
+
+  // Pegar próximo horário disponível
   const getProximoHorario = () => {
     if (aberto) return 'Disponível agora'
-    return 'Próx: Amanhã 09:00'
+    return formatarHorarios()
   }
 
   return (

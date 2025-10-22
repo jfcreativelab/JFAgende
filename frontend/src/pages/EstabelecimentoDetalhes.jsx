@@ -201,6 +201,42 @@ const EstabelecimentoDetalhes = () => {
                       <span className="break-all">{estabelecimento.email}</span>
                     </div>
                   </div>
+
+                  {/* Horários de Funcionamento */}
+                  {estabelecimento.horarios && estabelecimento.horarios.length > 0 && (
+                    <div className="mt-6">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                        <Clock size={20} />
+                        Horários de Funcionamento
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {estabelecimento.horarios.map((horario, index) => {
+                          const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+                          const hoje = new Date().getDay()
+                          const isHoje = horario.diaSemana === hoje
+                          
+                          return (
+                            <div 
+                              key={index}
+                              className={`flex items-center justify-between p-3 rounded-lg ${
+                                isHoje 
+                                  ? 'bg-primary-50 dark:bg-primary-900 border border-primary-200 dark:border-primary-700' 
+                                  : 'bg-gray-50 dark:bg-gray-800'
+                              }`}
+                            >
+                              <span className={`font-medium ${isHoje ? 'text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                                {diasSemana[horario.diaSemana]}
+                                {isHoje && <span className="ml-2 text-xs">(Hoje)</span>}
+                              </span>
+                              <span className={`text-sm ${isHoje ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                                {horario.horaInicio} - {horario.horaFim}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </Card>
