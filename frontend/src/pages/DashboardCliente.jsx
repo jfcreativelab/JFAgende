@@ -401,7 +401,6 @@ const DashboardCliente = () => {
                     )}
                   </div>
                 </div>
-              </Card>
 
               {/* Lista de Estabelecimentos */}
               <div className="grid gap-4">
