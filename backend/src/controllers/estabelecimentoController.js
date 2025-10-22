@@ -63,6 +63,7 @@ export const getEstabelecimentoById = async (req, res) => {
         endereco: true,
         telefone: true,
         email: true,
+        fotoPerfilUrl: true,
         imagemCapa: true,
         criadoEm: true,
         servicos: {

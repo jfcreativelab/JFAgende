@@ -121,7 +121,13 @@ const EstabelecimentoDetalhes = () => {
             <Card>
               <div className="flex gap-6 mb-6">
                 <div className="flex-shrink-0 w-32 h-32 bg-primary-100 rounded-xl flex items-center justify-center">
-                  {estabelecimento.imagemCapa ? (
+                  {estabelecimento.fotoPerfilUrl ? (
+                    <img 
+                      src={`https://jfagende-production.up.railway.app${estabelecimento.fotoPerfilUrl}`} 
+                      alt={estabelecimento.nome}
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                  ) : estabelecimento.imagemCapa ? (
                     <img 
                       src={estabelecimento.imagemCapa} 
                       alt={estabelecimento.nome}
