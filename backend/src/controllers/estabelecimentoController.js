@@ -42,21 +42,36 @@ export const getEstabelecimentos = async (req, res) => {
         fotoPerfilUrl: true,
         imagemCapa: true,
         chavePix: true,
-        criadoEm: true,
-        horarios: {
-          where: { ativo: true },
-          select: {
-            diaSemana: true,
-            horaInicio: true,
-            horaFim: true
-          },
-          orderBy: { diaSemana: 'asc' }
-        }
+        criadoEm: true
       },
       orderBy: { nome: 'asc' }
     });
 
-    res.json(estabelecimentos);
+    // Buscar horários separadamente para evitar problemas de schema
+    const estabelecimentosComHorarios = await Promise.all(
+      estabelecimentos.map(async (estabelecimento) => {
+        try {
+          const horarios = await prisma.horario.findMany({
+            where: { 
+              estabelecimentoId: estabelecimento.id,
+              ativo: true 
+            },
+            select: {
+              diaSemana: true,
+              horaInicio: true,
+              horaFim: true
+            },
+            orderBy: { diaSemana: 'asc' }
+          });
+          return { ...estabelecimento, horarios };
+        } catch (error) {
+          console.log('Erro ao buscar horários para estabelecimento:', estabelecimento.id, error.message);
+          return { ...estabelecimento, horarios: [] };
+        }
+      })
+    );
+
+    res.json(estabelecimentosComHorarios);
   } catch (error) {
     console.error('Erro ao buscar estabelecimentos:', error);
     res.status(500).json({ error: 'Erro ao buscar estabelecimentos' });
@@ -93,16 +108,27 @@ export const getEstabelecimentoById = async (req, res) => {
             preco: true,
             descricao: true
           }
-        },
-        horarios: {
-          where: { ativo: true },
-          orderBy: { diaSemana: 'asc' }
         }
       }
     });
 
     if (!estabelecimento) {
       return res.status(404).json({ error: 'Estabelecimento não encontrado' });
+    }
+
+    // Buscar horários separadamente para evitar problemas de schema
+    try {
+      const horarios = await prisma.horario.findMany({
+        where: { 
+          estabelecimentoId: estabelecimento.id,
+          ativo: true 
+        },
+        orderBy: { diaSemana: 'asc' }
+      });
+      estabelecimento.horarios = horarios;
+    } catch (error) {
+      console.log('Erro ao buscar horários para estabelecimento:', estabelecimento.id, error.message);
+      estabelecimento.horarios = [];
     }
 
     res.json(estabelecimento);
