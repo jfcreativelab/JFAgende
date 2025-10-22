@@ -120,21 +120,26 @@ const EstabelecimentoDetalhes = () => {
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <div className="flex gap-6 mb-6">
-                <div className="flex-shrink-0 w-32 h-32 bg-primary-100 rounded-xl flex items-center justify-center">
+                <div className="flex-shrink-0 w-32 h-32 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-2xl flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-primary-500/20">
                   {estabelecimento.fotoPerfilUrl ? (
                     <img 
-                      src={`https://jfagende-production.up.railway.app${estabelecimento.fotoPerfilUrl}`} 
+                      src={estabelecimento.fotoPerfilUrl} 
                       alt={estabelecimento.nome}
-                      className="w-full h-full object-cover rounded-xl"
+                      className="w-full h-full object-cover"
+                      crossOrigin="anonymous"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.style.display = 'none';
+                      }}
                     />
                   ) : estabelecimento.imagemCapa ? (
                     <img 
                       src={estabelecimento.imagemCapa} 
                       alt={estabelecimento.nome}
-                      className="w-full h-full object-cover rounded-xl"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <MapPin className="text-primary-600" size={48} />
+                    <MapPin className="text-primary-600 dark:text-primary-400" size={48} />
                   )}
                 </div>
                 

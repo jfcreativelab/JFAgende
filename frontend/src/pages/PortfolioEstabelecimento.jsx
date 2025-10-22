@@ -52,7 +52,7 @@ const PortfolioEstabelecimento = () => {
       setFotos(fotosData)
       setCategorias(categoriasData)
       setEstatisticas(statsData)
-      setLogoPreview(user.fotoPerfilUrl ? `https://jfagende-production.up.railway.app${user.fotoPerfilUrl}` : null)
+      setLogoPreview(user.fotoPerfilUrl || null)
     } catch (error) {
       console.error('Erro ao carregar dados:', error)
       setToast({ type: 'error', message: 'Erro ao carregar portfólio' })
@@ -132,7 +132,7 @@ const PortfolioEstabelecimento = () => {
       updateUser({ ...user, fotoPerfilUrl: data.estabelecimento.fotoPerfilUrl })
       
       // Atualizar preview da logo
-      setLogoPreview(data.estabelecimento.fotoPerfilUrl ? `https://jfagende-production.up.railway.app${data.estabelecimento.fotoPerfilUrl}` : null)
+      setLogoPreview(data.estabelecimento.fotoPerfilUrl || null)
       
     } catch (error) {
       console.error('Erro ao fazer upload da logo:', error)
