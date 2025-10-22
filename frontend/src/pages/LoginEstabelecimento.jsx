@@ -42,7 +42,12 @@ const LoginEstabelecimento = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950/30 relative overflow-hidden flex items-center justify-center p-4">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden opacity-40 dark:opacity-20">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-500/30 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+      </div>
       {/* Toast */}
       {toast && (
         <div className="fixed top-4 right-4 z-50">

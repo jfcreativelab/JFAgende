@@ -422,21 +422,25 @@ const DashboardCliente = () => {
                       className="cursor-pointer"
                     >
                       <div className="flex gap-4">
-                        <div className="flex-shrink-0 w-24 h-24 bg-primary-100 rounded-lg flex items-center justify-center">
+                        <div className="flex-shrink-0 w-24 h-24 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-xl flex items-center justify-center overflow-hidden shadow-md">
                           {estabelecimento.fotoPerfilUrl ? (
                             <img 
-                              src={`https://jfagende-production.up.railway.app${estabelecimento.fotoPerfilUrl}`} 
+                              src={estabelecimento.fotoPerfilUrl.startsWith('http') ? estabelecimento.fotoPerfilUrl : `${import.meta.env.VITE_API_URL || 'https://jfagende-production.up.railway.app'}${estabelecimento.fotoPerfilUrl}`}
                               alt={estabelecimento.nome}
-                              className="w-full h-full object-cover rounded-lg"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.style.display = 'none';
+                              }}
                             />
                           ) : estabelecimento.imagemCapa ? (
                             <img 
                               src={estabelecimento.imagemCapa} 
                               alt={estabelecimento.nome}
-                              className="w-full h-full object-cover rounded-lg"
+                              className="w-full h-full object-cover"
                             />
                           ) : (
-                            <MapPin className="text-primary-600" size={32} />
+                            <MapPin className="text-primary-600 dark:text-primary-400" size={32} />
                           )}
                         </div>
                         

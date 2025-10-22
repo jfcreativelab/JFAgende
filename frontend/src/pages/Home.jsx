@@ -61,17 +61,12 @@ const Home = () => {
           {/* Logo Principal */}
           <div className="flex items-center justify-center mb-10">
             <div className="relative group">
-              {/* Glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary-500 via-purple-500 to-pink-500 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-all duration-700 animate-pulse-slow"></div>
+              {/* Glow effect sutil */}
+              <div className="absolute inset-0 bg-gradient-to-r from-primary-400 via-purple-400 to-pink-400 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-all duration-500"></div>
               
-              {/* Logo com efeito de destaque */}
-              <div className="relative transform group-hover:scale-110 transition-all duration-500 group-hover:rotate-3">
+              {/* Logo com efeito suave */}
+              <div className="relative transform group-hover:scale-105 transition-all duration-300">
                 <Logo size="2xl" />
-              </div>
-              
-              {/* Rotating border */}
-              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-500 via-purple-500 to-pink-500 blur-sm animate-spin-slow"></div>
               </div>
             </div>
           </div>
