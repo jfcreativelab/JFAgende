@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Calendar, Clock, DollarSign, Check } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, DollarSign, Check, CreditCard, QrCode } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import estabelecimentoService from '../services/estabelecimentoService'
 import agendamentoService from '../services/agendamentoService'
@@ -8,6 +8,7 @@ import Button from '../components/Button'
 import Card from '../components/Card'
 import Loading from '../components/Loading'
 import Toast from '../components/Toast'
+import PagamentoPixModal from '../components/PagamentoPixModal'
 
 const Agendamento = () => {
   const { estabelecimentoId, servicoId } = useParams()
@@ -24,6 +25,8 @@ const Agendamento = () => {
   const [loadingHorarios, setLoadingHorarios] = useState(false)
   const [agendando, setAgendando] = useState(false)
   const [toast, setToast] = useState(null)
+  const [pagamentoAntecipado, setPagamentoAntecipado] = useState(false)
+  const [showPagamentoModal, setShowPagamentoModal] = useState(false)
 
   useEffect(() => {
     carregarDados()
@@ -101,6 +104,17 @@ const Agendamento = () => {
       return
     }
 
+    // Se pagamento antecipado está selecionado e estabelecimento tem chave PIX, abrir modal PIX
+    if (pagamentoAntecipado && estabelecimento?.chavePix) {
+      setShowPagamentoModal(true)
+      return
+    }
+
+    // Caso contrário, fazer agendamento normal
+    await realizarAgendamento()
+  }
+
+  const realizarAgendamento = async (dadosPagamento = {}) => {
     setAgendando(true)
 
     try {
@@ -112,12 +126,15 @@ const Agendamento = () => {
         return
       }
       
-      await agendamentoService.create({
+      const dadosAgendamento = {
         estabelecimentoId,
         servicoId,
         dataHora: dataHora.toISOString(),
-        observacoes
-      })
+        observacoes,
+        ...dadosPagamento
+      }
+
+      await agendamentoService.create(dadosAgendamento)
 
       setToast({ type: 'success', message: 'Agendamento realizado com sucesso!' })
       
@@ -133,6 +150,11 @@ const Agendamento = () => {
     } finally {
       setAgendando(false)
     }
+  }
+
+  const handleConfirmarPagamento = async (dadosPagamento) => {
+    setShowPagamentoModal(false)
+    await realizarAgendamento(dadosPagamento)
   }
 
   if (loading) {
@@ -260,6 +282,55 @@ const Agendamento = () => {
                   className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
                 />
               </div>
+
+              {/* Opção de Pagamento PIX */}
+              {estabelecimento?.chavePix && (
+                <div className="mt-6">
+                  <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        <QrCode className="text-blue-600 dark:text-blue-400" size={24} />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                          Pagamento Antecipado via PIX
+                        </h3>
+                        <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
+                          Pague antecipadamente e garante sua vaga! Taxa da plataforma: R$ 5,00
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="pagamentoAntecipado"
+                            checked={pagamentoAntecipado}
+                            onChange={(e) => setPagamentoAntecipado(e.target.checked)}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label htmlFor="pagamentoAntecipado" className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                            Quero pagar antecipadamente via PIX
+                          </label>
+                        </div>
+                        {pagamentoAntecipado && (
+                          <div className="mt-3 p-3 bg-blue-100 dark:bg-blue-800/30 rounded-lg">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-blue-800 dark:text-blue-200">Valor do serviço:</span>
+                              <span className="font-semibold text-blue-900 dark:text-blue-100">R$ {servico.preco.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-blue-800 dark:text-blue-200">Taxa da plataforma:</span>
+                              <span className="font-semibold text-blue-900 dark:text-blue-100">R$ 5,00</span>
+                            </div>
+                            <div className="flex justify-between text-sm font-bold border-t border-blue-200 dark:border-blue-600 pt-1 mt-1">
+                              <span className="text-blue-900 dark:text-blue-100">Total a pagar:</span>
+                              <span className="text-blue-900 dark:text-blue-100">R$ {(servico.preco + 5).toFixed(2)}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              )}
             </Card>
 
             <Button
@@ -270,6 +341,11 @@ const Agendamento = () => {
             >
               {agendando ? (
                 'Agendando...'
+              ) : pagamentoAntecipado && estabelecimento?.chavePix ? (
+                <>
+                  <QrCode size={20} />
+                  Pagar via PIX e Agendar
+                </>
               ) : (
                 <>
                   <Check size={20} />
@@ -313,6 +389,18 @@ const Agendamento = () => {
                       R$ {servico.preco.toFixed(2)}
                     </span>
                   </div>
+                  {pagamentoAntecipado && estabelecimento?.chavePix && (
+                    <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div className="flex justify-between text-xs text-blue-700 dark:text-blue-300">
+                        <span>Taxa da plataforma:</span>
+                        <span>R$ 5,00</span>
+                      </div>
+                      <div className="flex justify-between text-sm font-bold text-blue-900 dark:text-blue-100 border-t border-blue-200 dark:border-blue-600 pt-1 mt-1">
+                        <span>Total:</span>
+                        <span>R$ {(servico.preco + 5).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 {dataSelecionada && horarioSelecionado && (
@@ -339,6 +427,21 @@ const Agendamento = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de Pagamento PIX */}
+      <PagamentoPixModal
+        isOpen={showPagamentoModal}
+        onClose={() => setShowPagamentoModal(false)}
+        agendamento={{
+          id: 'temp-' + Date.now(),
+          servico: servico,
+          dataHora: dataSelecionada && horarioSelecionado 
+            ? new Date(`${dataSelecionada}T${horarioSelecionado}:00`).toISOString()
+            : new Date().toISOString()
+        }}
+        estabelecimento={estabelecimento}
+        onConfirmarPagamento={handleConfirmarPagamento}
+      />
     </div>
   )
 }
