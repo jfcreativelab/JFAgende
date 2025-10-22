@@ -238,7 +238,7 @@ export const updateServico = async (req, res) => {
 };
 
 /**
- * Deleta (desativa) um serviço
+ * Remove um serviço permanentemente
  */
 export const deleteServico = async (req, res) => {
   try {
@@ -249,15 +249,27 @@ export const deleteServico = async (req, res) => {
       return res.status(403).json({ error: 'Acesso negado' });
     }
 
-    await prisma.servico.update({
-      where: { id: servicoId },
-      data: { ativo: false }
+    // Verifica se o serviço existe e pertence ao estabelecimento
+    const servico = await prisma.servico.findFirst({
+      where: { 
+        id: servicoId,
+        estabelecimentoId: id
+      }
     });
 
-    res.json({ message: 'Serviço desativado com sucesso' });
+    if (!servico) {
+      return res.status(404).json({ error: 'Serviço não encontrado' });
+    }
+
+    // Remove o serviço permanentemente
+    await prisma.servico.delete({
+      where: { id: servicoId }
+    });
+
+    res.json({ message: 'Serviço removido permanentemente' });
   } catch (error) {
     console.error('Erro ao deletar serviço:', error);
-    res.status(500).json({ error: 'Erro ao deletar serviço' });
+    res.status(500).json({ error: 'Erro ao remover serviço' });
   }
 };
 

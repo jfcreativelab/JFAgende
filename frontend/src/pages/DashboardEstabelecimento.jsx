@@ -202,15 +202,15 @@ const DashboardEstabelecimento = () => {
   }
 
   const handleDeletarServico = async (servicoId) => {
-    if (!confirm('Deseja realmente desativar este serviço?')) return
+    if (!confirm('⚠️ ATENÇÃO: Deseja realmente REMOVER este serviço permanentemente?\n\nEsta ação não pode ser desfeita e o serviço será excluído completamente do sistema.')) return
 
     try {
       await estabelecimentoService.deleteServico(user.id, servicoId)
-      setToast({ type: 'success', message: 'Serviço desativado com sucesso!' })
+      setToast({ type: 'success', message: 'Serviço removido permanentemente!' })
       carregarDados()
     } catch (error) {
       console.error('Erro ao deletar serviço:', error)
-      setToast({ type: 'error', message: 'Erro ao deletar serviço' })
+      setToast({ type: 'error', message: 'Erro ao remover serviço' })
     }
   }
 
@@ -1503,8 +1503,10 @@ const DashboardEstabelecimento = () => {
                           size="sm"
                           variant="ghost"
                           onClick={() => handleDeletarServico(servico.id)}
+                          className="hover:bg-red-50 hover:border-red-200"
+                          title="Remover serviço permanentemente"
                         >
-                          <Trash2 size={16} className="text-red-600" />
+                          <Trash2 size={16} className="text-red-600 hover:text-red-700" />
                         </Button>
                       </div>
                     </div>

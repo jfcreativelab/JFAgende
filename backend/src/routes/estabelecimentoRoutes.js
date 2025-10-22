@@ -60,7 +60,7 @@ router.put('/:id/servicos/:servicoId', authenticate, isEstabelecimento, updateSe
 
 /**
  * @route   DELETE /estabelecimentos/:id/servicos/:servicoId
- * @desc    Desativa um serviço
+ * @desc    Remove um serviço permanentemente
  * @access  Private (Estabelecimento)
  */
 router.delete('/:id/servicos/:servicoId', authenticate, isEstabelecimento, deleteServico);
