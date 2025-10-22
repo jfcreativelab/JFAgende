@@ -9,6 +9,7 @@ import Button from './Button'
 import Input from './Input'
 import Badge from './Badge'
 import Toast from './Toast'
+import Card from './Card'
 import AgendamentoNaoCadastrado from './AgendamentoNaoCadastrado'
 
 const locales = { 'pt-BR': ptBR }
