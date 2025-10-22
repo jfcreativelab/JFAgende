@@ -42,7 +42,7 @@ const PerfilEstabelecimento = () => {
         telefone: user.telefone || '',
         email: user.email || ''
       })
-      setLogoPreview(user.fotoPerfilUrl)
+      setLogoPreview(user.fotoPerfilUrl ? `https://jfagende-production.up.railway.app${user.fotoPerfilUrl}` : null)
     }
   }, [user])
 
@@ -128,7 +128,7 @@ const PerfilEstabelecimento = () => {
       telefone: user.telefone || '',
       email: user.email || ''
     })
-    setLogoPreview(user.fotoPerfilUrl)
+    setLogoPreview(user.fotoPerfilUrl ? `https://jfagende-production.up.railway.app${user.fotoPerfilUrl}` : null)
     setLogoFile(null)
     setEditing(false)
   }

@@ -423,7 +423,13 @@ const DashboardCliente = () => {
                     >
                       <div className="flex gap-4">
                         <div className="flex-shrink-0 w-24 h-24 bg-primary-100 rounded-lg flex items-center justify-center">
-                          {estabelecimento.imagemCapa ? (
+                          {estabelecimento.fotoPerfilUrl ? (
+                            <img 
+                              src={`https://jfagende-production.up.railway.app${estabelecimento.fotoPerfilUrl}`} 
+                              alt={estabelecimento.nome}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : estabelecimento.imagemCapa ? (
                             <img 
                               src={estabelecimento.imagemCapa} 
                               alt={estabelecimento.nome}
