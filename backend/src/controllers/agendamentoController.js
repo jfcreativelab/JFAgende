@@ -7,8 +7,19 @@ const prisma = new PrismaClient();
  */
 export const createAgendamento = async (req, res) => {
   try {
-    const { estabelecimentoId, servicoId, dataHora, observacoes } = req.body;
+    const { estabelecimentoId, servicoId, dataHora, observacoes, pagamentoAntecipado, valorTaxa, valorTotal } = req.body;
     const clienteId = req.user.id;
+
+    console.log('🔍 Debug - Dados recebidos para criar agendamento:', {
+      estabelecimentoId,
+      servicoId,
+      dataHora,
+      observacoes,
+      pagamentoAntecipado,
+      valorTaxa,
+      valorTotal,
+      clienteId
+    });
 
     if (!estabelecimentoId || !servicoId || !dataHora) {
       return res.status(400).json({ error: 'Estabelecimento, serviço e data/hora são obrigatórios' });
@@ -81,6 +92,12 @@ export const createAgendamento = async (req, res) => {
           }
         }
       }
+    });
+
+    console.log('🔍 Debug - Agendamento criado com sucesso:', {
+      id: agendamento.id,
+      status: agendamento.status,
+      pagamentoAntecipado: agendamento.pagamentoAntecipado
     });
 
     res.status(201).json({

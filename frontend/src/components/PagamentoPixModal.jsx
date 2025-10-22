@@ -104,51 +104,61 @@ const PagamentoPixModal = ({
 
     setLoading(true)
     try {
-      // Usar o ID do agendamento que já foi passado como prop
-      // Se for um ID temporário, criar um agendamento real primeiro
-      let agendamentoId = agendamento.id
+      console.log('🔍 Debug - Dados do agendamento:', agendamento)
+      console.log('🔍 Debug - Estabelecimento:', estabelecimento)
       
-      if (agendamento.id.startsWith('temp-')) {
-        // Criar agendamento real
-        const agendamentoData = {
-          estabelecimentoId: estabelecimento.id,
-          servicoId: agendamento.servico.id,
-          dataHora: agendamento.dataHora,
-          observacoes: 'Pagamento antecipado via PIX',
-          pagamentoAntecipado: true,
-          valorTaxa: 5.00,
-          valorTotal: valorTotal
-        }
-
-        const agendamentoResponse = await fetch('https://jfagende-production.up.railway.app/api/agendamentos', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify(agendamentoData)
-        })
-
-        if (!agendamentoResponse.ok) {
-          const errorData = await agendamentoResponse.json()
-          throw new Error(errorData.error || 'Erro ao criar agendamento.')
-        }
-
-        const novoAgendamento = await agendamentoResponse.json()
-        agendamentoId = novoAgendamento.id
+      // Sempre criar um agendamento real para PIX
+      const agendamentoData = {
+        estabelecimentoId: estabelecimento.id,
+        servicoId: agendamento.servico.id,
+        dataHora: agendamento.dataHora,
+        observacoes: 'Pagamento antecipado via PIX',
+        pagamentoAntecipado: true,
+        valorTaxa: 5.00,
+        valorTotal: valorTotal
       }
+
+      console.log('🔍 Debug - Dados para criar agendamento:', agendamentoData)
+
+      const agendamentoResponse = await fetch('https://jfagende-production.up.railway.app/api/agendamentos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(agendamentoData)
+      })
+
+      console.log('🔍 Debug - Response status:', agendamentoResponse.status)
+
+      if (!agendamentoResponse.ok) {
+        const errorData = await agendamentoResponse.json()
+        console.error('🔍 Debug - Erro na resposta:', errorData)
+        throw new Error(errorData.error || 'Erro ao criar agendamento.')
+      }
+
+      const novoAgendamento = await agendamentoResponse.json()
+      console.log('🔍 Debug - Novo agendamento criado:', novoAgendamento)
+      
+      const agendamentoId = novoAgendamento.id
+      console.log('🔍 Debug - ID do agendamento:', agendamentoId)
 
       // Fazer upload do comprovante
       const formData = new FormData()
       formData.append('comprovante', comprovante)
 
-      const response = await fetch(`https://jfagende-production.up.railway.app/api/pagamento/${agendamentoId}/comprovante`, {
+      const uploadUrl = `https://jfagende-production.up.railway.app/api/pagamento/${agendamentoId}/comprovante`
+      console.log('🔍 Debug - URL de upload:', uploadUrl)
+
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: formData
       })
+
+      console.log('🔍 Debug - Upload response status:', response.status)
 
       if (response.ok) {
         setToast({ type: 'success', message: 'Comprovante enviado com sucesso! Aguarde a confirmação.' })
@@ -158,6 +168,7 @@ const PagamentoPixModal = ({
         setComprovantePreview(null)
       } else {
         const errorData = await response.json()
+        console.error('🔍 Debug - Erro no upload:', errorData)
         throw new Error(errorData.error || 'Erro ao enviar comprovante')
       }
     } catch (error) {
