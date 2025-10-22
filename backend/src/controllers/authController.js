@@ -208,7 +208,21 @@ export const loginEstabelecimento = async (req, res) => {
     }
 
     // Busca apenas estabelecimentos
-    const usuario = await prisma.estabelecimento.findUnique({ where: { email } });
+    const usuario = await prisma.estabelecimento.findUnique({ 
+      where: { email },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        senhaHash: true,
+        chavePix: true,
+        fotoPerfilUrl: true,
+        categoria: true,
+        endereco: true,
+        telefone: true,
+        criadoEm: true
+      }
+    });
 
     if (!usuario) {
       return res.status(401).json({ error: 'Email ou senha incorretos' });
