@@ -216,10 +216,18 @@ const AgendaProfissional = ({
     return colors[status] || 'default'
   }
 
-  console.log('AgendaProfissional renderizando:', { agendamentos, bloqueios, servicos, estabelecimento })
-
   return (
     <div className="space-y-6">
+      {/* Debug Info */}
+      <div className="bg-yellow-100 border border-yellow-400 rounded-lg p-4 mb-4">
+        <p className="text-sm text-yellow-800">
+          <strong>Debug:</strong> AgendaProfissional renderizando - 
+          Agendamentos: {agendamentos?.length || 0}, 
+          Bloqueios: {bloqueios?.length || 0}, 
+          Serviços: {servicos?.length || 0}
+        </p>
+      </div>
+
       {/* Toast */}
       {toast && (
         <div className="fixed top-4 right-4 z-50">
