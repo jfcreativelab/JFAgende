@@ -94,7 +94,7 @@ const PerfilEstabelecimento = () => {
         const response = await fetch(`https://jfagende-production.up.railway.app/api/estabelecimentos/${user.id}/logo`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('estabelecimentoToken')}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           },
           body: formDataLogo
         })
