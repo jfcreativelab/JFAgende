@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Shield, Lock, Mail, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import Card from '../components/Card'
 import Toast from '../components/Toast'
 import Logo from '../components/Logo'
-import adminService from '../services/adminService'
 
 const LoginAdmin = () => {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     senha: ''
@@ -29,26 +30,25 @@ const LoginAdmin = () => {
     e.preventDefault()
     setLoading(true)
 
-    try {
-      const result = await adminService.login(formData.email, formData.senha)
-      
+    const result = await login(formData.email, formData.senha, 'admin')
+
+    if (result.success) {
       setToast({ 
         type: 'premium', 
-        message: `Bem-vindo, ${result.admin.nome}!` 
+        message: `Bem-vindo, ${result.data.admin.nome}!` 
       })
 
       setTimeout(() => {
         navigate('/admin/dashboard')
       }, 1000)
-    } catch (error) {
-      console.error('Erro no login:', error)
+    } else {
       setToast({
         type: 'error',
-        message: error.response?.data?.error || 'Credenciais inválidas'
+        message: result.error || 'Credenciais inválidas'
       })
-    } finally {
-      setLoading(false)
     }
+
+    setLoading(false)
   }
 
   return (

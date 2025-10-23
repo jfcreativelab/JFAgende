@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import authService from '../services/authService'
+import adminService from '../services/adminService'
 
 const AuthContext = createContext({})
 
@@ -19,8 +20,19 @@ export const AuthProvider = ({ children }) => {
     // Recupera os dados do usuário ao carregar a aplicação
     const token = localStorage.getItem('token')
     const storedUser = localStorage.getItem('user')
+    const adminToken = localStorage.getItem('adminToken')
+    const storedAdmin = localStorage.getItem('adminData')
 
-    if (token && storedUser) {
+    if (adminToken && storedAdmin) {
+      try {
+        const adminData = JSON.parse(storedAdmin)
+        setUser({ ...adminData, tipo: 'admin' })
+      } catch (error) {
+        console.error('Erro ao recuperar dados do admin:', error)
+        localStorage.removeItem('adminToken')
+        localStorage.removeItem('adminData')
+      }
+    } else if (token && storedUser) {
       try {
         setUser(JSON.parse(storedUser))
       } catch (error) {
@@ -42,19 +54,27 @@ export const AuthProvider = ({ children }) => {
         data = await authService.loginCliente(email, senha)
       } else if (tipo === 'estabelecimento') {
         data = await authService.loginEstabelecimento(email, senha)
+      } else if (tipo === 'admin') {
+        data = await adminService.login(email, senha)
       } else {
         throw new Error('Tipo de usuário inválido')
       }
       
       console.log('📊 Dados recebidos da API:', data)
       
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify({ ...data.usuario, tipo: data.tipo }))
-      
-      const userData = { ...data.usuario, tipo: data.tipo }
-      console.log('👤 Dados do usuário salvos:', userData)
-      
-      setUser(userData)
+      if (tipo === 'admin') {
+        localStorage.setItem('adminToken', data.token)
+        localStorage.setItem('adminData', JSON.stringify(data.admin))
+        const userData = { ...data.admin, tipo: 'admin' }
+        console.log('👤 Dados do admin salvos:', userData)
+        setUser(userData)
+      } else {
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify({ ...data.usuario, tipo: data.tipo }))
+        const userData = { ...data.usuario, tipo: data.tipo }
+        console.log('👤 Dados do usuário salvos:', userData)
+        setUser(userData)
+      }
       
       // Aguardar um tick para garantir que o estado foi atualizado
       await new Promise(resolve => setTimeout(resolve, 0))
@@ -95,6 +115,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     authService.logout()
+    localStorage.removeItem('adminToken')
+    localStorage.removeItem('adminData')
     setUser(null)
   }
 
