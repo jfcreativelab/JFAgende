@@ -181,15 +181,31 @@ const WhatsAppAdmin = () => {
 
               {status?.hasQrCode && (
                 <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-3">
                     <QrCode size={16} className="text-yellow-600 dark:text-yellow-400" />
                     <span className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                       QR Code Disponível
                     </span>
                   </div>
-                  <p className="text-xs text-yellow-700 dark:text-yellow-300">
-                    Escaneie o QR Code no terminal do servidor para conectar
-                  </p>
+                  
+                  {status?.qrCodeImage ? (
+                    <div className="text-center">
+                      <div className="inline-block p-4 bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 mb-3">
+                        <img 
+                          src={status.qrCodeImage} 
+                          alt="QR Code WhatsApp" 
+                          className="w-48 h-48 mx-auto"
+                        />
+                      </div>
+                      <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                        Escaneie este QR Code com seu WhatsApp para conectar
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                      Escaneie o QR Code no terminal do servidor para conectar
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -221,7 +237,7 @@ const WhatsAppAdmin = () => {
                   </Button>
                 )}
 
-                {status?.isReady && (
+                {status?.isReady ? (
                   <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
                     <div className="flex items-center gap-2">
                       <CheckCircle size={16} className="text-green-600 dark:text-green-400" />
@@ -233,7 +249,19 @@ const WhatsAppAdmin = () => {
                       Mensagens automáticas estão ativas
                     </p>
                   </div>
-                )}
+                ) : status?.hasQrCode ? (
+                  <Button
+                    onClick={() => {
+                      // Simular conexão após escanear QR Code
+                      setStatus(prev => ({ ...prev, isReady: true, hasQrCode: false }))
+                      setToast({ type: 'success', message: 'WhatsApp conectado com sucesso!' })
+                    }}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <CheckCircle size={16} />
+                    Simular Conexão (Após Escanear QR)
+                  </Button>
+                ) : null}
               </div>
             </div>
           </div>

@@ -1,8 +1,11 @@
 // Serviço WhatsApp simplificado para evitar problemas de dependências
+import QRCode from 'qrcode'
+
 class WhatsAppSimpleService {
   constructor() {
     this.isReady = false
     this.qrCode = null
+    this.qrCodeImage = null
     this.client = null
   }
 
@@ -10,10 +13,22 @@ class WhatsAppSimpleService {
     try {
       console.log('🔧 Inicializando WhatsApp Simple Service...')
       
-      // Simular inicialização por enquanto
-      this.isReady = false
-      this.qrCode = 'QR_CODE_PLACEHOLDER'
+      // Gerar QR Code real para demonstração
+      const qrData = `JFAgende-WhatsApp-${Date.now()}`
+      this.qrCode = qrData
       
+      // Gerar QR Code como imagem base64
+      this.qrCodeImage = await QRCode.toDataURL(qrData, {
+        width: 256,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      })
+      
+      console.log('📱 QR Code gerado para WhatsApp:')
+      console.log('QR Code Data:', qrData)
       console.log('⚠️ WhatsApp Simple Service - Modo de desenvolvimento')
       console.log('📱 Para usar WhatsApp real, configure as dependências corretamente')
       
@@ -126,6 +141,7 @@ Nos vemos em breve! 😊`
       isReady: this.isReady,
       hasQrCode: !!this.qrCode,
       qrCode: this.qrCode,
+      qrCodeImage: this.qrCodeImage,
       mode: 'simple'
     }
   }
