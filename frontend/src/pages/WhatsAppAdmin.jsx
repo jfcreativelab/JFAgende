@@ -197,9 +197,23 @@ const WhatsAppAdmin = () => {
                           className="w-48 h-48 mx-auto"
                         />
                       </div>
-                      <p className="text-xs text-yellow-700 dark:text-yellow-300">
-                        Escaneie este QR Code com seu WhatsApp para conectar
-                      </p>
+                      {status?.mode === 'simple' ? (
+                        <div className="space-y-2">
+                          <p className="text-xs text-yellow-700 dark:text-yellow-300 font-medium">
+                            ⚠️ Modo de Demonstração
+                          </p>
+                          <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                            Este QR Code é apenas para demonstração visual
+                          </p>
+                          <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                            Para WhatsApp real, configure as credenciais da API
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                          Escaneie este QR Code com seu WhatsApp para conectar
+                        </p>
+                      )}
                     </div>
                   ) : (
                     <p className="text-xs text-yellow-700 dark:text-yellow-300">
@@ -334,6 +348,38 @@ const WhatsAppAdmin = () => {
             </Button>
           </div>
         </Card>
+
+        {/* Status da Configuração */}
+        {status?.mode === 'simple' && (
+          <Card className="mb-8 bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-3 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
+                <AlertCircle size={24} className="text-orange-600 dark:text-orange-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-orange-900 dark:text-orange-100">
+                  Modo de Demonstração
+                </h2>
+                <p className="text-orange-700 dark:text-orange-300">
+                  WhatsApp configurado para demonstração visual
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-3 text-sm text-orange-800 dark:text-orange-200">
+              <p className="font-medium">Para usar WhatsApp real:</p>
+              <ul className="list-disc list-inside space-y-1 ml-4">
+                <li>Configure as credenciais da WhatsApp Business API</li>
+                <li>Adicione as variáveis de ambiente no Railway</li>
+                <li>Faça deploy das alterações</li>
+                <li>Teste com mensagens reais</li>
+              </ul>
+              <p className="text-xs mt-3 p-2 bg-orange-100 dark:bg-orange-800/30 rounded">
+                <strong>Nota:</strong> Atualmente as mensagens são simuladas no console do servidor.
+              </p>
+            </div>
+          </Card>
+        )}
 
         {/* Informações */}
         <Card>
