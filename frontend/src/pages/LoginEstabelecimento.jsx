@@ -119,15 +119,24 @@ const LoginEstabelecimento = () => {
           <div className="mt-6 text-center">
             <p className="text-gray-600 text-sm">
               Não tem uma conta?{' '}
-              <button
-                onClick={() => {
-                  console.log('🔍 Debug - Link Cadastre-se clicado')
+              <a
+                href="/cadastro/estabelecimento"
+                onClick={(e) => {
+                  e.preventDefault()
+                  console.log('🔍 Debug - LINK Cadastre-se clicado')
+                  console.log('🔍 Debug - Navegando para /cadastro/estabelecimento')
                   navigate('/cadastro/estabelecimento')
                 }}
-                className="text-primary-600 font-medium hover:text-primary-700 cursor-pointer underline hover:no-underline transition-all bg-transparent border-none p-0 text-sm"
+                className="text-primary-600 font-medium hover:text-primary-700 cursor-pointer underline hover:no-underline transition-all"
+                style={{ 
+                  pointerEvents: 'auto',
+                  zIndex: 10,
+                  position: 'relative',
+                  display: 'inline'
+                }}
               >
                 Cadastre-se
-              </button>
+              </a>
             </p>
           </div>
         </Card>
