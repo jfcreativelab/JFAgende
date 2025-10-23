@@ -38,7 +38,10 @@ import {
   HardDrive,
   Wifi,
   Zap,
-  Megaphone
+  Megaphone,
+  Code,
+  FileText,
+  Headphones
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import Card from '../components/Card'
@@ -593,6 +596,39 @@ const DashboardAdmin = () => {
         <Megaphone className="w-6 h-6" />
         <span className="text-sm font-medium">Marketing</span>
       </Button>
+    </div>
+
+    {/* Terceira linha de funcionalidades */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <Button
+        onClick={() => navigate('/admin/api')}
+        className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700"
+      >
+        <Code className="w-6 h-6" />
+        <span className="text-sm font-medium">API</span>
+      </Button>
+      
+      <Button
+        onClick={() => navigate('/admin/conteudo')}
+        className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+      >
+        <FileText className="w-6 h-6" />
+        <span className="text-sm font-medium">Conteúdo</span>
+      </Button>
+      
+      <Button
+        onClick={() => navigate('/admin/suporte')}
+        className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700"
+      >
+        <Headphones className="w-6 h-6" />
+        <span className="text-sm font-medium">Suporte</span>
+      </Button>
+      
+      <div className="h-20 flex items-center justify-center">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          Mais funcionalidades em breve...
+        </span>
+      </div>
     </div>
           </div>
         </Card>

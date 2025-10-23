@@ -37,6 +37,9 @@ import BackupAdmin from './pages/BackupAdmin'
 import SegurancaAdmin from './pages/SegurancaAdmin'
 import FinanceiroAdmin from './pages/FinanceiroAdmin'
 import MarketingAdmin from './pages/MarketingAdmin'
+import ApiManagementAdmin from './pages/ApiManagementAdmin'
+import ContentManagementAdmin from './pages/ContentManagementAdmin'
+import SupportAdmin from './pages/SupportAdmin'
 import Notificacoes from './pages/Notificacoes'
 import PagamentoSucesso from './pages/PagamentoSucesso'
 import PagamentoCancelado from './pages/PagamentoCancelado'
@@ -302,6 +305,30 @@ function App() {
       element={
         <ProtectedRoute tipo="admin">
           <MarketingAdmin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/api"
+      element={
+        <ProtectedRoute tipo="admin">
+          <ApiManagementAdmin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/conteudo"
+      element={
+        <ProtectedRoute tipo="admin">
+          <ContentManagementAdmin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/suporte"
+      element={
+        <ProtectedRoute tipo="admin">
+          <SupportAdmin />
         </ProtectedRoute>
       }
     />
