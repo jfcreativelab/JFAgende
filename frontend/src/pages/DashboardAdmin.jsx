@@ -79,18 +79,71 @@ const DashboardAdmin = () => {
   const carregarDados = async () => {
     try {
       setLoading(true)
-      // Simular carregamento de dados
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // Buscar dados reais da API
+      const token = localStorage.getItem('adminToken')
+      const response = await fetch('https://jfagende-production.up.railway.app/api/admin/estatisticas-gerais', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.status}`)
+      }
+
+      const dadosReais = await response.json()
+      console.log('📊 Dados reais recebidos:', dadosReais)
       
       setStats({
-        totalUsers: 1247,
-        totalEstabelecimentos: 89,
-        totalAgendamentos: 3456,
-        receitaTotal: 45678.90,
-        crescimentoUsuarios: 12.5,
-        crescimentoEstabelecimentos: 8.3,
-        crescimentoAgendamentos: 23.7,
-        crescimentoReceita: 18.2
+        totalUsers: dadosReais.totalUsuarios || 0,
+        totalEstabelecimentos: dadosReais.totalEstabelecimentos || 0,
+        totalAgendamentos: dadosReais.totalAgendamentos || 0,
+        receitaTotal: dadosReais.receitaTotal || 0,
+        crescimentoUsuarios: dadosReais.crescimentoUsuarios || 0,
+        crescimentoEstabelecimentos: dadosReais.crescimentoEstabelecimentos || 0,
+        crescimentoAgendamentos: dadosReais.crescimentoAgendamentos || 0,
+        crescimentoReceita: dadosReais.crescimentoReceita || 0
+      })
+
+      // Buscar atividade recente
+      const activityResponse = await fetch('https://jfagende-production.up.railway.app/api/admin/atividade-recente', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (activityResponse.ok) {
+        const activityData = await activityResponse.json()
+        setRecentActivity(activityData.atividades || [])
+      } else {
+        // Fallback para dados simulados
+        setRecentActivity([
+          { id: 1, type: 'user', action: 'Novo usuário cadastrado', user: 'João Silva', time: '2 min atrás', status: 'success' },
+          { id: 2, type: 'estabelecimento', action: 'Estabelecimento aprovado', user: 'Salão da Maria', time: '5 min atrás', status: 'success' },
+          { id: 3, type: 'agendamento', action: 'Agendamento cancelado', user: 'Cliente Anônimo', time: '8 min atrás', status: 'warning' },
+          { id: 4, type: 'payment', action: 'Pagamento processado', user: 'R$ 150,00', time: '12 min atrás', status: 'success' },
+          { id: 5, type: 'system', action: 'Backup realizado', user: 'Sistema', time: '1 hora atrás', status: 'info' }
+        ])
+      }
+
+    } catch (error) {
+      console.error('❌ Erro ao carregar dados:', error)
+      
+      // Fallback para dados simulados em caso de erro
+      setStats({
+        totalUsers: 0,
+        totalEstabelecimentos: 0,
+        totalAgendamentos: 0,
+        receitaTotal: 0,
+        crescimentoUsuarios: 0,
+        crescimentoEstabelecimentos: 0,
+        crescimentoAgendamentos: 0,
+        crescimentoReceita: 0
       })
 
       setRecentActivity([
@@ -100,8 +153,7 @@ const DashboardAdmin = () => {
         { id: 4, type: 'payment', action: 'Pagamento processado', user: 'R$ 150,00', time: '12 min atrás', status: 'success' },
         { id: 5, type: 'system', action: 'Backup realizado', user: 'Sistema', time: '1 hora atrás', status: 'info' }
       ])
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error)
+      
       setToast({ type: 'error', message: 'Erro ao carregar dados do painel' })
     } finally {
       setLoading(false)
@@ -157,32 +209,32 @@ const DashboardAdmin = () => {
       {/* Header Ultra Profissional */}
       <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 z-40">
         <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-lg">
                 <Shield className="w-8 h-8 text-white" />
               </div>
-              <div>
+          <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                   Painel Administrativo
                 </h1>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Controle total da plataforma JFAgende
-                </p>
-              </div>
+            </p>
+          </div>
             </div>
             
             <div className="flex items-center gap-4">
-              <Button
+            <Button
                 onClick={carregarDados}
-                variant="outline"
+              variant="outline"
                 size="sm"
                 className="hover:bg-blue-50 dark:hover:bg-blue-900/20"
-              >
+            >
                 <RefreshCw size={16} />
-                Atualizar
-              </Button>
-              
+              Atualizar
+            </Button>
+            
               <div className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/20 rounded-full">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-sm font-medium text-green-700 dark:text-green-300">
@@ -311,14 +363,14 @@ const DashboardAdmin = () => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     Atividade Recente
-                  </h3>
+            </h3>
                   <Button variant="ghost" size="sm">
                     Ver Todas
                   </Button>
                 </div>
               </div>
               <div className="p-6">
-                <div className="space-y-4">
+            <div className="space-y-4">
                   {recentActivity.map((activity) => (
                     <div key={activity.id} className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200">
                       <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
@@ -340,10 +392,10 @@ const DashboardAdmin = () => {
                       </Badge>
                     </div>
                   ))}
-                </div>
-              </div>
+                    </div>
+                  </div>
             </Card>
-          </div>
+            </div>
 
           {/* Status do Sistema */}
           <div>
@@ -351,11 +403,11 @@ const DashboardAdmin = () => {
               <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Status do Sistema
-                </h3>
+            </h3>
               </div>
               <div className="p-6 space-y-6">
                 {/* Uptime */}
-                <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
                       <Server className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -368,10 +420,10 @@ const DashboardAdmin = () => {
                   <div className="text-right">
                     <p className="text-lg font-bold text-green-600 dark:text-green-400">
                       {systemHealth.uptime}
-                    </p>
-                  </div>
+                  </p>
                 </div>
-
+              </div>
+              
                 {/* Response Time */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -386,48 +438,48 @@ const DashboardAdmin = () => {
                   <div className="text-right">
                     <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       {systemHealth.responseTime}
-                    </p>
-                  </div>
+                  </p>
                 </div>
-
+              </div>
+              
                 {/* Memory Usage */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
                       <HardDrive className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                    </div>
+                </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">Memória</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">Uso atual</p>
-                    </div>
-                  </div>
+              </div>
+            </div>
                   <div className="text-right">
                     <p className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
                       {systemHealth.memoryUsage}
-                    </p>
-                  </div>
+                  </p>
                 </div>
-
+              </div>
+              
                 {/* CPU Usage */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3">
                     <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
                       <Cpu className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">CPU</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">Processamento</p>
-                    </div>
-                  </div>
+                </div>
+              </div>
                   <div className="text-right">
                     <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
                       {systemHealth.cpuUsage}
-                    </p>
-                  </div>
+                  </p>
+                </div>
                 </div>
               </div>
             </Card>
-          </div>
+            </div>
         </div>
 
         {/* Ações Rápidas */}
@@ -436,7 +488,7 @@ const DashboardAdmin = () => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Ações Rápidas
             </h3>
-          </div>
+              </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Button
@@ -470,11 +522,11 @@ const DashboardAdmin = () => {
                 <BarChart3 className="w-6 h-6" />
                 <span className="text-sm font-medium">Relatórios</span>
               </Button>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </div>
-    </div>
   )
 }
 

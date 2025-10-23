@@ -1,5 +1,39 @@
 import { useState, useEffect } from 'react'
-import { Search, Trash2, Eye, User, Store as StoreIcon } from 'lucide-react'
+import { 
+  Search, 
+  Trash2, 
+  Eye, 
+  User, 
+  Store as StoreIcon, 
+  Filter,
+  Download,
+  RefreshCw,
+  MoreVertical,
+  Edit,
+  Shield,
+  Mail,
+  Phone,
+  Calendar,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Star,
+  Crown,
+  Zap,
+  Users2,
+  Building2,
+  Activity,
+  BarChart3,
+  PieChart,
+  ArrowUpRight,
+  ArrowDownRight,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
+} from 'lucide-react'
 import AdminLayout from '../components/AdminLayout'
 import Card from '../components/Card'
 import Button from '../components/Button'
@@ -8,6 +42,10 @@ import Badge from '../components/Badge'
 import Loading from '../components/Loading'
 import Toast from '../components/Toast'
 import Modal from '../components/Modal'
+import AdminTable from '../components/AdminTable'
+import AdminMetricCard from '../components/AdminMetricCard'
+import AdminChart from '../components/AdminChart'
+import AnimatedNumber from '../components/AnimatedNumber'
 import adminService from '../services/adminService'
 
 const GerenciarUsuarios = () => {
@@ -19,10 +57,25 @@ const GerenciarUsuarios = () => {
   const [search, setSearch] = useState('')
   const [modalDelete, setModalDelete] = useState({ open: false, tipo: '', id: '', nome: '' })
   const [pagination, setPagination] = useState({ page: 1, limit: 20 })
+  const [stats, setStats] = useState({
+    totalClientes: 0,
+    totalEstabelecimentos: 0,
+    clientesAtivos: 0,
+    estabelecimentosAtivos: 0,
+    crescimentoClientes: 0,
+    crescimentoEstabelecimentos: 0
+  })
+  const [filtros, setFiltros] = useState({
+    status: '',
+    plano: '',
+    dataInicio: '',
+    dataFim: ''
+  })
+  const [viewMode, setViewMode] = useState('table') // table, cards, analytics
 
   useEffect(() => {
     carregarDados()
-  }, [abaAtiva, pagination.page, search])
+  }, [abaAtiva, pagination.page, search, filtros])
 
   const carregarDados = async () => {
     setLoading(true)
@@ -31,7 +84,8 @@ const GerenciarUsuarios = () => {
         const data = await adminService.getAllClientes({
           page: pagination.page,
           limit: pagination.limit,
-          search
+          search,
+          ...filtros
         })
         setClientes(data.clientes)
         setPagination(prev => ({ ...prev, ...data.pagination }))
@@ -39,16 +93,40 @@ const GerenciarUsuarios = () => {
         const data = await adminService.getAllEstabelecimentos({
           page: pagination.page,
           limit: pagination.limit,
-          search
+          search,
+          ...filtros
         })
         setEstabelecimentos(data.estabelecimentos)
         setPagination(prev => ({ ...prev, ...data.pagination }))
       }
+
+      // Carregar estatísticas
+      await carregarEstatisticas()
     } catch (error) {
       console.error('Erro ao carregar dados:', error)
       setToast({ type: 'error', message: 'Erro ao carregar dados' })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const carregarEstatisticas = async () => {
+    try {
+      const token = localStorage.getItem('adminToken')
+      const response = await fetch('https://jfagende-production.up.railway.app/api/admin/estatisticas-usuarios', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setStats(data)
+      }
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error)
     }
   }
 
@@ -70,6 +148,35 @@ const GerenciarUsuarios = () => {
     }
   }
 
+  const handleExport = async (formato) => {
+    try {
+      const token = localStorage.getItem('adminToken')
+      const response = await fetch(`https://jfagende-production.up.railway.app/api/admin/exportar-usuarios?tipo=${abaAtiva}&formato=${formato}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.ok) {
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `usuarios_${abaAtiva}_${new Date().toISOString().split('T')[0]}.${formato}`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+        setToast({ type: 'success', message: 'Exportação realizada com sucesso' })
+      }
+    } catch (error) {
+      console.error('Erro ao exportar:', error)
+      setToast({ type: 'error', message: 'Erro ao exportar dados' })
+    }
+  }
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -77,6 +184,253 @@ const GerenciarUsuarios = () => {
       year: 'numeric'
     })
   }
+
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      ativo: { color: 'green', text: 'Ativo' },
+      inativo: { color: 'gray', text: 'Inativo' },
+      pendente: { color: 'yellow', text: 'Pendente' },
+      bloqueado: { color: 'red', text: 'Bloqueado' }
+    }
+
+    const config = statusConfig[status] || { color: 'gray', text: status }
+    
+    return (
+      <Badge 
+        className={`text-${config.color}-600 bg-${config.color}-100 dark:text-${config.color}-400 dark:bg-${config.color}-900/20`}
+        size="sm"
+      >
+        {config.text}
+      </Badge>
+    )
+  }
+
+  const getPlanoBadge = (plano) => {
+    const planoConfig = {
+      FREE: { color: 'gray', text: 'FREE', icon: User },
+      BASIC: { color: 'blue', text: 'BASIC', icon: Star },
+      PREMIUM: { color: 'purple', text: 'PREMIUM', icon: Crown }
+    }
+
+    const config = planoConfig[plano] || { color: 'gray', text: plano, icon: User }
+    const Icon = config.icon
+    
+    return (
+      <Badge 
+        className={`text-${config.color}-600 bg-${config.color}-100 dark:text-${config.color}-400 dark:bg-${config.color}-900/20 flex items-center gap-1`}
+        size="sm"
+      >
+        <Icon size={12} />
+        {config.text}
+      </Badge>
+    )
+  }
+
+  const columnsClientes = [
+    { key: 'nome', label: 'Nome', render: (value, item) => (
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+          <User size={20} className="text-blue-600 dark:text-blue-400" />
+        </div>
+        <div>
+          <p className="font-medium text-gray-900 dark:text-white">{value}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{item.email}</p>
+        </div>
+      </div>
+    )},
+    { key: 'telefone', label: 'Telefone' },
+    { key: 'totalAgendamentos', label: 'Agendamentos', render: (value) => (
+      <Badge variant="primary" size="sm">
+        {value}
+      </Badge>
+    )},
+    { key: 'criadoEm', label: 'Cadastro', render: (value) => formatDate(value) },
+    { key: 'status', label: 'Status', render: (value) => getStatusBadge(value) }
+  ]
+
+  const columnsEstabelecimentos = [
+    { key: 'nome', label: 'Estabelecimento', render: (value, item) => (
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+          <StoreIcon size={20} className="text-purple-600 dark:text-purple-400" />
+        </div>
+        <div>
+          <p className="font-medium text-gray-900 dark:text-white">{value}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{item.email}</p>
+        </div>
+      </div>
+    )},
+    { key: 'categoria', label: 'Categoria', render: (value) => (
+      <Badge variant="default" size="sm">
+        {value}
+      </Badge>
+    )},
+    { key: 'plano', label: 'Plano', render: (value) => getPlanoBadge(value) },
+    { key: 'totalAgendamentos', label: 'Agendamentos', render: (value) => (
+      <Badge variant="primary" size="sm">
+        {value}
+      </Badge>
+    )},
+    { key: 'criadoEm', label: 'Cadastro', render: (value) => formatDate(value) },
+    { key: 'status', label: 'Status', render: (value) => getStatusBadge(value) }
+  ]
+
+  const renderAnalytics = () => (
+    <div className="space-y-8">
+      {/* Métricas Principais */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <AdminMetricCard
+          title="Total de Clientes"
+          value={stats.totalClientes}
+          change={stats.crescimentoClientes}
+          changeType="positive"
+          icon={Users2}
+          color="blue"
+          subtitle={`${stats.clientesAtivos} ativos`}
+        />
+        
+        <AdminMetricCard
+          title="Estabelecimentos"
+          value={stats.totalEstabelecimentos}
+          change={stats.crescimentoEstabelecimentos}
+          changeType="positive"
+          icon={Building2}
+          color="purple"
+          subtitle={`${stats.estabelecimentosAtivos} ativos`}
+        />
+        
+        <AdminMetricCard
+          title="Taxa de Ativação"
+          value={`${Math.round((stats.clientesAtivos / Math.max(stats.totalClientes, 1)) * 100)}%`}
+          change="5.2"
+          changeType="positive"
+          icon={Activity}
+          color="green"
+          subtitle="Clientes ativos"
+        />
+        
+        <AdminMetricCard
+          title="Crescimento Total"
+          value={`${Math.round(((stats.crescimentoClientes + stats.crescimentoEstabelecimentos) / 2) * 100) / 100}%`}
+          change="12.8"
+          changeType="positive"
+          icon={TrendingUp}
+          color="yellow"
+          subtitle="Este mês"
+        />
+      </div>
+
+      {/* Gráficos */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <AdminChart
+          title="Crescimento de Usuários"
+          type="line"
+          color="blue"
+          data={[
+            { x: 0, y: 100, label: 'Jan' },
+            { x: 1, y: 150, label: 'Fev' },
+            { x: 2, y: 200, label: 'Mar' },
+            { x: 3, y: 180, label: 'Abr' },
+            { x: 4, y: 250, label: 'Mai' },
+            { x: 5, y: 300, label: 'Jun' }
+          ]}
+          trendValue={15.2}
+          trendType="positive"
+        />
+        
+        <AdminChart
+          title="Distribuição por Plano"
+          type="pie"
+          color="purple"
+          data={[
+            { x: 0, y: 40, label: 'FREE' },
+            { x: 1, y: 35, label: 'BASIC' },
+            { x: 2, y: 25, label: 'PREMIUM' }
+          ]}
+        />
+      </div>
+    </div>
+  )
+
+  const renderFiltros = () => (
+    <Card className="mb-6">
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Filtros Avançados
+          </h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setFiltros({ status: '', plano: '', dataInicio: '', dataFim: '' })}
+          >
+            Limpar Filtros
+          </Button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Status
+            </label>
+            <select
+              value={filtros.status}
+              onChange={(e) => setFiltros({ ...filtros, status: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            >
+              <option value="">Todos os status</option>
+              <option value="ativo">Ativo</option>
+              <option value="inativo">Inativo</option>
+              <option value="pendente">Pendente</option>
+              <option value="bloqueado">Bloqueado</option>
+            </select>
+          </div>
+          
+          {abaAtiva === 'estabelecimentos' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Plano
+              </label>
+              <select
+                value={filtros.plano}
+                onChange={(e) => setFiltros({ ...filtros, plano: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="">Todos os planos</option>
+                <option value="FREE">FREE</option>
+                <option value="BASIC">BASIC</option>
+                <option value="PREMIUM">PREMIUM</option>
+              </select>
+            </div>
+          )}
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Data Início
+            </label>
+            <input
+              type="date"
+              value={filtros.dataInicio}
+              onChange={(e) => setFiltros({ ...filtros, dataInicio: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Data Fim
+            </label>
+            <input
+              type="date"
+              value={filtros.dataFim}
+              onChange={(e) => setFiltros({ ...filtros, dataFim: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+        </div>
+      </div>
+    </Card>
+  )
 
   return (
     <AdminLayout>
@@ -125,35 +479,62 @@ const GerenciarUsuarios = () => {
       </Modal>
 
       <div className="space-y-6">
-        {/* Cabeçalho */}
+        {/* Header Ultra Profissional */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-800">
+          <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Gerenciar Usuários
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Visualize e gerencie todos os usuários do sistema
-          </p>
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 text-lg">
+                Controle total de clientes e estabelecimentos
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/20 rounded-full">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                  Sistema Online
+                </span>
+              </div>
+              
+              <Button
+                onClick={carregarDados}
+                variant="outline"
+                size="sm"
+                className="hover:bg-blue-50 dark:hover:bg-blue-900/20"
+              >
+                <RefreshCw size={16} />
+                Atualizar
+              </Button>
+            </div>
+          </div>
         </div>
 
-        {/* Tabs e Busca */}
-        <Card>
-          <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+        {/* Tabs e Controles */}
+        <Card className="overflow-hidden">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
             {/* Tabs */}
-            <div className="flex gap-2 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+              <div className="flex gap-2 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl">
               <button
                 onClick={() => {
                   setAbaAtiva('clientes')
                   setPagination(prev => ({ ...prev, page: 1 }))
                 }}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
                   abaAtiva === 'clientes'
-                    ? 'bg-white dark:bg-gray-800 text-primary-600 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-white dark:bg-gray-800 text-blue-600 shadow-lg transform scale-105'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-600'
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <User size={18} />
                   Clientes
+                    <Badge variant="primary" size="sm" className="ml-1">
+                      {stats.totalClientes}
+                    </Badge>
                 </div>
               </button>
               <button
@@ -161,21 +542,59 @@ const GerenciarUsuarios = () => {
                   setAbaAtiva('estabelecimentos')
                   setPagination(prev => ({ ...prev, page: 1 }))
                 }}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
                   abaAtiva === 'estabelecimentos'
-                    ? 'bg-white dark:bg-gray-800 text-primary-600 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-white dark:bg-gray-800 text-purple-600 shadow-lg transform scale-105'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-600'
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <StoreIcon size={18} />
                   Estabelecimentos
+                    <Badge variant="primary" size="sm" className="ml-1">
+                      {stats.totalEstabelecimentos}
+                    </Badge>
                 </div>
+                </button>
+              </div>
+
+              {/* Controles */}
+              <div className="flex items-center gap-3">
+                {/* Modo de Visualização */}
+                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode('table')}
+                    className={`p-2 rounded-md transition-all ${
+                      viewMode === 'table' 
+                        ? 'bg-white dark:bg-gray-800 shadow-sm' 
+                        : 'hover:bg-white/50 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    <BarChart3 size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('cards')}
+                    className={`p-2 rounded-md transition-all ${
+                      viewMode === 'cards' 
+                        ? 'bg-white dark:bg-gray-800 shadow-sm' 
+                        : 'hover:bg-white/50 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    <PieChart size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('analytics')}
+                    className={`p-2 rounded-md transition-all ${
+                      viewMode === 'analytics' 
+                        ? 'bg-white dark:bg-gray-800 shadow-sm' 
+                        : 'hover:bg-white/50 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    <Activity size={16} />
               </button>
             </div>
 
             {/* Busca */}
-            <div className="w-full sm:w-64">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                 <input
@@ -183,233 +602,67 @@ const GerenciarUsuarios = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Buscar..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
+                    className="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Exportar */}
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => handleExport('csv')}
+                    variant="outline"
+                    size="sm"
+                    className="hover:bg-green-50 dark:hover:bg-green-900/20"
+                  >
+                    <Download size={16} />
+                    CSV
+                  </Button>
+                  <Button
+                    onClick={() => handleExport('excel')}
+                    variant="outline"
+                    size="sm"
+                    className="hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  >
+                    <Download size={16} />
+                    Excel
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </Card>
 
-        {/* Tabela */}
-        <Card>
-          {loading ? (
-            <div className="py-12">
-              <Loading />
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b border-gray-200 dark:border-gray-700">
-                    <tr>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white">
-                        Nome
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white">
-                        Email
-                      </th>
-                      {abaAtiva === 'estabelecimentos' && (
-                        <>
-                          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white">
-                            Categoria
-                          </th>
-                          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white">
-                            Plano
-                          </th>
-                        </>
-                      )}
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white">
-                        Agendamentos
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white">
-                        Cadastro
-                      </th>
-                      <th className="text-right py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white">
-                        Ações
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {abaAtiva === 'clientes' ? (
-                      clientes.length > 0 ? (
-                        clientes.map((cliente) => (
-                          <tr
-                            key={cliente.id}
-                            className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                          >
-                            <td className="py-3 px-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                                  <User size={20} className="text-blue-600 dark:text-blue-400" />
-                                </div>
-                                <span className="font-medium text-gray-900 dark:text-white">
-                                  {cliente.nome}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                              {cliente.email}
-                            </td>
-                            <td className="py-3 px-4">
-                              <Badge variant="primary">
-                                {cliente.totalAgendamentos}
-                              </Badge>
-                            </td>
-                            <td className="py-3 px-4 text-sm text-gray-600 dark:text-gray-400">
-                              {formatDate(cliente.criadoEm)}
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="flex items-center justify-end gap-2">
-                                <Button
-                                  variant="danger"
-                                  size="sm"
-                                  onClick={() => setModalDelete({
-                                    open: true,
-                                    tipo: 'cliente',
-                                    id: cliente.id,
-                                    nome: cliente.nome
-                                  })}
-                                >
-                                  <Trash2 size={16} />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="5" className="py-8 text-center text-gray-500 dark:text-gray-400">
-                            Nenhum cliente encontrado
-                          </td>
-                        </tr>
-                      )
-                    ) : (
-                      estabelecimentos.length > 0 ? (
-                        estabelecimentos.map((est) => (
-                          <tr
-                            key={est.id}
-                            className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                          >
-                            <td className="py-3 px-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                                  <StoreIcon size={20} className="text-purple-600 dark:text-purple-400" />
-                                </div>
-                                <span className="font-medium text-gray-900 dark:text-white">
-                                  {est.nome}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                              {est.email}
-                            </td>
-                            <td className="py-3 px-4">
-                              <Badge variant="default">
-                                {est.categoria}
-                              </Badge>
-                            </td>
-                            <td className="py-3 px-4">
-                              <Badge 
-                                variant={
-                                  est.plano === 'PREMIUM' ? 'success' :
-                                  est.plano === 'BASIC' ? 'warning' : 'default'
-                                }
-                              >
-                                {est.plano}
-                              </Badge>
-                            </td>
-                            <td className="py-3 px-4">
-                              <Badge variant="primary">
-                                {est.totalAgendamentos}
-                              </Badge>
-                            </td>
-                            <td className="py-3 px-4 text-sm text-gray-600 dark:text-gray-400">
-                              {formatDate(est.criadoEm)}
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="flex items-center justify-end gap-2">
-                                <Button
-                                  variant="danger"
-                                  size="sm"
-                                  onClick={() => setModalDelete({
-                                    open: true,
-                                    tipo: 'estabelecimento',
-                                    id: est.id,
-                                    nome: est.nome
-                                  })}
-                                >
-                                  <Trash2 size={16} />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="7" className="py-8 text-center text-gray-500 dark:text-gray-400">
-                            Nenhum estabelecimento encontrado
-                          </td>
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </table>
-              </div>
+        {/* Filtros */}
+        {renderFiltros()}
 
-              {/* Paginação */}
-              {pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Página {pagination.page} de {pagination.totalPages} ({pagination.total} total)
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
-                      disabled={pagination.page === 1}
-                    >
-                      Anterior
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
-                      disabled={pagination.page === pagination.totalPages}
-                    >
-                      Próxima
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </Card>
+        {/* Conteúdo Principal */}
+        {viewMode === 'analytics' ? (
+          renderAnalytics()
+        ) : (
+          <AdminTable
+            title={`${abaAtiva === 'clientes' ? 'Clientes' : 'Estabelecimentos'} Cadastrados`}
+            data={abaAtiva === 'clientes' ? clientes : estabelecimentos}
+            columns={abaAtiva === 'clientes' ? columnsClientes : columnsEstabelecimentos}
+            searchable={false}
+            filterable={false}
+            actions={true}
+            pagination={true}
+            pageSize={pagination.limit}
+            onEdit={(item) => console.log('Editar:', item)}
+            onDelete={(item) => setModalDelete({
+                                    open: true,
+              tipo: abaAtiva === 'clientes' ? 'cliente' : 'estabelecimento',
+              id: item.id,
+              nome: item.nome
+            })}
+            onView={(item) => console.log('Ver:', item)}
+            onExport={() => handleExport('csv')}
+            loading={loading}
+          />
+        )}
       </div>
     </AdminLayout>
   )
 }
 
 export default GerenciarUsuarios
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
