@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, senha, tipo) => {
     try {
+      console.log('🔐 Iniciando login:', { email, tipo })
       let data
       
       if (tipo === 'cliente') {
@@ -45,13 +46,19 @@ export const AuthProvider = ({ children }) => {
         throw new Error('Tipo de usuário inválido')
       }
       
+      console.log('📊 Dados recebidos da API:', data)
+      
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify({ ...data.usuario, tipo: data.tipo }))
       
-      setUser({ ...data.usuario, tipo: data.tipo })
+      const userData = { ...data.usuario, tipo: data.tipo }
+      console.log('👤 Dados do usuário salvos:', userData)
+      
+      setUser(userData)
       
       return { success: true, data }
     } catch (error) {
+      console.error('❌ Erro no login:', error)
       return {
         success: false,
         error: error.response?.data?.error || 'Erro ao fazer login'

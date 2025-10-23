@@ -47,13 +47,16 @@ function ProtectedRoute({ children, tipo }) {
   }
 
   if (!user) {
+    console.log('🔒 Usuário não autenticado, redirecionando para home')
     return <Navigate to="/" replace />
   }
 
   if (tipo && user.tipo !== tipo) {
+    console.log('🔒 Tipo de usuário incorreto:', { esperado: tipo, atual: user.tipo })
     return <Navigate to="/" replace />
   }
 
+  console.log('✅ Acesso autorizado:', { user: user.tipo, rota: tipo })
   return children
 }
 
