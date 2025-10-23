@@ -522,11 +522,46 @@ const DashboardAdmin = () => {
                 <BarChart3 className="w-6 h-6" />
                 <span className="text-sm font-medium">Relatórios</span>
               </Button>
-              </div>
             </div>
-          </Card>
-        </div>
+
+            {/* Segunda linha de funcionalidades */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Button
+                onClick={() => navigate('/admin/analytics')}
+                className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700"
+              >
+                <Activity className="w-6 h-6" />
+                <span className="text-sm font-medium">Analytics</span>
+              </Button>
+              
+              <Button
+                onClick={() => navigate('/admin/notificacoes')}
+                className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700"
+              >
+                <Bell className="w-6 h-6" />
+                <span className="text-sm font-medium">Notificações</span>
+              </Button>
+              
+              <Button
+                onClick={() => navigate('/admin/monitoramento')}
+                className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
+              >
+                <Server className="w-6 h-6" />
+                <span className="text-sm font-medium">Monitoramento</span>
+              </Button>
+              
+              <Button
+                onClick={() => navigate('/admin/logs')}
+                className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
+              >
+                <Database className="w-6 h-6" />
+                <span className="text-sm font-medium">Logs</span>
+              </Button>
+            </div>
+          </div>
+        </Card>
       </div>
+    </div>
   )
 }
 

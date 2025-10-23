@@ -30,6 +30,9 @@ import GerenciarAdmins from './pages/GerenciarAdmins'
 import ConfiguracoesAdmin from './pages/ConfiguracoesAdmin'
 import WhatsAppAdmin from './pages/WhatsAppAdmin'
 import RelatoriosAvancados from './pages/RelatoriosAvancados'
+import AnalyticsAdmin from './pages/AnalyticsAdmin'
+import NotificacoesAdmin from './pages/NotificacoesAdmin'
+import MonitoramentoAdmin from './pages/MonitoramentoAdmin'
 import Notificacoes from './pages/Notificacoes'
 import PagamentoSucesso from './pages/PagamentoSucesso'
 import PagamentoCancelado from './pages/PagamentoCancelado'
@@ -234,14 +237,38 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          <Route 
-            path="/admin/configuracoes" 
-            element={
-              <ProtectedRoute tipo="admin">
-                <ConfiguracoesAdmin />
-              </ProtectedRoute>
-            } 
-          />
+    <Route
+      path="/admin/configuracoes"
+      element={
+        <ProtectedRoute tipo="admin">
+          <ConfiguracoesAdmin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/analytics"
+      element={
+        <ProtectedRoute tipo="admin">
+          <AnalyticsAdmin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/notificacoes"
+      element={
+        <ProtectedRoute tipo="admin">
+          <NotificacoesAdmin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/monitoramento"
+      element={
+        <ProtectedRoute tipo="admin">
+          <MonitoramentoAdmin />
+        </ProtectedRoute>
+      }
+    />
           {/* Notificações (cliente/estabelecimento) */}
           <Route path="/notificacoes" element={<Notificacoes />} />
 
