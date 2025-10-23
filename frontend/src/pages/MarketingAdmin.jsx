@@ -12,7 +12,7 @@ import {
   TrendingUp, 
   TrendingDown, 
   Eye, 
-  Click, 
+  MousePointer, 
   Share2, 
   Heart, 
   ThumbsUp, 
@@ -559,7 +559,7 @@ const MarketingAdmin = () => {
         <Card className="p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-              <Click className="text-purple-600 dark:text-purple-400" size={20} />
+              <MousePointer className="text-purple-600 dark:text-purple-400" size={20} />
             </div>
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Taxa de Clique</p>
