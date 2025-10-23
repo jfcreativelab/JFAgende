@@ -56,6 +56,9 @@ export const AuthProvider = ({ children }) => {
       
       setUser(userData)
       
+      // Aguardar um tick para garantir que o estado foi atualizado
+      await new Promise(resolve => setTimeout(resolve, 0))
+      
       return { success: true, data }
     } catch (error) {
       console.error('❌ Erro no login:', error)

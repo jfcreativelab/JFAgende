@@ -33,7 +33,10 @@ const LoginCliente = () => {
     const result = await login(formData.email, formData.senha, 'cliente')
 
     if (result.success) {
-      navigate('/cliente/dashboard')
+      // Aguardar um pouco para garantir que o estado foi atualizado
+      setTimeout(() => {
+        navigate('/cliente/dashboard')
+      }, 100)
     } else {
       setToast({ type: 'error', message: result.error })
     }
