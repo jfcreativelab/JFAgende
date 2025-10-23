@@ -10,6 +10,7 @@ import Toast from '../components/Toast'
 import Logo from '../components/Logo'
 
 const CadastroEstabelecimento = () => {
+  console.log('🔍 Debug - CadastroEstabelecimento carregado')
   const navigate = useNavigate()
   const { register } = useAuth()
   

@@ -122,6 +122,7 @@ const LoginEstabelecimento = () => {
               <Link 
                 to="/cadastro/estabelecimento" 
                 className="text-primary-600 font-medium hover:text-primary-700"
+                onClick={() => console.log('🔍 Debug - Link Cadastre-se clicado')}
               >
                 Cadastre-se
               </Link>
