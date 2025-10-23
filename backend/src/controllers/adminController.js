@@ -7,6 +7,191 @@ const prisma = new PrismaClient()
 // DASHBOARD & ESTATÍSTICAS
 // =====================================================
 
+// Estatísticas gerais para o dashboard
+export const getEstatisticasGerais = async (req, res) => {
+  try {
+    const [
+      totalUsuarios,
+      totalEstabelecimentos,
+      totalAgendamentos,
+      receitaTotal
+    ] = await Promise.all([
+      prisma.cliente.count().catch(() => 0),
+      prisma.estabelecimento.count().catch(() => 0),
+      prisma.agendamento.count().catch(() => 0),
+      prisma.agendamento.aggregate({
+        where: { status: 'CONCLUIDO' },
+        _sum: { valorTotal: true }
+      }).then(result => result._sum.valorTotal || 0).catch(() => 0)
+    ])
+
+    // Calcular crescimento mensal
+    const mesAtual = new Date()
+    mesAtual.setDate(1)
+    mesAtual.setHours(0, 0, 0, 0)
+
+    const mesPassado = new Date(mesAtual)
+    mesPassado.setMonth(mesPassado.getMonth() - 1)
+
+    const [
+      usuariosMesAtual,
+      usuariosMesPassado,
+      estabelecimentosMesAtual,
+      estabelecimentosMesPassado,
+      agendamentosMesAtual,
+      agendamentosMesPassado
+    ] = await Promise.all([
+      prisma.cliente.count({
+        where: { criadoEm: { gte: mesAtual } }
+      }).catch(() => 0),
+      prisma.cliente.count({
+        where: {
+          criadoEm: {
+            gte: mesPassado,
+            lt: mesAtual
+          }
+        }
+      }).catch(() => 0),
+      prisma.estabelecimento.count({
+        where: { criadoEm: { gte: mesAtual } }
+      }).catch(() => 0),
+      prisma.estabelecimento.count({
+        where: {
+          criadoEm: {
+            gte: mesPassado,
+            lt: mesAtual
+          }
+        }
+      }).catch(() => 0),
+      prisma.agendamento.count({
+        where: { criadoEm: { gte: mesAtual } }
+      }).catch(() => 0),
+      prisma.agendamento.count({
+        where: {
+          criadoEm: {
+            gte: mesPassado,
+            lt: mesAtual
+          }
+        }
+      }).catch(() => 0)
+    ])
+
+    const crescimentoUsuarios = usuariosMesPassado > 0
+      ? ((usuariosMesAtual - usuariosMesPassado) / usuariosMesPassado * 100).toFixed(1)
+      : 0
+
+    const crescimentoEstabelecimentos = estabelecimentosMesPassado > 0
+      ? ((estabelecimentosMesAtual - estabelecimentosMesPassado) / estabelecimentosMesPassado * 100).toFixed(1)
+      : 0
+
+    const crescimentoAgendamentos = agendamentosMesPassado > 0
+      ? ((agendamentosMesAtual - agendamentosMesPassado) / agendamentosMesPassado * 100).toFixed(1)
+      : 0
+
+    const crescimentoReceita = 15.2 // Simulado por enquanto
+
+    res.json({
+      totalUsuarios,
+      totalEstabelecimentos,
+      totalAgendamentos,
+      receitaTotal,
+      crescimentoUsuarios: parseFloat(crescimentoUsuarios),
+      crescimentoEstabelecimentos: parseFloat(crescimentoEstabelecimentos),
+      crescimentoAgendamentos: parseFloat(crescimentoAgendamentos),
+      crescimentoReceita: parseFloat(crescimentoReceita)
+    })
+  } catch (error) {
+    console.error('Erro ao obter estatísticas gerais:', error)
+    res.status(500).json({ error: 'Erro ao obter estatísticas gerais' })
+  }
+}
+
+// Atividade recente para o dashboard
+export const getAtividadeRecente = async (req, res) => {
+  try {
+    const atividades = []
+
+    // Últimos clientes cadastrados
+    const ultimosClientes = await prisma.cliente.findMany({
+      take: 3,
+      orderBy: { criadoEm: 'desc' },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        criadoEm: true
+      }
+    })
+
+    ultimosClientes.forEach(cliente => {
+      atividades.push({
+        id: `cliente-${cliente.id}`,
+        tipo: 'cliente',
+        acao: 'CADASTRO',
+        descricao: `${cliente.nome} se cadastrou`,
+        data: cliente.criadoEm,
+        usuario: cliente.nome
+      })
+    })
+
+    // Últimos estabelecimentos cadastrados
+    const ultimosEstabelecimentos = await prisma.estabelecimento.findMany({
+      take: 3,
+      orderBy: { criadoEm: 'desc' },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        categoria: true,
+        criadoEm: true
+      }
+    })
+
+    ultimosEstabelecimentos.forEach(estabelecimento => {
+      atividades.push({
+        id: `estabelecimento-${estabelecimento.id}`,
+        tipo: 'estabelecimento',
+        acao: 'CADASTRO',
+        descricao: `${estabelecimento.nome} (${estabelecimento.categoria}) se cadastrou`,
+        data: estabelecimento.criadoEm,
+        usuario: estabelecimento.nome
+      })
+    })
+
+    // Últimos agendamentos
+    const ultimosAgendamentos = await prisma.agendamento.findMany({
+      take: 3,
+      orderBy: { criadoEm: 'desc' },
+      include: {
+        cliente: { select: { nome: true } },
+        estabelecimento: { select: { nome: true } },
+        servico: { select: { nome: true } }
+      }
+    })
+
+    ultimosAgendamentos.forEach(agendamento => {
+      atividades.push({
+        id: `agendamento-${agendamento.id}`,
+        tipo: 'agendamento',
+        acao: 'CRIACAO',
+        descricao: `${agendamento.cliente.nome} agendou ${agendamento.servico.nome} em ${agendamento.estabelecimento.nome}`,
+        data: agendamento.criadoEm,
+        usuario: agendamento.cliente.nome
+      })
+    })
+
+    // Ordenar por data e pegar as 10 mais recentes
+    const atividadesOrdenadas = atividades
+      .sort((a, b) => new Date(b.data) - new Date(a.data))
+      .slice(0, 10)
+
+    res.json({ atividades: atividadesOrdenadas })
+  } catch (error) {
+    console.error('Erro ao obter atividade recente:', error)
+    res.status(500).json({ error: 'Erro ao obter atividade recente' })
+  }
+}
+
 export const getDashboardStats = async (req, res) => {
   try {
     const [
@@ -257,6 +442,46 @@ export const deleteCliente = async (req, res) => {
   } catch (error) {
     console.error('Erro ao deletar cliente:', error)
     res.status(500).json({ error: 'Erro ao deletar cliente' })
+  }
+}
+
+// Aprovar estabelecimento
+export const aprovarEstabelecimento = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const estabelecimento = await prisma.estabelecimento.update({
+      where: { id },
+      data: { ativo: true }
+    })
+
+    res.json({ 
+      message: 'Estabelecimento aprovado com sucesso',
+      estabelecimento 
+    })
+  } catch (error) {
+    console.error('Erro ao aprovar estabelecimento:', error)
+    res.status(500).json({ error: 'Erro ao aprovar estabelecimento' })
+  }
+}
+
+// Rejeitar estabelecimento
+export const rejeitarEstabelecimento = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const estabelecimento = await prisma.estabelecimento.update({
+      where: { id },
+      data: { ativo: false }
+    })
+
+    res.json({ 
+      message: 'Estabelecimento rejeitado',
+      estabelecimento 
+    })
+  } catch (error) {
+    console.error('Erro ao rejeitar estabelecimento:', error)
+    res.status(500).json({ error: 'Erro ao rejeitar estabelecimento' })
   }
 }
 
@@ -630,6 +855,346 @@ export const deleteAdmin = async (req, res) => {
   } catch (error) {
     console.error('Erro ao deletar admin:', error)
     res.status(500).json({ error: 'Erro ao deletar admin' })
+  }
+}
+
+// =====================================================
+// ESTATÍSTICAS ESPECÍFICAS
+// =====================================================
+
+// Estatísticas de estabelecimentos
+export const getEstatisticasEstabelecimentos = async (req, res) => {
+  try {
+    const [
+      totalEstabelecimentos,
+      estabelecimentosAtivos,
+      estabelecimentosPendentes,
+      receitaTotal,
+      topCategoria,
+      mediaAvaliacao,
+      totalAgendamentos
+    ] = await Promise.all([
+      prisma.estabelecimento.count().catch(() => 0),
+      prisma.estabelecimento.count({ where: { ativo: true } }).catch(() => 0),
+      prisma.estabelecimento.count({ where: { ativo: false } }).catch(() => 0),
+      prisma.agendamento.aggregate({
+        where: { status: 'CONCLUIDO' },
+        _sum: { valorTotal: true }
+      }).then(result => result._sum.valorTotal || 0).catch(() => 0),
+      prisma.estabelecimento.groupBy({
+        by: ['categoria'],
+        _count: true,
+        orderBy: { _count: { categoria: 'desc' } },
+        take: 1
+      }).then(result => result[0]?.categoria || 'N/A').catch(() => 'N/A'),
+      prisma.avaliacao.aggregate({
+        _avg: { nota: true }
+      }).then(result => result._avg.nota || 0).catch(() => 0),
+      prisma.agendamento.count().catch(() => 0)
+    ])
+
+    // Calcular crescimento
+    const mesAtual = new Date()
+    mesAtual.setDate(1)
+    mesAtual.setHours(0, 0, 0, 0)
+
+    const mesPassado = new Date(mesAtual)
+    mesPassado.setMonth(mesPassado.getMonth() - 1)
+
+    const [estabelecimentosMesAtual, estabelecimentosMesPassado] = await Promise.all([
+      prisma.estabelecimento.count({
+        where: { criadoEm: { gte: mesAtual } }
+      }).catch(() => 0),
+      prisma.estabelecimento.count({
+        where: {
+          criadoEm: {
+            gte: mesPassado,
+            lt: mesAtual
+          }
+        }
+      }).catch(() => 0)
+    ])
+
+    const crescimentoEstabelecimentos = estabelecimentosMesPassado > 0
+      ? ((estabelecimentosMesAtual - estabelecimentosMesPassado) / estabelecimentosMesPassado * 100).toFixed(1)
+      : 0
+
+    res.json({
+      totalEstabelecimentos,
+      estabelecimentosAtivos,
+      estabelecimentosPendentes,
+      receitaTotal,
+      crescimentoEstabelecimentos: parseFloat(crescimentoEstabelecimentos),
+      topCategoria,
+      mediaAvaliacao: Math.round(mediaAvaliacao * 10) / 10,
+      totalAgendamentos
+    })
+  } catch (error) {
+    console.error('Erro ao obter estatísticas de estabelecimentos:', error)
+    res.status(500).json({ error: 'Erro ao obter estatísticas de estabelecimentos' })
+  }
+}
+
+// Estatísticas de logs
+export const getEstatisticasLogs = async (req, res) => {
+  try {
+    const hoje = new Date()
+    hoje.setHours(0, 0, 0, 0)
+    const amanha = new Date(hoje)
+    amanha.setDate(amanha.getDate() + 1)
+
+    const semanaAtras = new Date(hoje)
+    semanaAtras.setDate(semanaAtras.getDate() - 7)
+
+    const [
+      totalLogs,
+      logsHoje,
+      logsSemana,
+      adminsAtivos,
+      acoesMaisComuns,
+      entidadesMaisAfetadas,
+      logsPorHora,
+      taxaErro
+    ] = await Promise.all([
+      prisma.logAtividade.count().catch(() => 0),
+      prisma.logAtividade.count({
+        where: {
+          criadoEm: {
+            gte: hoje,
+            lt: amanha
+          }
+        }
+      }).catch(() => 0),
+      prisma.logAtividade.count({
+        where: {
+          criadoEm: {
+            gte: semanaAtras
+          }
+        }
+      }).catch(() => 0),
+      prisma.admin.count({ where: { ativo: true } }).catch(() => 0),
+      prisma.logAtividade.groupBy({
+        by: ['acao'],
+        _count: true,
+        orderBy: { _count: { acao: 'desc' } },
+        take: 5
+      }).catch(() => []),
+      prisma.logAtividade.groupBy({
+        by: ['entidade'],
+        _count: true,
+        orderBy: { _count: { entidade: 'desc' } },
+        take: 5
+      }).catch(() => []),
+      // Simular logs por hora
+      Promise.resolve([
+        { hora: '00:00', quantidade: 2 },
+        { hora: '01:00', quantidade: 1 },
+        { hora: '02:00', quantidade: 0 },
+        { hora: '03:00', quantidade: 1 },
+        { hora: '04:00', quantidade: 0 },
+        { hora: '05:00', quantidade: 1 },
+        { hora: '06:00', quantidade: 3 },
+        { hora: '07:00', quantidade: 5 },
+        { hora: '08:00', quantidade: 8 },
+        { hora: '09:00', quantidade: 12 },
+        { hora: '10:00', quantidade: 15 },
+        { hora: '11:00', quantidade: 18 },
+        { hora: '12:00', quantidade: 14 },
+        { hora: '13:00', quantidade: 16 },
+        { hora: '14:00', quantidade: 20 },
+        { hora: '15:00', quantidade: 22 },
+        { hora: '16:00', quantidade: 19 },
+        { hora: '17:00', quantidade: 17 },
+        { hora: '18:00', quantidade: 13 },
+        { hora: '19:00', quantidade: 9 },
+        { hora: '20:00', quantidade: 6 },
+        { hora: '21:00', quantidade: 4 },
+        { hora: '22:00', quantidade: 3 },
+        { hora: '23:00', quantidade: 2 }
+      ]),
+      // Calcular taxa de erro
+      prisma.logAtividade.count({
+        where: { status: 'error' }
+      }).then(erros => {
+        return prisma.logAtividade.count().then(total => {
+          return total > 0 ? ((erros / total) * 100).toFixed(1) : 0
+        })
+      }).catch(() => 0)
+    ])
+
+    res.json({
+      totalLogs,
+      logsHoje,
+      logsSemana,
+      adminsAtivos,
+      acoesMaisComuns: acoesMaisComuns.map(item => ({
+        acao: item.acao,
+        quantidade: item._count.acao
+      })),
+      entidadesMaisAfetadas: entidadesMaisAfetadas.map(item => ({
+        nome: item.entidade,
+        quantidade: item._count.entidade,
+        acoes: item._count.entidade
+      })),
+      logsPorHora,
+      taxaErro: parseFloat(taxaErro)
+    })
+  } catch (error) {
+    console.error('Erro ao obter estatísticas de logs:', error)
+    res.status(500).json({ error: 'Erro ao obter estatísticas de logs' })
+  }
+}
+
+// =====================================================
+// EXPORTAÇÃO
+// =====================================================
+
+// Exportar estabelecimentos
+export const exportarEstabelecimentos = async (req, res) => {
+  try {
+    const { formato = 'csv' } = req.query
+
+    const estabelecimentos = await prisma.estabelecimento.findMany({
+      include: {
+        _count: {
+          select: {
+            agendamentos: true,
+            servicos: true,
+            avaliacoes: true
+          }
+        },
+        assinatura: {
+          include: { plano: true }
+        }
+      }
+    })
+
+    if (formato === 'csv') {
+      const csvHeader = 'Nome,Email,Categoria,Plano,Agendamentos,Servicos,Avaliacoes,Status,CriadoEm\n'
+      const csvData = estabelecimentos.map(e => 
+        `"${e.nome}","${e.email}","${e.categoria}","${e.assinatura?.plano?.nome || 'FREE'}","${e._count.agendamentos}","${e._count.servicos}","${e._count.avaliacoes}","${e.ativo ? 'Ativo' : 'Inativo'}","${e.criadoEm.toISOString()}"`
+      ).join('\n')
+
+      res.setHeader('Content-Type', 'text/csv')
+      res.setHeader('Content-Disposition', 'attachment; filename=estabelecimentos.csv')
+      res.send(csvHeader + csvData)
+    } else if (formato === 'excel') {
+      // Para Excel, retornar JSON que pode ser convertido no frontend
+      res.json({
+        estabelecimentos: estabelecimentos.map(e => ({
+          nome: e.nome,
+          email: e.email,
+          categoria: e.categoria,
+          plano: e.assinatura?.plano?.nome || 'FREE',
+          agendamentos: e._count.agendamentos,
+          servicos: e._count.servicos,
+          avaliacoes: e._count.avaliacoes,
+          status: e.ativo ? 'Ativo' : 'Inativo',
+          criadoEm: e.criadoEm
+        }))
+      })
+    } else {
+      res.status(400).json({ error: 'Formato não suportado' })
+    }
+  } catch (error) {
+    console.error('Erro ao exportar estabelecimentos:', error)
+    res.status(500).json({ error: 'Erro ao exportar estabelecimentos' })
+  }
+}
+
+// Exportar relatório
+export const exportarRelatorio = async (req, res) => {
+  try {
+    const { formato = 'pdf' } = req.body
+
+    // Buscar dados do relatório
+    const dados = await getRelatoriosAvancados(req, res)
+    
+    if (formato === 'pdf') {
+      // Para PDF, retornar JSON que pode ser convertido no frontend
+      res.json({
+        tipo: 'pdf',
+        dados: dados,
+        geradoEm: new Date().toISOString()
+      })
+    } else if (formato === 'excel') {
+      res.json({
+        tipo: 'excel',
+        dados: dados,
+        geradoEm: new Date().toISOString()
+      })
+    } else if (formato === 'csv') {
+      res.json({
+        tipo: 'csv',
+        dados: dados,
+        geradoEm: new Date().toISOString()
+      })
+    } else {
+      res.status(400).json({ error: 'Formato não suportado' })
+    }
+  } catch (error) {
+    console.error('Erro ao exportar relatório:', error)
+    res.status(500).json({ error: 'Erro ao exportar relatório' })
+  }
+}
+
+// Exportar logs
+export const exportarLogs = async (req, res) => {
+  try {
+    const { formato = 'csv', filtros = {}, selectedLogs = [] } = req.body
+
+    let where = {}
+    if (filtros.acao) where.acao = filtros.acao
+    if (filtros.entidade) where.entidade = filtros.entidade
+    if (filtros.admin) where.adminId = filtros.admin
+    if (filtros.dataInicio && filtros.dataFim) {
+      where.criadoEm = {
+        gte: new Date(filtros.dataInicio),
+        lte: new Date(filtros.dataFim)
+      }
+    }
+
+    const logs = await prisma.logAtividade.findMany({
+      where: selectedLogs.length > 0 ? { id: { in: selectedLogs } } : where,
+      include: {
+        admin: {
+          select: {
+            id: true,
+            nome: true,
+            email: true
+          }
+        }
+      },
+      orderBy: { criadoEm: 'desc' }
+    })
+
+    if (formato === 'csv') {
+      const csvHeader = 'Data,Acao,Entidade,Admin,IP,Status,Detalhes\n'
+      const csvData = logs.map(log => 
+        `"${log.criadoEm.toISOString()}","${log.acao}","${log.entidade}","${log.admin?.nome || 'Sistema'}","${log.ipAddress || 'N/A'}","${log.status || 'success'}","${log.detalhes || ''}"`
+      ).join('\n')
+
+      res.setHeader('Content-Type', 'text/csv')
+      res.setHeader('Content-Disposition', 'attachment; filename=logs_auditoria.csv')
+      res.send(csvHeader + csvData)
+    } else if (formato === 'excel') {
+      res.json({
+        logs: logs.map(log => ({
+          data: log.criadoEm,
+          acao: log.acao,
+          entidade: log.entidade,
+          admin: log.admin?.nome || 'Sistema',
+          ip: log.ipAddress || 'N/A',
+          status: log.status || 'success',
+          detalhes: log.detalhes || ''
+        }))
+      })
+    } else {
+      res.status(400).json({ error: 'Formato não suportado' })
+    }
+  } catch (error) {
+    console.error('Erro ao exportar logs:', error)
+    res.status(500).json({ error: 'Erro ao exportar logs' })
   }
 }
 

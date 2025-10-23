@@ -171,6 +171,107 @@ const adminService = {
       headers: { Authorization: `Bearer ${token}` }
     })
     return response.data
+  },
+
+  // =====================================================
+  // ESTATÍSTICAS E RELATÓRIOS
+  // =====================================================
+
+  getEstatisticasGerais: async () => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.get('/admin/estatisticas-gerais', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return response.data
+  },
+
+  getAtividadeRecente: async () => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.get('/admin/atividade-recente', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return response.data
+  },
+
+  getEstatisticasEstabelecimentos: async () => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.get('/admin/estatisticas-estabelecimentos', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return response.data
+  },
+
+  getEstatisticasLogs: async () => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.get('/admin/estatisticas-logs', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return response.data
+  },
+
+  getRelatoriosAvancados: async (params = {}) => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.get('/admin/relatorios-avancados', {
+      headers: { Authorization: `Bearer ${token}` },
+      params
+    })
+    return response.data
+  },
+
+  // =====================================================
+  // EXPORTAÇÃO
+  // =====================================================
+
+  exportarEstabelecimentos: async (formato = 'csv') => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.get(`/admin/exportar-estabelecimentos?formato=${formato}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      responseType: formato === 'csv' ? 'blob' : 'json'
+    })
+    return response.data
+  },
+
+  exportarRelatorio: async (formato = 'pdf', filtros = {}) => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.post('/admin/exportar-relatorio', 
+      { formato, ...filtros },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    return response.data
+  },
+
+  exportarLogs: async (formato = 'csv', filtros = {}, selectedLogs = []) => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.post('/admin/exportar-logs', 
+      { formato, filtros, selectedLogs },
+      { 
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: formato === 'csv' ? 'blob' : 'json'
+      }
+    )
+    return response.data
+  },
+
+  // =====================================================
+  // FUNÇÕES ADICIONAIS PARA ESTABELECIMENTOS
+  // =====================================================
+
+  aprovarEstabelecimento: async (id) => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.patch(`/admin/estabelecimentos/${id}/aprovar`, 
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    return response.data
+  },
+
+  rejeitarEstabelecimento: async (id) => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.patch(`/admin/estabelecimentos/${id}/rejeitar`, 
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    return response.data
   }
 }
 

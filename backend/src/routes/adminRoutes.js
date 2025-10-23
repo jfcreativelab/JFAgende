@@ -21,6 +21,8 @@ router.get('/auth/profile', isAdmin, adminAuthController.getProfile)
 
 // Dashboard e Estatísticas
 router.get('/dashboard/stats', isAdmin, adminController.getDashboardStats)
+router.get('/estatisticas-gerais', isAdmin, adminController.getEstatisticasGerais)
+router.get('/atividade-recente', isAdmin, adminController.getAtividadeRecente)
 
 // Gerenciamento de Clientes
 router.get('/clientes', isAdmin, adminController.getAllClientes)
@@ -33,6 +35,18 @@ router.delete(
 
 // Gerenciamento de Estabelecimentos
 router.get('/estabelecimentos', isAdmin, adminController.getAllEstabelecimentos)
+router.patch(
+  '/estabelecimentos/:id/aprovar',
+  isAdmin,
+  logAdminAction('APPROVE_ESTABELECIMENTO', 'Estabelecimento'),
+  adminController.aprovarEstabelecimento
+)
+router.patch(
+  '/estabelecimentos/:id/rejeitar',
+  isAdmin,
+  logAdminAction('REJECT_ESTABELECIMENTO', 'Estabelecimento'),
+  adminController.rejeitarEstabelecimento
+)
 router.delete(
   '/estabelecimentos/:id',
   isAdmin,
@@ -66,6 +80,15 @@ router.delete(
 
 // Relatórios Avançados
 router.get('/relatorios-avancados', isAdmin, adminController.getRelatoriosAvancados)
+
+// Estatísticas específicas
+router.get('/estatisticas-estabelecimentos', isAdmin, adminController.getEstatisticasEstabelecimentos)
+router.get('/estatisticas-logs', isAdmin, adminController.getEstatisticasLogs)
+
+// Exportação
+router.post('/exportar-estabelecimentos', isAdmin, adminController.exportarEstabelecimentos)
+router.post('/exportar-relatorio', isAdmin, adminController.exportarRelatorio)
+router.post('/exportar-logs', isAdmin, adminController.exportarLogs)
 
 // =====================================================
 // ROTAS DE SUPER ADMIN (Gerenciamento de Admins)
