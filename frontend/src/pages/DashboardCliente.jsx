@@ -56,6 +56,7 @@ const DashboardCliente = () => {
     { value: 'estetica', label: 'Estética' },
     { value: 'bronze', label: 'Bronzeamento' },
     { value: 'ozonioterapia', label: 'Ozonioterapia' },
+    { value: 'outros', label: 'Outros' },
   ]
 
   const opcoesOrdenacao = [

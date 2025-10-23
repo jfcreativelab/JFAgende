@@ -32,7 +32,8 @@ const AdvancedSearch = ({ onSearch, onFilterChange, initialFilters = {} }) => {
     { value: 'depilacao', label: 'Depilação' },
     { value: 'estetica', label: 'Estética' },
     { value: 'bronze', label: 'Bronzeamento' },
-    { value: 'ozonioterapia', label: 'Ozonioterapia' }
+    { value: 'ozonioterapia', label: 'Ozonioterapia' },
+    { value: 'outros', label: 'Outros' }
   ]
 
   const avaliacoes = [

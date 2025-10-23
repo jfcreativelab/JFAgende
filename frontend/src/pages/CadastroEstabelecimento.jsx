@@ -37,6 +37,7 @@ const CadastroEstabelecimento = () => {
     { value: 'estetica', label: 'Estética' },
     { value: 'bronze', label: 'Bronzeamento' },
     { value: 'ozonioterapia', label: 'Ozonioterapia' },
+    { value: 'outros', label: 'Outros' },
   ]
 
   const handleChange = (e) => {
