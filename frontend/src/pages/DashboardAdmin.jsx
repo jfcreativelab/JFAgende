@@ -251,11 +251,17 @@ const DashboardAdmin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-100 dark:from-slate-900 dark:via-purple-900 dark:to-indigo-900">
+      {/* BANNER DE TESTE - VISUAL ULTRA PREMIUM */}
+      <div className="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 text-white text-center py-4 animate-pulse">
+        <h1 className="text-2xl font-black">🎉 PAINEL ADMIN ULTRA PREMIUM ATIVADO! 🎉</h1>
+        <p className="text-lg font-bold">✨ Visual completamente redesenhado com gradientes vibrantes! ✨</p>
+      </div>
+      
       {/* Header Premium */}
       <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 shadow-2xl border-b border-purple-200 dark:border-purple-700 sticky top-0 z-40">
         <div className="px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div>
+        <div className="flex items-center justify-between">
+          <div>
               <h1 className="text-4xl font-black text-white drop-shadow-lg">
                 🚀 PAINEL ADMIN PREMIUM
               </h1>
@@ -265,16 +271,16 @@ const DashboardAdmin = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              <Button
+            <Button
                 onClick={carregarDados}
-                variant="outline"
+              variant="outline"
                 size="sm"
                 className="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border-white/20 dark:border-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-800/80"
-              >
+            >
                 <RefreshCw size={16} />
-                Atualizar
-              </Button>
-              
+              Atualizar
+            </Button>
+            
               <div className="flex items-center gap-2 px-3 py-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-sm font-medium text-green-700 dark:text-green-300">
@@ -283,8 +289,8 @@ const DashboardAdmin = () => {
               </div>
             </div>
           </div>
+          </div>
         </div>
-      </div>
 
       <div className="p-6 space-y-8">
         {/* Métricas Principais */}
@@ -340,7 +346,7 @@ const DashboardAdmin = () => {
                   <ArrowUpRight className="w-5 h-5 text-green-300 animate-bounce" />
                   <span className="text-green-300 text-lg font-bold ml-2">
                     +{stats.crescimentoAgendamentos}% 📈
-                  </span>
+                      </span>
                 </div>
               </div>
               <div className="p-4 bg-white/30 rounded-2xl shadow-lg">
@@ -375,12 +381,12 @@ const DashboardAdmin = () => {
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             <Activity className="w-6 h-6 text-blue-600" />
             Status do Sistema
-          </h3>
+            </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl">
               <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3">
                 <CheckCircle className="w-6 h-6 text-white" />
-              </div>
+                    </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Status</p>
               <p className="text-lg font-bold text-green-600 capitalize">{systemHealth.status}</p>
             </div>
@@ -388,35 +394,35 @@ const DashboardAdmin = () => {
             <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl">
               <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Clock className="w-6 h-6 text-white" />
-              </div>
+                    </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Uptime</p>
               <p className="text-lg font-bold text-blue-600">{systemHealth.uptime}</p>
-            </div>
-            
+        </div>
+
             <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl">
               <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Zap className="w-6 h-6 text-white" />
               </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Tempo de Resposta</p>
               <p className="text-lg font-bold text-purple-600">{systemHealth.responseTime}</p>
-            </div>
-            
+              </div>
+              
             <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl">
               <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Server className="w-6 h-6 text-white" />
               </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">CPU</p>
               <p className="text-lg font-bold text-orange-600">{systemHealth.cpuUsage}</p>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
 
         {/* Funcionalidades do Painel */}
         <Card className="p-8 bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-slate-800 dark:via-purple-900 dark:to-pink-900 backdrop-blur-xl border-2 border-purple-200 dark:border-purple-700 shadow-2xl">
           <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 mb-8 flex items-center gap-3">
             <Settings className="w-8 h-8 text-purple-600 animate-spin" />
             🚀 FUNCIONALIDADES ADMINISTRATIVAS PREMIUM
-          </h3>
+              </h3>
           
           {/* Primeira linha de funcionalidades */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -451,8 +457,8 @@ const DashboardAdmin = () => {
               <Database className="w-10 h-10 animate-pulse" />
               <span className="text-lg font-black">📋 Logs</span>
             </Button>
-          </div>
-
+              </div>
+              
           {/* Segunda linha de funcionalidades */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <Button
@@ -486,8 +492,8 @@ const DashboardAdmin = () => {
               <Megaphone className="w-8 h-8" />
               <span className="text-sm font-semibold">Marketing</span>
             </Button>
-          </div>
-
+              </div>
+              
           {/* Terceira linha de funcionalidades */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Button
@@ -521,9 +527,9 @@ const DashboardAdmin = () => {
                   Em breve...
                 </span>
               </div>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
 
         {/* Atividade Recente */}
         <Card className="p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-white/20 dark:border-slate-700/50 shadow-xl">
@@ -542,16 +548,16 @@ const DashboardAdmin = () => {
                   <div className="flex-1">
                     <p className="font-medium text-gray-900 dark:text-white">{activity.message}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(activity.timestamp)}</p>
-                  </div>
+              </div>
                   <Badge color={activity.color} size="sm">
                     {activity.type.replace('_', ' ')}
                   </Badge>
-                </div>
+              </div>
               )
             })}
-          </div>
-        </Card>
-      </div>
+            </div>
+          </Card>
+              </div>
 
       {/* Toast */}
       {toast && (
@@ -563,7 +569,7 @@ const DashboardAdmin = () => {
           />
         </div>
       )}
-    </div>
+      </div>
   )
 }
 
