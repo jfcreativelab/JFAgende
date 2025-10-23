@@ -48,6 +48,7 @@ import {
   TrendingUp,
   TrendingDown,
   Zap,
+  Upload,
   Target,
   Award,
   Globe2,
