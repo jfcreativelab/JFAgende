@@ -175,14 +175,70 @@ function App() {
 
           {/* Rotas Admin */}
           <Route path="/admin/login" element={<LoginAdmin />} />
-          <Route path="/admin/dashboard" element={<DashboardAdmin />} />
-          <Route path="/admin/clientes" element={<GerenciarUsuarios />} />
-          <Route path="/admin/estabelecimentos" element={<GerenciarUsuarios />} />
-          <Route path="/admin/planos" element={<GerenciarPlanos />} />
-          <Route path="/admin/relatorios" element={<RelatoriosAvancados />} />
-          <Route path="/admin/logs" element={<LogsAuditoria />} />
-          <Route path="/admin/admins" element={<GerenciarAdmins />} />
-          <Route path="/admin/configuracoes" element={<ConfiguracoesAdmin />} />
+          <Route 
+            path="/admin/dashboard" 
+            element={
+              <ProtectedRoute tipo="admin">
+                <DashboardAdmin />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/clientes" 
+            element={
+              <ProtectedRoute tipo="admin">
+                <GerenciarUsuarios />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/estabelecimentos" 
+            element={
+              <ProtectedRoute tipo="admin">
+                <GerenciarUsuarios />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/planos" 
+            element={
+              <ProtectedRoute tipo="admin">
+                <GerenciarPlanos />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/relatorios" 
+            element={
+              <ProtectedRoute tipo="admin">
+                <RelatoriosAvancados />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/logs" 
+            element={
+              <ProtectedRoute tipo="admin">
+                <LogsAuditoria />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/admins" 
+            element={
+              <ProtectedRoute tipo="admin">
+                <GerenciarAdmins />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/configuracoes" 
+            element={
+              <ProtectedRoute tipo="admin">
+                <ConfiguracoesAdmin />
+              </ProtectedRoute>
+            } 
+          />
           {/* Notificações (cliente/estabelecimento) */}
           <Route path="/notificacoes" element={<Notificacoes />} />
 
