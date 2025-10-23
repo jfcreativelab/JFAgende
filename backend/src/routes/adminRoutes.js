@@ -82,6 +82,7 @@ router.delete(
 router.get('/relatorios-avancados', isAdmin, adminController.getRelatoriosAvancados)
 
 // Estatísticas específicas
+router.get('/estatisticas-usuarios', isAdmin, adminController.getEstatisticasUsuarios)
 router.get('/estatisticas-estabelecimentos', isAdmin, adminController.getEstatisticasEstabelecimentos)
 router.get('/estatisticas-logs', isAdmin, adminController.getEstatisticasLogs)
 

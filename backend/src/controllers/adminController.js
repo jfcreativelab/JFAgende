@@ -862,6 +862,112 @@ export const deleteAdmin = async (req, res) => {
 // ESTATÍSTICAS ESPECÍFICAS
 // =====================================================
 
+// Estatísticas de usuários
+export const getEstatisticasUsuarios = async (req, res) => {
+  try {
+    const [
+      totalUsuarios,
+      usuariosAtivos,
+      usuariosInativos,
+      novosUsuariosHoje,
+      novosUsuariosSemana,
+      usuariosPorTipo
+    ] = await Promise.all([
+      prisma.cliente.count().catch(() => 0),
+      prisma.cliente.count({ where: { ativo: true } }).catch(() => 0),
+      prisma.cliente.count({ where: { ativo: false } }).catch(() => 0),
+      prisma.cliente.count({
+        where: {
+          criadoEm: {
+            gte: new Date(new Date().setHours(0, 0, 0, 0)),
+            lt: new Date(new Date().setHours(23, 59, 59, 999))
+          }
+        }
+      }).catch(() => 0),
+      prisma.cliente.count({
+        where: {
+          criadoEm: {
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+          }
+        }
+      }).catch(() => 0),
+      prisma.cliente.groupBy({
+        by: ['tipo'],
+        _count: true
+      }).catch(() => [])
+    ])
+
+    // Calcular crescimento mensal
+    const mesAtual = new Date()
+    mesAtual.setDate(1)
+    mesAtual.setHours(0, 0, 0, 0)
+
+    const mesPassado = new Date(mesAtual)
+    mesPassado.setMonth(mesPassado.getMonth() - 1)
+
+    const [usuariosMesAtual, usuariosMesPassado] = await Promise.all([
+      prisma.cliente.count({
+        where: { criadoEm: { gte: mesAtual } }
+      }).catch(() => 0),
+      prisma.cliente.count({
+        where: {
+          criadoEm: {
+            gte: mesPassado,
+            lt: mesAtual
+          }
+        }
+      }).catch(() => 0)
+    ])
+
+    const crescimentoUsuarios = usuariosMesPassado > 0
+      ? ((usuariosMesAtual - usuariosMesPassado) / usuariosMesPassado * 100).toFixed(1)
+      : 0
+
+    // Dados por mês (últimos 6 meses)
+    const dadosPorMes = []
+    for (let i = 5; i >= 0; i--) {
+      const dataMes = new Date()
+      dataMes.setMonth(dataMes.getMonth() - i)
+      dataMes.setDate(1)
+      dataMes.setHours(0, 0, 0, 0)
+
+      const proximoMes = new Date(dataMes)
+      proximoMes.setMonth(proximoMes.getMonth() + 1)
+
+      const usuariosMes = await prisma.cliente.count({
+        where: {
+          criadoEm: {
+            gte: dataMes,
+            lt: proximoMes
+          }
+        }
+      }).catch(() => 0)
+
+      dadosPorMes.push({
+        mes: dataMes.toLocaleDateString('pt-BR', { month: 'short' }),
+        usuarios: usuariosMes
+      })
+    }
+
+    res.json({
+      totalUsuarios,
+      usuariosAtivos,
+      usuariosInativos,
+      novosUsuariosHoje,
+      novosUsuariosSemana,
+      crescimentoUsuarios: parseFloat(crescimentoUsuarios),
+      usuariosPorTipo: usuariosPorTipo.map(item => ({
+        tipo: item.tipo || 'cliente',
+        quantidade: item._count.tipo
+      })),
+      dadosPorMes
+    })
+  } catch (error) {
+    console.error('Erro ao obter estatísticas de usuários:', error)
+    res.status(500).json({ error: 'Erro ao obter estatísticas de usuários' })
+  }
+}
+
 // Estatísticas de estabelecimentos
 export const getEstatisticasEstabelecimentos = async (req, res) => {
   try {
