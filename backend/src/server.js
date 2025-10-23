@@ -22,6 +22,7 @@ import planoRoutes from './routes/planoRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import pagamentoRoutes from './routes/pagamentoRoutes.js';
 import setupRoutes from './routes/setupRoutes.js';
+import whatsappRoutes from './routes/whatsappRoutes.js';
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -91,6 +92,7 @@ app.use('/api/planos', planoRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/pagamento', pagamentoRoutes);
 app.use('/api/setup', setupRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
 
 // Servir arquivos estáticos (imagens do portfólio) com cache
 app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {

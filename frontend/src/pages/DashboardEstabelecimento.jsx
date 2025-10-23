@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LogOut, Calendar as CalendarIcon, Package, User, Plus, Edit2, Trash2, Clock, DollarSign, Check, X, BarChart3, CalendarDays, Image as ImageIcon, TrendingUp, TrendingDown, Users, CheckCircle, XCircle, AlertCircle, Wallet, CreditCard, PieChart, ArrowUpCircle, ArrowDownCircle } from 'lucide-react'
+import { LogOut, Calendar as CalendarIcon, Package, User, Plus, Edit2, Trash2, Clock, DollarSign, Check, X, BarChart3, CalendarDays, Image as ImageIcon, TrendingUp, TrendingDown, Users, CheckCircle, XCircle, AlertCircle, Wallet, CreditCard, PieChart, ArrowUpCircle, ArrowDownCircle, Smartphone } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useNotifications } from '../hooks/useNotifications'
 import { startOfMonth, endOfMonth, addMonths } from 'date-fns'
@@ -1002,6 +1002,30 @@ const DashboardEstabelecimento = () => {
                 </div>
               </Card>
             </div>
+
+            {/* WhatsApp Admin */}
+            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-green-500 rounded-xl">
+                  <Smartphone className="text-white" size={24} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                    📱 Mensagens Automáticas WhatsApp
+                  </h3>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                    Configure mensagens automáticas para confirmação de agendamentos e lembretes para seus clientes.
+                  </p>
+                  <Button
+                    onClick={() => navigate('/estabelecimento/whatsapp')}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <Smartphone size={16} />
+                    Configurar WhatsApp
+                  </Button>
+                </div>
+              </div>
+            </Card>
 
             {/* Resumo de Status */}
             <Card>

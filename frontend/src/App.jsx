@@ -28,6 +28,7 @@ import GerenciarPlanos from './pages/GerenciarPlanos'
 import LogsAuditoria from './pages/LogsAuditoria'
 import GerenciarAdmins from './pages/GerenciarAdmins'
 import ConfiguracoesAdmin from './pages/ConfiguracoesAdmin'
+import WhatsAppAdmin from './pages/WhatsAppAdmin'
 import RelatoriosAvancados from './pages/RelatoriosAvancados'
 import Notificacoes from './pages/Notificacoes'
 import PagamentoSucesso from './pages/PagamentoSucesso'
@@ -157,6 +158,14 @@ function App() {
             element={
               <ProtectedRoute tipo="estabelecimento">
                 <GestaoEquipe />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/estabelecimento/whatsapp"
+            element={
+              <ProtectedRoute tipo="estabelecimento">
+                <WhatsAppAdmin />
               </ProtectedRoute>
             }
           />

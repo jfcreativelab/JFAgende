@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import whatsappService from '../services/whatsappService.js';
 
 const prisma = new PrismaClient();
 
@@ -99,6 +100,33 @@ export const createAgendamento = async (req, res) => {
       status: agendamento.status,
       pagamentoAntecipado: agendamento.pagamentoAntecipado
     });
+
+    // Enviar confirmação via WhatsApp (apenas se não for pagamento antecipado)
+    if (!req.body.pagamentoAntecipado) {
+      try {
+        const whatsappData = {
+          clienteNome: agendamento.cliente.nome,
+          clienteTelefone: agendamento.cliente.telefone,
+          estabelecimentoNome: agendamento.estabelecimento.nome,
+          servicoNome: agendamento.servico.nome,
+          dataHora: agendamento.dataHora,
+          observacoes: agendamento.observacoes,
+          enderecoEstabelecimento: agendamento.estabelecimento.endereco
+        };
+
+        console.log('📱 Enviando confirmação WhatsApp...');
+        const whatsappResult = await whatsappService.sendAppointmentConfirmation(whatsappData);
+        
+        if (whatsappResult.success) {
+          console.log('✅ Confirmação WhatsApp enviada com sucesso');
+        } else {
+          console.log('⚠️ Erro ao enviar confirmação WhatsApp:', whatsappResult.error);
+        }
+      } catch (whatsappError) {
+        console.error('❌ Erro ao enviar confirmação WhatsApp:', whatsappError);
+        // Não falha o agendamento se o WhatsApp falhar
+      }
+    }
 
     res.status(201).json({
       message: 'Agendamento criado com sucesso',
