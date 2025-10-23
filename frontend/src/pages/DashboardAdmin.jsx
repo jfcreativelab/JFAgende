@@ -37,7 +37,8 @@ import {
   Cpu,
   HardDrive,
   Wifi,
-  Zap
+  Zap,
+  Megaphone
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import Card from '../components/Card'
@@ -550,14 +551,49 @@ const DashboardAdmin = () => {
                 <span className="text-sm font-medium">Monitoramento</span>
               </Button>
               
-              <Button
-                onClick={() => navigate('/admin/logs')}
-                className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
-              >
-                <Database className="w-6 h-6" />
-                <span className="text-sm font-medium">Logs</span>
-              </Button>
-            </div>
+      <Button
+        onClick={() => navigate('/admin/logs')}
+        className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700"
+      >
+        <Database className="w-6 h-6" />
+        <span className="text-sm font-medium">Logs</span>
+      </Button>
+    </div>
+
+    {/* Segunda linha de funcionalidades */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <Button
+        onClick={() => navigate('/admin/backup')}
+        className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700"
+      >
+        <HardDrive className="w-6 h-6" />
+        <span className="text-sm font-medium">Backup</span>
+      </Button>
+      
+      <Button
+        onClick={() => navigate('/admin/seguranca')}
+        className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
+      >
+        <Shield className="w-6 h-6" />
+        <span className="text-sm font-medium">Segurança</span>
+      </Button>
+      
+      <Button
+        onClick={() => navigate('/admin/financeiro')}
+        className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+      >
+        <DollarSign className="w-6 h-6" />
+        <span className="text-sm font-medium">Financeiro</span>
+      </Button>
+      
+      <Button
+        onClick={() => navigate('/admin/marketing')}
+        className="h-20 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-transform duration-200 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
+      >
+        <Megaphone className="w-6 h-6" />
+        <span className="text-sm font-medium">Marketing</span>
+      </Button>
+    </div>
           </div>
         </Card>
       </div>

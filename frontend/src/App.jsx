@@ -33,6 +33,10 @@ import RelatoriosAvancados from './pages/RelatoriosAvancados'
 import AnalyticsAdmin from './pages/AnalyticsAdmin'
 import NotificacoesAdmin from './pages/NotificacoesAdmin'
 import MonitoramentoAdmin from './pages/MonitoramentoAdmin'
+import BackupAdmin from './pages/BackupAdmin'
+import SegurancaAdmin from './pages/SegurancaAdmin'
+import FinanceiroAdmin from './pages/FinanceiroAdmin'
+import MarketingAdmin from './pages/MarketingAdmin'
 import Notificacoes from './pages/Notificacoes'
 import PagamentoSucesso from './pages/PagamentoSucesso'
 import PagamentoCancelado from './pages/PagamentoCancelado'
@@ -266,6 +270,38 @@ function App() {
       element={
         <ProtectedRoute tipo="admin">
           <MonitoramentoAdmin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/backup"
+      element={
+        <ProtectedRoute tipo="admin">
+          <BackupAdmin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/seguranca"
+      element={
+        <ProtectedRoute tipo="admin">
+          <SegurancaAdmin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/financeiro"
+      element={
+        <ProtectedRoute tipo="admin">
+          <FinanceiroAdmin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/marketing"
+      element={
+        <ProtectedRoute tipo="admin">
+          <MarketingAdmin />
         </ProtectedRoute>
       }
     />
