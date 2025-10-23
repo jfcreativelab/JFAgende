@@ -250,17 +250,17 @@ const DashboardAdmin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-100 dark:from-slate-900 dark:via-purple-900 dark:to-indigo-900">
       {/* Header Premium */}
-      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-white/20 dark:border-slate-700/50 sticky top-0 z-40">
-        <div className="px-6 py-4">
+      <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 shadow-2xl border-b border-purple-200 dark:border-purple-700 sticky top-0 z-40">
+        <div className="px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                Painel Administrativo
+              <h1 className="text-4xl font-black text-white drop-shadow-lg">
+                🚀 PAINEL ADMIN PREMIUM
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Bem-vindo, {user?.nome || 'Administrador'} • {new Date().toLocaleDateString('pt-BR')}
+              <p className="text-purple-100 mt-2 text-lg">
+                ✨ Bem-vindo, {user?.nome || 'Administrador'} • {new Date().toLocaleDateString('pt-BR')}
               </p>
             </div>
             
@@ -289,82 +289,82 @@ const DashboardAdmin = () => {
       <div className="p-6 space-y-8">
         {/* Métricas Principais */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+          <Card className="p-8 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 hover:rotate-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Total de Usuários</p>
-                <p className="text-3xl font-bold mt-2">
+                <p className="text-pink-100 text-lg font-bold">👥 Total de Usuários</p>
+                <p className="text-5xl font-black mt-3 drop-shadow-lg">
                   <AnimatedNumber value={stats.totalUsers} />
                 </p>
-                <div className="flex items-center mt-2">
-                  <ArrowUpRight className="w-4 h-4 text-green-300" />
-                  <span className="text-green-300 text-sm font-medium ml-1">
-                    +{stats.crescimentoUsuarios}%
+                <div className="flex items-center mt-3 bg-green-500/30 rounded-full px-3 py-1">
+                  <ArrowUpRight className="w-5 h-5 text-green-300 animate-bounce" />
+                  <span className="text-green-300 text-lg font-bold ml-2">
+                    +{stats.crescimentoUsuarios}% 📈
                   </span>
                 </div>
               </div>
-              <div className="p-3 bg-white/20 rounded-xl">
-                <Users className="w-8 h-8" />
+              <div className="p-4 bg-white/30 rounded-2xl shadow-lg">
+                <Users className="w-12 h-12 animate-pulse" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+          <Card className="p-8 bg-gradient-to-br from-green-500 via-teal-500 to-cyan-600 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 hover:-rotate-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-emerald-100 text-sm font-medium">Estabelecimentos</p>
-                <p className="text-3xl font-bold mt-2">
+                <p className="text-green-100 text-lg font-bold">🏢 Estabelecimentos</p>
+                <p className="text-5xl font-black mt-3 drop-shadow-lg">
                   <AnimatedNumber value={stats.totalEstabelecimentos} />
                 </p>
-                <div className="flex items-center mt-2">
-                  <ArrowUpRight className="w-4 h-4 text-green-300" />
-                  <span className="text-green-300 text-sm font-medium ml-1">
-                    +{stats.crescimentoEstabelecimentos}%
+                <div className="flex items-center mt-3 bg-green-500/30 rounded-full px-3 py-1">
+                  <ArrowUpRight className="w-5 h-5 text-green-300 animate-bounce" />
+                  <span className="text-green-300 text-lg font-bold ml-2">
+                    +{stats.crescimentoEstabelecimentos}% 📈
                   </span>
                 </div>
               </div>
-              <div className="p-3 bg-white/20 rounded-xl">
-                <Building2 className="w-8 h-8" />
+              <div className="p-4 bg-white/30 rounded-2xl shadow-lg">
+                <Building2 className="w-12 h-12 animate-pulse" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+          <Card className="p-8 bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 hover:rotate-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">Agendamentos</p>
-                <p className="text-3xl font-bold mt-2">
+                <p className="text-purple-100 text-lg font-bold">📅 Agendamentos</p>
+                <p className="text-5xl font-black mt-3 drop-shadow-lg">
                   <AnimatedNumber value={stats.totalAgendamentos} />
                 </p>
-                <div className="flex items-center mt-2">
-                  <ArrowUpRight className="w-4 h-4 text-green-300" />
-                  <span className="text-green-300 text-sm font-medium ml-1">
-                    +{stats.crescimentoAgendamentos}%
+                <div className="flex items-center mt-3 bg-green-500/30 rounded-full px-3 py-1">
+                  <ArrowUpRight className="w-5 h-5 text-green-300 animate-bounce" />
+                  <span className="text-green-300 text-lg font-bold ml-2">
+                    +{stats.crescimentoAgendamentos}% 📈
                   </span>
                 </div>
               </div>
-              <div className="p-3 bg-white/20 rounded-xl">
-                <Calendar className="w-8 h-8" />
+              <div className="p-4 bg-white/30 rounded-2xl shadow-lg">
+                <Calendar className="w-12 h-12 animate-pulse" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-amber-500 to-amber-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+          <Card className="p-8 bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 hover:-rotate-1">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-amber-100 text-sm font-medium">Receita Total</p>
-                <p className="text-3xl font-bold mt-2">
+                <p className="text-yellow-100 text-lg font-bold">💰 Receita Total</p>
+                <p className="text-4xl font-black mt-3 drop-shadow-lg">
                   {formatCurrency(stats.receitaTotal)}
                 </p>
-                <div className="flex items-center mt-2">
-                  <ArrowUpRight className="w-4 h-4 text-green-300" />
-                  <span className="text-green-300 text-sm font-medium ml-1">
-                    +{stats.crescimentoReceita}%
+                <div className="flex items-center mt-3 bg-green-500/30 rounded-full px-3 py-1">
+                  <ArrowUpRight className="w-5 h-5 text-green-300 animate-bounce" />
+                  <span className="text-green-300 text-lg font-bold ml-2">
+                    +{stats.crescimentoReceita}% 📈
                   </span>
                 </div>
               </div>
-              <div className="p-3 bg-white/20 rounded-xl">
-                <DollarSign className="w-8 h-8" />
+              <div className="p-4 bg-white/30 rounded-2xl shadow-lg">
+                <DollarSign className="w-12 h-12 animate-pulse" />
               </div>
             </div>
           </Card>
@@ -412,44 +412,44 @@ const DashboardAdmin = () => {
         </Card>
 
         {/* Funcionalidades do Painel */}
-        <Card className="p-8 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-white/20 dark:border-slate-700/50 shadow-xl">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
-            <Settings className="w-7 h-7 text-blue-600" />
-            Funcionalidades Administrativas
+        <Card className="p-8 bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-slate-800 dark:via-purple-900 dark:to-pink-900 backdrop-blur-xl border-2 border-purple-200 dark:border-purple-700 shadow-2xl">
+          <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 mb-8 flex items-center gap-3">
+            <Settings className="w-8 h-8 text-purple-600 animate-spin" />
+            🚀 FUNCIONALIDADES ADMINISTRATIVAS PREMIUM
           </h3>
           
           {/* Primeira linha de funcionalidades */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <Button
               onClick={() => navigate('/admin/analytics')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl"
+              className="h-28 flex flex-col items-center justify-center gap-3 hover:scale-110 hover:rotate-2 transition-all duration-500 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-500 hover:to-indigo-500 text-white shadow-2xl hover:shadow-3xl border-2 border-white/20"
             >
-              <BarChart3 className="w-8 h-8" />
-              <span className="text-sm font-semibold">Analytics</span>
+              <BarChart3 className="w-10 h-10 animate-pulse" />
+              <span className="text-lg font-black">📊 Analytics</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/notificacoes')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-lg hover:shadow-xl"
+              className="h-28 flex flex-col items-center justify-center gap-3 hover:scale-110 hover:-rotate-2 transition-all duration-500 bg-gradient-to-br from-pink-500 via-red-500 to-orange-500 hover:from-orange-500 hover:to-pink-500 text-white shadow-2xl hover:shadow-3xl border-2 border-white/20"
             >
-              <Bell className="w-8 h-8" />
-              <span className="text-sm font-semibold">Notificações</span>
+              <Bell className="w-10 h-10 animate-pulse" />
+              <span className="text-lg font-black">🔔 Notificações</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/monitoramento')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl"
+              className="h-28 flex flex-col items-center justify-center gap-3 hover:scale-110 hover:rotate-2 transition-all duration-500 bg-gradient-to-br from-red-500 via-pink-500 to-purple-500 hover:from-purple-500 hover:to-red-500 text-white shadow-2xl hover:shadow-3xl border-2 border-white/20"
             >
-              <Server className="w-8 h-8" />
-              <span className="text-sm font-semibold">Monitoramento</span>
+              <Server className="w-10 h-10 animate-pulse" />
+              <span className="text-lg font-black">🖥️ Monitoramento</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/logs')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white shadow-lg hover:shadow-xl"
+              className="h-28 flex flex-col items-center justify-center gap-3 hover:scale-110 hover:-rotate-2 transition-all duration-500 bg-gradient-to-br from-gray-500 via-blue-500 to-indigo-500 hover:from-indigo-500 hover:to-gray-500 text-white shadow-2xl hover:shadow-3xl border-2 border-white/20"
             >
-              <Database className="w-8 h-8" />
-              <span className="text-sm font-semibold">Logs</span>
+              <Database className="w-10 h-10 animate-pulse" />
+              <span className="text-lg font-black">📋 Logs</span>
             </Button>
           </div>
 
