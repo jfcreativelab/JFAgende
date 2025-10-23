@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, User, Mail, Phone, MapPin, Edit3, Save, X, Upload, Camera, Settings, Shield, Bell, CreditCard, BarChart3, Image as ImageIcon, CheckCircle, Plus, Clock } from 'lucide-react'
+import { ArrowLeft, User, Mail, Phone, MapPin, Edit3, Save, X, Upload, Camera, Settings, Shield, Bell, CreditCard, BarChart3, Image as ImageIcon, CheckCircle, Plus, Clock, Smartphone } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import ThemeToggle from '../components/ThemeToggle'
 import Button from '../components/Button'
@@ -649,6 +649,39 @@ const PerfilEstabelecimento = () => {
                 </div>
               </div>
             )}
+          </Card>
+
+          {/* WhatsApp Admin */}
+          <Card className="p-8 mb-8 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-green-500 rounded-xl">
+                <Smartphone className="text-white" size={24} />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  📱 Mensagens Automáticas WhatsApp
+                </h2>
+                <p className="text-gray-700 dark:text-gray-300 mb-6">
+                  Configure mensagens automáticas para confirmação de agendamentos e lembretes para seus clientes.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    onClick={() => navigate('/estabelecimento/whatsapp')}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <Smartphone size={16} />
+                    Configurar WhatsApp
+                  </Button>
+                  <Button
+                    onClick={() => navigate('/estabelecimento/whatsapp')}
+                    variant="outline"
+                    className="border-green-300 text-green-700 hover:bg-green-50 dark:border-green-600 dark:text-green-300 dark:hover:bg-green-900/20"
+                  >
+                    Ver Status
+                  </Button>
+                </div>
+              </div>
+            </div>
           </Card>
 
           {/* Cards de Ações Rápidas */}
