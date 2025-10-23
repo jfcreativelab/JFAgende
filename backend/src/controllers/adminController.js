@@ -1574,9 +1574,6 @@ export const getRelatoriosAvancados = async (req, res) => {
     })
 
     const receitaCalculada = agendamentosConcluidos.reduce((sum, ag) => sum + (ag.servico?.preco || 0), 0)
-    
-    // Usar receita calculada em vez do valor do aggregate
-    const receitaTotal = receitaCalculada
 
     // Dados de crescimento (comparar com período anterior)
     const dataInicioAnterior = new Date(dataInicio)
