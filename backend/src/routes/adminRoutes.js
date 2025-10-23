@@ -84,6 +84,7 @@ router.get('/relatorios-avancados', isAdmin, adminController.getRelatoriosAvanca
 // Estatísticas específicas
 router.get('/estatisticas-usuarios', isAdmin, adminController.getEstatisticasUsuarios)
 router.get('/estatisticas-estabelecimentos', isAdmin, adminController.getEstatisticasEstabelecimentos)
+router.get('/estatisticas-planos', isAdmin, adminController.getEstatisticasPlanos)
 router.get('/estatisticas-logs', isAdmin, adminController.getEstatisticasLogs)
 
 // Exportação

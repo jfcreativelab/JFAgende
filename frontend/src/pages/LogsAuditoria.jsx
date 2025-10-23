@@ -21,6 +21,8 @@ import {
   Globe,
   Lock,
   Unlock,
+  LogIn,
+  LogOut,
   Edit,
   Plus,
   Minus,

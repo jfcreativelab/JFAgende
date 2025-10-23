@@ -209,6 +209,14 @@ const adminService = {
     return response.data
   },
 
+  getEstatisticasPlanos: async () => {
+    const token = localStorage.getItem('adminToken')
+    const response = await api.get('/admin/estatisticas-planos', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return response.data
+  },
+
   getEstatisticasLogs: async () => {
     const token = localStorage.getItem('adminToken')
     const response = await api.get('/admin/estatisticas-logs', {
