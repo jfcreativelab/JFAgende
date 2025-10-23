@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import whatsappService from '../services/whatsappService.js';
+import whatsappSimpleService from '../services/whatsappSimpleService.js';
 
 const prisma = new PrismaClient();
 
@@ -115,7 +115,7 @@ export const createAgendamento = async (req, res) => {
         };
 
         console.log('📱 Enviando confirmação WhatsApp...');
-        const whatsappResult = await whatsappService.sendAppointmentConfirmation(whatsappData);
+        const whatsappResult = await whatsappSimpleService.sendAppointmentConfirmation(whatsappData);
         
         if (whatsappResult.success) {
           console.log('✅ Confirmação WhatsApp enviada com sucesso');

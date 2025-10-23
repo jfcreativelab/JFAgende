@@ -1,12 +1,12 @@
 import express from 'express'
-import whatsappService from '../services/whatsappService.js'
+import whatsappSimpleService from '../services/whatsappSimpleService.js'
 
 const router = express.Router()
 
 // Rota para obter status do WhatsApp
 router.get('/status', async (req, res) => {
   try {
-    const status = whatsappService.getStatus()
+    const status = whatsappSimpleService.getStatus()
     res.json({
       success: true,
       data: status
@@ -23,7 +23,7 @@ router.get('/status', async (req, res) => {
 // Rota para inicializar WhatsApp
 router.post('/initialize', async (req, res) => {
   try {
-    await whatsappService.initialize()
+    await whatsappSimpleService.initialize()
     res.json({
       success: true,
       message: 'WhatsApp inicializado com sucesso'
@@ -49,7 +49,7 @@ router.post('/send-test', async (req, res) => {
       })
     }
 
-    const result = await whatsappService.sendMessage(phoneNumber, message)
+    const result = await whatsappSimpleService.sendMessage(phoneNumber, message)
     
     if (result.success) {
       res.json({
@@ -88,7 +88,7 @@ router.post('/send-appointment-confirmation', async (req, res) => {
       })
     }
 
-    const result = await whatsappService.sendAppointmentConfirmation(appointmentData)
+    const result = await whatsappSimpleService.sendAppointmentConfirmation(appointmentData)
     
     if (result.success) {
       res.json({
@@ -127,7 +127,7 @@ router.post('/send-appointment-reminder', async (req, res) => {
       })
     }
 
-    const result = await whatsappService.sendAppointmentReminder(appointmentData)
+    const result = await whatsappSimpleService.sendAppointmentReminder(appointmentData)
     
     if (result.success) {
       res.json({
@@ -153,7 +153,7 @@ router.post('/send-appointment-reminder', async (req, res) => {
 // Rota para desconectar WhatsApp
 router.post('/disconnect', async (req, res) => {
   try {
-    await whatsappService.disconnect()
+    await whatsappSimpleService.disconnect()
     res.json({
       success: true,
       message: 'WhatsApp desconectado com sucesso'
