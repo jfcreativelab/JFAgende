@@ -30,9 +30,9 @@ router.post('/initialize', async (req, res) => {
     })
   } catch (error) {
     console.error('Erro ao inicializar WhatsApp:', error)
-    res.status(500).json({
+    res.json({
       success: false,
-      error: 'Erro ao inicializar WhatsApp'
+      error: 'WhatsApp não pôde ser inicializado, mas o servidor continua funcionando'
     })
   }
 })

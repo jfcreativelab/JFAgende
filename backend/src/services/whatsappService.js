@@ -1,5 +1,7 @@
 import pkg from 'whatsapp-web.js'
-import qrcode from 'qrcode-terminal'
+import qrcodePkg from 'qrcode-terminal'
+
+const qrcode = qrcodePkg.default || qrcodePkg
 
 const { Client, LocalAuth } = pkg
 
@@ -13,6 +15,12 @@ class WhatsAppService {
   async initialize() {
     try {
       console.log('🔧 Inicializando WhatsApp Service...')
+      
+      // Verificar se já está inicializado
+      if (this.client) {
+        console.log('⚠️ WhatsApp já está inicializado')
+        return
+      }
       
       this.client = new Client({
         authStrategy: new LocalAuth({
@@ -68,7 +76,10 @@ class WhatsAppService {
       
     } catch (error) {
       console.error('❌ Erro ao inicializar WhatsApp Service:', error)
-      throw error
+      this.isReady = false
+      this.client = null
+      // Não re-throw o erro para não quebrar o servidor
+      console.log('⚠️ WhatsApp Service falhou, mas servidor continua funcionando')
     }
   }
 
