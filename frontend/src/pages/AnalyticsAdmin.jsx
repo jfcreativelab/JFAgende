@@ -1067,6 +1067,7 @@ const AnalyticsAdmin = () => {
             />
           </div>
         )}
+        </div>
       </div>
     </AdminLayout>
   )

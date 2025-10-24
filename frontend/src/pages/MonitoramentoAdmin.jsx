@@ -1059,6 +1059,7 @@ const MonitoramentoAdmin = () => {
             />
           </div>
         )}
+        </div>
       </div>
     </AdminLayout>
   )
