@@ -506,102 +506,52 @@ const NotificacoesAdmin = () => {
   }
 
   const carregarNotificacoesSimuladas = () => {
-    try {
-      // Simular dados de notificações (versão corrigida)
-      const dadosSimulados = [
-        {
-          id: 1,
-          title: 'Sistema de Backup Concluído',
-          message: 'O backup automático do sistema foi executado com sucesso. Todos os dados foram salvos.',
-          type: 'success',
-          priority: 'medium',
-          channels: ['in-app', 'email'],
-          targetUsers: 'admins',
-          createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 min atrás
-          readAt: null,
-          sentAt: new Date(Date.now() - 1000 * 60 * 30),
-          status: 'sent',
-          read: false
-        },
-        {
-          id: 2,
-          title: 'Alta Demanda no Servidor',
-          message: 'O servidor está com 85% de utilização. Considere escalar os recursos.',
-          type: 'warning',
-          priority: 'high',
-          channels: ['in-app', 'email', 'push'],
-          targetUsers: 'admins',
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2h atrás
-          readAt: new Date(Date.now() - 1000 * 60 * 60), // 1h atrás
-          sentAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
-          status: 'sent',
-          read: true
-        },
-        {
-          id: 3,
-          title: 'Falha na Integração WhatsApp',
-          message: 'A integração com WhatsApp apresentou falha. Verifique as configurações.',
-          type: 'error',
-          priority: 'urgent',
-          channels: ['in-app', 'email', 'push', 'sms'],
-          targetUsers: 'admins',
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4h atrás
-          readAt: null,
-          sentAt: new Date(Date.now() - 1000 * 60 * 60 * 4),
-          status: 'sent',
-          read: false
-        },
-        {
-          id: 4,
-          title: 'Novo Estabelecimento Cadastrado',
-          message: 'Salão Beleza & Cia foi cadastrado e está aguardando aprovação.',
-          type: 'info',
-          priority: 'medium',
-          channels: ['in-app'],
-          targetUsers: 'admins',
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6h atrás
-          readAt: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5h atrás
-          sentAt: new Date(Date.now() - 1000 * 60 * 60 * 6),
-          status: 'sent',
-          read: true
-        },
-        {
-          id: 5,
-          title: 'Relatório Mensal Disponível',
-          message: 'O relatório de performance do mês de dezembro está disponível para download.',
-          type: 'info',
-          priority: 'low',
-          channels: ['in-app', 'email'],
-          targetUsers: 'admins',
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 dia atrás
-          readAt: new Date(Date.now() - 1000 * 60 * 60 * 20), // 20h atrás
-          sentAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
-          status: 'sent',
-          read: true
-        },
-        {
-          id: 6,
-          title: 'Atualização de Segurança Disponível',
-          message: 'Uma nova atualização de segurança está disponível. Recomendamos instalar imediatamente.',
-          type: 'critical',
-          priority: 'urgent',
-          channels: ['in-app', 'email', 'push'],
-          targetUsers: 'admins',
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 dias atrás
-          readAt: new Date(Date.now() - 1000 * 60 * 60 * 40), // 40h atrás
-          sentAt: new Date(Date.now() - 1000 * 60 * 60 * 48),
-          status: 'sent',
-          read: true
-        }
-      ]
+    const dadosSimulados = [
+      {
+        id: 1,
+        title: 'Sistema de Backup Concluído',
+        message: 'O backup automático do sistema foi executado com sucesso. Todos os dados foram salvos.',
+        type: 'success',
+        priority: 'medium',
+        channels: ['in-app', 'email'],
+        targetUsers: 'admins',
+        createdAt: new Date(Date.now() - 1000 * 60 * 30),
+        readAt: null,
+        sentAt: new Date(Date.now() - 1000 * 60 * 30),
+        status: 'sent',
+        read: false
+      },
+      {
+        id: 2,
+        title: 'Alta Demanda no Servidor',
+        message: 'O servidor está com 85% de utilização. Considere escalar os recursos.',
+        type: 'warning',
+        priority: 'high',
+        channels: ['in-app', 'email', 'push'],
+        targetUsers: 'admins',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
+        readAt: new Date(Date.now() - 1000 * 60 * 60),
+        sentAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
+        status: 'sent',
+        read: true
+      },
+      {
+        id: 3,
+        title: 'Falha na Integração WhatsApp',
+        message: 'A integração com WhatsApp apresentou falha. Verifique as configurações.',
+        type: 'error',
+        priority: 'urgent',
+        channels: ['in-app', 'email', 'push', 'sms'],
+        targetUsers: 'admins',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        readAt: null,
+        sentAt: new Date(Date.now() - 1000 * 60 * 60 * 4),
+        status: 'sent',
+        read: false
+      }
+    ]
 
-      setNotifications(dadosSimulados)
-    } catch (error) {
-      console.error('Erro ao carregar notificações:', error)
-      setToast({ type: 'error', message: 'Erro ao carregar notificações' })
-    } finally {
-      setLoading(false)
-    }
+    setNotifications(dadosSimulados)
   }
 
   const filteredNotifications = notifications.filter(notification => {
