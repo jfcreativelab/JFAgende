@@ -223,20 +223,20 @@ const RelatoriosAvancados = () => {
   const renderFiltros = () => (
     <Card className="mb-6">
       <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Filtros Avançados
-          </h3>
+        </h3>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={carregarDados}
-              disabled={loading}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-              Atualizar
-            </Button>
+        <Button
+          variant="outline"
+          onClick={carregarDados}
+          disabled={loading}
+          className="flex items-center gap-2"
+        >
+          <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+          Atualizar
+        </Button>
             <Button
               variant="outline"
               onClick={() => setFiltros({
@@ -252,70 +252,70 @@ const RelatoriosAvancados = () => {
               Limpar
             </Button>
           </div>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Período
+          </label>
+          <select
+            value={filtros.periodo}
+            onChange={(e) => setFiltros({ ...filtros, periodo: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+          >
+            {periodos.map(periodo => (
+              <option key={periodo.value} value={periodo.value}>
+                {periodo.label}
+              </option>
+            ))}
+          </select>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Período
-            </label>
-            <select
-              value={filtros.periodo}
-              onChange={(e) => setFiltros({ ...filtros, periodo: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            >
-              {periodos.map(periodo => (
-                <option key={periodo.value} value={periodo.value}>
-                  {periodo.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Tipo de Relatório
-            </label>
-            <select
-              value={filtros.tipoRelatorio}
-              onChange={(e) => setFiltros({ ...filtros, tipoRelatorio: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            >
-              {tiposRelatorio.map(tipo => (
-                <option key={tipo.id} value={tipo.id}>
-                  {tipo.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Estabelecimento
-            </label>
-            <Input
-              type="text"
-              placeholder="Filtrar por estabelecimento"
-              value={filtros.estabelecimento}
-              onChange={(e) => setFiltros({ ...filtros, estabelecimento: e.target.value })}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Plano
-            </label>
-            <select
-              value={filtros.plano}
-              onChange={(e) => setFiltros({ ...filtros, plano: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            >
-              <option value="">Todos os planos</option>
-              <option value="FREE">FREE</option>
-              <option value="BASIC">BASIC</option>
-              <option value="PREMIUM">PREMIUM</option>
-            </select>
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Tipo de Relatório
+          </label>
+          <select
+            value={filtros.tipoRelatorio}
+            onChange={(e) => setFiltros({ ...filtros, tipoRelatorio: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+          >
+            {tiposRelatorio.map(tipo => (
+              <option key={tipo.id} value={tipo.id}>
+                {tipo.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Estabelecimento
+          </label>
+          <Input
+            type="text"
+            placeholder="Filtrar por estabelecimento"
+            value={filtros.estabelecimento}
+            onChange={(e) => setFiltros({ ...filtros, estabelecimento: e.target.value })}
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Plano
+          </label>
+          <select
+            value={filtros.plano}
+            onChange={(e) => setFiltros({ ...filtros, plano: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+          >
+            <option value="">Todos os planos</option>
+            <option value="FREE">FREE</option>
+            <option value="BASIC">BASIC</option>
+            <option value="PREMIUM">PREMIUM</option>
+          </select>
+        </div>
         </div>
 
         {filtros.periodo === 'custom' && (
@@ -351,7 +351,7 @@ const RelatoriosAvancados = () => {
   const renderDashboard = () => (
     <div className="space-y-8">
       {/* Métricas Principais */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <AdminMetricCard
           title="Total de Usuários"
           value={dados?.resumo.totalUsuarios}
@@ -432,7 +432,7 @@ const RelatoriosAvancados = () => {
                 <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
                   <Server className="w-5 h-5 text-green-600 dark:text-green-400" />
                 </div>
-                <div>
+          <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Uptime</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Disponibilidade</p>
                 </div>
@@ -441,15 +441,15 @@ const RelatoriosAvancados = () => {
                 <p className="text-lg font-bold text-green-600 dark:text-green-400">
                   {dados?.metricasSistema.uptime}
                 </p>
-              </div>
             </div>
+          </div>
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                   <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
+        </div>
+          <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Response Time</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Tempo de resposta</p>
                 </div>
@@ -458,15 +458,15 @@ const RelatoriosAvancados = () => {
                 <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
                   {dados?.metricasSistema.responseTime}
                 </p>
-              </div>
             </div>
+          </div>
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
                   <HardDrive className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                </div>
-                <div>
+        </div>
+          <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Memória</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Uso atual</p>
                 </div>
@@ -475,26 +475,26 @@ const RelatoriosAvancados = () => {
                 <p className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
                   {dados?.metricasSistema.memoryUsage}
                 </p>
-              </div>
             </div>
+          </div>
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
                   <Cpu className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div>
+        </div>
+          <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">CPU</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Processamento</p>
-                </div>
-              </div>
+            </div>
+          </div>
               <div className="text-right">
                 <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
                   {dados?.metricasSistema.cpuUsage}
                 </p>
-              </div>
-            </div>
-
+          </div>
+        </div>
+        
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-red-100 dark:bg-red-900/20 rounded-lg">
@@ -503,69 +503,69 @@ const RelatoriosAvancados = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Taxa de Erro</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Erros por requisição</p>
-                </div>
-              </div>
+            </div>
+          </div>
               <div className="text-right">
                 <p className="text-lg font-bold text-red-600 dark:text-red-400">
                   {dados?.metricasSistema.errorRate}
                 </p>
+                </div>
               </div>
-            </div>
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
                   <Users className="w-5 h-5 text-green-600 dark:text-green-400" />
-                </div>
+          </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Usuários Ativos</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Agora</p>
-                </div>
+        </div>
               </div>
               <div className="text-right">
                 <p className="text-lg font-bold text-green-600 dark:text-green-400">
                   {dados?.metricasSistema.activeUsers}
                 </p>
               </div>
+              </div>
             </div>
-          </div>
         </div>
       </Card>
 
       {/* Top Estabelecimentos */}
-      <Card>
+    <Card>
         <div className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
             Top Estabelecimentos por Performance
-          </h3>
+        </h3>
           <div className="space-y-4">
-            {dados?.topEstabelecimentos.map((estabelecimento, index) => (
-              <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-bold text-purple-600 dark:text-purple-400">
-                      {index + 1}
-                    </span>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 dark:text-white">
-                      {estabelecimento.nome}
-                    </h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {estabelecimento.agendamentos} agendamentos
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-gray-900 dark:text-white">
-                    R$ {estabelecimento.receita.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    receita total
-                  </p>
-                </div>
+        {dados?.topEstabelecimentos.map((estabelecimento, index) => (
+          <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="flex items-center gap-4">
+              <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                <span className="text-sm font-bold text-purple-600 dark:text-purple-400">
+                  {index + 1}
+                </span>
               </div>
-            ))}
+              <div>
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  {estabelecimento.nome}
+                </h4>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {estabelecimento.agendamentos} agendamentos
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="font-bold text-gray-900 dark:text-white">
+                R$ {estabelecimento.receita.toLocaleString()}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                receita total
+              </p>
+            </div>
+          </div>
+        ))}
           </div>
         </div>
       </Card>
@@ -802,8 +802,8 @@ const RelatoriosAvancados = () => {
               Compartilhar
             </Button>
           </div>
-        </div>
-      </Card>
+      </div>
+    </Card>
     </div>
   )
 
@@ -837,16 +837,16 @@ const RelatoriosAvancados = () => {
       <div className="space-y-6">
         {/* Header Ultra Profissional */}
         <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-8 border border-indigo-200 dark:border-indigo-800">
-          <div className="flex items-center justify-between">
-            <div>
+        <div className="flex items-center justify-between">
+          <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                Relatórios Avançados
+              Relatórios Avançados
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-lg">
-                Análise detalhada e insights do sistema
-              </p>
-            </div>
-            
+              Análise detalhada e insights do sistema
+            </p>
+          </div>
+          
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/20 rounded-full">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -909,22 +909,22 @@ const RelatoriosAvancados = () => {
               </div>
 
               <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => handleExport('pdf')}
-                  className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 flex items-center gap-2"
-                >
-                  <Download size={16} />
-                  Exportar PDF
-                </Button>
-                <Button
-                  onClick={() => handleExport('excel')}
-                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 flex items-center gap-2"
-                >
-                  <Download size={16} />
-                  Exportar Excel
-                </Button>
-              </div>
-            </div>
+            <Button
+              onClick={() => handleExport('pdf')}
+              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 flex items-center gap-2"
+            >
+              <Download size={16} />
+              Exportar PDF
+            </Button>
+            <Button
+              onClick={() => handleExport('excel')}
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 flex items-center gap-2"
+            >
+              <Download size={16} />
+              Exportar Excel
+            </Button>
+          </div>
+        </div>
           </div>
         </Card>
 

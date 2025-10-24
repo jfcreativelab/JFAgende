@@ -98,14 +98,14 @@ const GerenciarUsuarios = () => {
           }))
         } else {
           // Fallback para dados simulados
-          const data = await adminService.getAllClientes({
-            page: pagination.page,
-            limit: pagination.limit,
+        const data = await adminService.getAllClientes({
+          page: pagination.page,
+          limit: pagination.limit,
             search,
             ...filtros
-          })
-          setClientes(data.clientes)
-          setPagination(prev => ({ ...prev, ...data.pagination }))
+        })
+        setClientes(data.clientes)
+        setPagination(prev => ({ ...prev, ...data.pagination }))
         }
       } else {
         // Buscar dados reais de estabelecimentos
@@ -121,17 +121,17 @@ const GerenciarUsuarios = () => {
             total: data.total || 0,
             totalPages: Math.ceil((data.total || 0) / pagination.limit)
           }))
-        } else {
+      } else {
           // Fallback para dados simulados
-          const data = await adminService.getAllEstabelecimentos({
-            page: pagination.page,
-            limit: pagination.limit,
+        const data = await adminService.getAllEstabelecimentos({
+          page: pagination.page,
+          limit: pagination.limit,
             search,
             ...filtros
-          })
-          setEstabelecimentos(data.estabelecimentos)
-          setPagination(prev => ({ ...prev, ...data.pagination }))
-        }
+        })
+        setEstabelecimentos(data.estabelecimentos)
+        setPagination(prev => ({ ...prev, ...data.pagination }))
+      }
       }
 
       // Carregar estatísticas
@@ -522,9 +522,9 @@ const GerenciarUsuarios = () => {
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-lg">
                 Controle total de clientes e estabelecimentos
-              </p>
-            </div>
-            
+          </p>
+        </div>
+
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/20 rounded-full">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -637,31 +637,31 @@ const GerenciarUsuarios = () => {
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Buscar..."
                     className="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                />
+              </div>
 
                 {/* Exportar */}
                 <div className="flex items-center gap-2">
-                  <Button
+                                <Button
                     onClick={() => handleExport('csv')}
-                    variant="outline"
-                    size="sm"
+                      variant="outline"
+                      size="sm"
                     className="hover:bg-green-50 dark:hover:bg-green-900/20"
-                  >
+                    >
                     <Download size={16} />
                     CSV
-                  </Button>
-                  <Button
+                    </Button>
+                    <Button
                     onClick={() => handleExport('excel')}
-                    variant="outline"
-                    size="sm"
+                      variant="outline"
+                      size="sm"
                     className="hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                  >
+                    >
                     <Download size={16} />
                     Excel
-                  </Button>
+                    </Button>
+                  </div>
                 </div>
-              </div>
             </div>
           </div>
         </Card>

@@ -443,7 +443,7 @@ const DashboardAdmin = () => {
           <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600 mb-6 flex items-center gap-2">
             <Zap className="w-7 h-7 text-cyan-600 animate-pulse" />
             📊 MÉTRICAS EM TEMPO REAL
-          </h3>
+            </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-800/20 rounded-xl border border-green-200 dark:border-green-700">
               <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
@@ -464,27 +464,27 @@ const DashboardAdmin = () => {
             <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-yellow-100 dark:from-orange-900/20 dark:to-yellow-800/20 rounded-xl border border-orange-200 dark:border-orange-700">
               <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
                 <Calendar className="w-6 h-6 text-white" />
-              </div>
+                    </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Agendamentos Pendentes</p>
               <p className="text-2xl font-bold text-orange-600">{realTimeStats.pendingAppointments}</p>
-            </div>
+                    </div>
             
             <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-800/20 rounded-xl border border-purple-200 dark:border-purple-700">
               <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
                 <DollarSign className="w-6 h-6 text-white" />
-              </div>
+                  </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Receita Hoje</p>
               <p className="text-2xl font-bold text-purple-600">{formatCurrency(realTimeStats.todayRevenue)}</p>
             </div>
-          </div>
-        </Card>
+            </div>
+          </Card>
 
         {/* Status do Sistema */}
         <Card className="p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-white/20 dark:border-slate-700/50 shadow-xl">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             <Activity className="w-6 h-6 text-blue-600" />
             Status do Sistema
-          </h3>
+            </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl">
               <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3">
