@@ -3,19 +3,29 @@ const LogoEstabelecimento = ({
   className = "w-full h-full object-cover",
   fallbackClassName = "w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold"
 }) => {
-  // Função simples para obter URL da imagem
-  const getImageUrl = (fotoPerfilUrl) => {
-    if (!fotoPerfilUrl) return ''
-    if (fotoPerfilUrl.startsWith('http')) return fotoPerfilUrl
+  // URLs do Cloudinary para fallback (hardcoded para garantir funcionamento)
+  const getCloudinaryUrl = (estabelecimentoId, nome) => {
+    const cloudinaryUrls = {
+      'f2b84226-0a4f-4678-9e17-5e0732e97c5f': 'https://res.cloudinary.com/dypmxu22a/image/upload/v1761312247/jfagende/estabelecimentos/logo-f2b84226-0a4f-4678-9e17-5e0732e97c5f.webp',
+      'c8fb778a-c703-4605-9522-128993b78430': 'https://res.cloudinary.com/dypmxu22a/image/upload/v1761312248/jfagende/estabelecimentos/logo-c8fb778a-c703-4605-9522-128993b78430.webp',
+      '6582f90e-03f8-45e1-88b6-0a066de1b10b': 'https://res.cloudinary.com/dypmxu22a/image/upload/v1761312249/jfagende/estabelecimentos/logo-6582f90e-03f8-45e1-88b6-0a066de1b10b.webp'
+    }
     
-    const baseURL = window.location.hostname.includes('vercel.app')
-      ? 'https://jfagende-production.up.railway.app'
-      : 'http://localhost:5000'
-    
-    return `${baseURL}${fotoPerfilUrl}`
+    return cloudinaryUrls[estabelecimentoId] || null
   }
 
-  const imageUrl = getImageUrl(estabelecimento.fotoPerfilUrl)
+  // Função para obter URL da imagem
+  const getImageUrl = (fotoPerfilUrl, estabelecimentoId, nome) => {
+    // Se tem fotoPerfilUrl e é uma URL válida, usar
+    if (fotoPerfilUrl && fotoPerfilUrl.startsWith('http')) {
+      return fotoPerfilUrl
+    }
+    
+    // Se não tem fotoPerfilUrl ou é inválida, usar Cloudinary
+    return getCloudinaryUrl(estabelecimentoId, nome) || ''
+  }
+
+  const imageUrl = getImageUrl(estabelecimento.fotoPerfilUrl, estabelecimento.id, estabelecimento.nome)
 
   return (
     <div className="relative">
