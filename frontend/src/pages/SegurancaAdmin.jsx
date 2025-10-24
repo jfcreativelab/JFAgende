@@ -709,7 +709,7 @@ const SegurancaAdmin = () => {
                   <Activity className="text-blue-600 dark:text-blue-400" size={16} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">{log.action.replace('_', ' ')}</p>
+                  <p className="text-sm font-medium">{log.action?.replace('_', ' ') || 'Ação'}</p>
                   <p className="text-xs text-gray-600 dark:text-gray-400">
                     {log.user} • {formatDate(log.timestamp)}
                   </p>
@@ -909,7 +909,7 @@ const SegurancaAdmin = () => {
                 <tr key={log.id} className="border-b border-gray-100 dark:border-gray-800">
                   <td className="py-3 px-4">
                     <Badge color="blue" size="sm">
-                      {log.action.replace('_', ' ')}
+                      {log.action?.replace('_', ' ') || 'Ação'}
                     </Badge>
                   </td>
                   <td className="py-3 px-4 font-medium">{log.user}</td>

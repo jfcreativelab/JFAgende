@@ -212,12 +212,19 @@ const DashboardAdmin = () => {
   }
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+    if (!date) return 'Data inválida'
+    try {
+      const dateObj = new Date(date)
+      if (isNaN(dateObj.getTime())) return 'Data inválida'
+      return dateObj.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    } catch (error) {
+      return 'Data inválida'
+    }
   }
 
   const getHealthColor = (status) => {
@@ -402,7 +409,7 @@ const DashboardAdmin = () => {
             <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl">
               <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Zap className="w-6 h-6 text-white" />
-              </div>
+            </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Tempo de Resposta</p>
               <p className="text-lg font-bold text-purple-600">{systemHealth.responseTime}</p>
               </div>
@@ -538,23 +545,30 @@ const DashboardAdmin = () => {
             Atividade Recente
           </h3>
           <div className="space-y-4">
-            {recentActivity.map(activity => {
-              const Icon = activity.icon
+            {recentActivity && recentActivity.length > 0 ? recentActivity.map(activity => {
+              if (!activity || !activity.id) return null
+              const Icon = activity.icon || Activity
+              const color = activity.color || 'blue'
               return (
                 <div key={activity.id} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-slate-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
-                  <div className={`p-3 rounded-xl bg-${activity.color}-100 dark:bg-${activity.color}-900/20`}>
-                    <Icon className={`w-5 h-5 text-${activity.color}-600 dark:text-${activity.color}-400`} />
+                  <div className={`p-3 rounded-xl bg-${color}-100 dark:bg-${color}-900/20`}>
+                    <Icon className={`w-5 h-5 text-${color}-600 dark:text-${color}-400`} />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900 dark:text-white">{activity.message}</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{activity.message || 'Atividade'}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(activity.timestamp)}</p>
-              </div>
-                  <Badge color={activity.color} size="sm">
-                    {activity.type.replace('_', ' ')}
+                  </div>
+                  <Badge color={color} size="sm">
+                    {activity.type?.replace('_', ' ') || 'Atividade'}
                   </Badge>
               </div>
               )
-            })}
+            }) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>Nenhuma atividade recente</p>
+              </div>
+            )}
             </div>
           </Card>
               </div>
