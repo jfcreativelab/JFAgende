@@ -44,142 +44,151 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950/30 relative overflow-hidden">
-      {/* Animated mesh gradient background */}
-      <div className="absolute inset-0 overflow-hidden opacity-40 dark:opacity-20">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-500/30 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-pink-500/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-0 right-1/3 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
+      {/* Animated mesh gradient background - otimizado para mobile */}
+      <div className="absolute inset-0 overflow-hidden opacity-30 dark:opacity-15">
+        <div className="absolute top-0 left-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-primary-500/20 sm:bg-primary-500/30 rounded-full blur-2xl sm:blur-3xl animate-float"></div>
+        <div className="absolute top-1/3 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-purple-500/20 sm:bg-purple-500/30 rounded-full blur-2xl sm:blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-64 h-64 sm:w-96 sm:h-96 bg-pink-500/20 sm:bg-pink-500/30 rounded-full blur-2xl sm:blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-0 right-1/3 w-64 h-64 sm:w-96 sm:h-96 bg-blue-500/20 sm:bg-blue-500/30 rounded-full blur-2xl sm:blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
       </div>
       
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:4rem_4rem] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)]"></div>
+      {/* Grid pattern overlay - responsivo */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:2rem_2rem] sm:bg-[size:4rem_4rem] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)]"></div>
 
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 py-8 sm:py-12 md:py-16 lg:py-20 relative z-10">
-        <div className="text-center mb-12 sm:mb-16 md:mb-20 animate-fade-in-up">
-          {/* Logo Principal */}
-          <div className="flex items-center justify-center mb-10">
+      {/* Hero Section - otimizado para mobile */}
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12 lg:py-16 xl:py-20 relative z-10">
+        <div className="text-center mb-8 sm:mb-12 md:mb-16 lg:mb-20 animate-fade-in-up">
+          {/* Logo Principal - otimizado para mobile */}
+          <div className="flex items-center justify-center mb-6 sm:mb-8 md:mb-10">
             <div className="relative group">
-              {/* Glow effect sutil */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary-400 via-purple-400 to-pink-400 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-all duration-500"></div>
+              {/* Glow effect sutil - responsivo */}
+              <div className="absolute inset-0 bg-gradient-to-r from-primary-400 via-purple-400 to-pink-400 rounded-full blur-xl sm:blur-2xl opacity-15 sm:opacity-20 group-hover:opacity-25 sm:group-hover:opacity-30 transition-all duration-500"></div>
               
-              {/* Logo com efeito suave */}
+              {/* Logo com efeito suave - tamanhos responsivos */}
               <div className="relative transform group-hover:scale-105 transition-all duration-300">
-                <Logo size="2xl" />
+                <Logo size="xl" className="sm:hidden" />
+                <Logo size="2xl" className="hidden sm:block" />
               </div>
             </div>
           </div>
 
-          {/* Badge de destaque moderno */}
-          <div className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl glass-strong border-2 border-primary-500/30 mb-6 sm:mb-8 animate-bounce-in hover:scale-105 transition-transform duration-300 cursor-default group">
-            <div className="p-1 sm:p-1.5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-lg animate-pulse">
-              <Zap size={14} className="text-white sm:w-4 sm:h-4" />
+          {/* Badge de destaque moderno - otimizado para mobile */}
+          <div className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 md:px-6 md:py-3 rounded-lg sm:rounded-xl md:rounded-2xl glass-strong border-2 border-primary-500/30 mb-4 sm:mb-6 md:mb-8 animate-bounce-in hover:scale-105 transition-transform duration-300 cursor-default group">
+            <div className="p-1 sm:p-1.5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-md sm:rounded-lg animate-pulse">
+              <Zap size={12} className="text-white sm:w-4 sm:h-4" />
             </div>
-            <span className="font-bold bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent text-sm sm:text-base">
-              {stats.agendamentos > 0 ? `Mais de ${stats.agendamentos} agendamentos realizados!` : 'Sistema de agendamento inteligente!'}
+            <span className="font-bold bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent text-xs sm:text-sm md:text-base leading-tight">
+              {stats.agendamentos > 0 ? `Mais de ${stats.agendamentos} agendamentos!` : 'Sistema inteligente!'}
             </span>
           </div>
           
-          <p className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed font-medium px-4">
+          {/* Título principal - responsivo */}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 md:mb-8 leading-tight">
+            <span className="bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              JFAgende
+            </span>
+          </h1>
+          
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 md:mb-12 max-w-2xl sm:max-w-3xl mx-auto leading-relaxed font-medium px-2 sm:px-4">
             Plataforma <span className="text-primary-600 dark:text-primary-400 font-bold">completa e moderna</span> para agendamento de horários entre clientes e estabelecimentos de estética
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
+          {/* Botões principais - otimizados para mobile */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-2 sm:px-4 max-w-md sm:max-w-none mx-auto">
             <Button 
               size="lg" 
               onClick={() => navigate('/login/cliente')}
-              className="w-full sm:w-auto sm:min-w-[200px]"
+              className="w-full sm:w-auto sm:min-w-[180px] md:min-w-[200px] h-12 sm:h-14 text-base sm:text-lg font-semibold"
             >
               <Calendar size={18} className="sm:w-5 sm:h-5" />
-              Sou Cliente
+              <span className="ml-2">Sou Cliente</span>
             </Button>
             
             <Button 
               size="lg" 
               variant="secondary"
               onClick={() => navigate('/login/estabelecimento')}
-              className="w-full sm:w-auto sm:min-w-[200px]"
+              className="w-full sm:w-auto sm:min-w-[180px] md:min-w-[200px] h-12 sm:h-14 text-base sm:text-lg font-semibold"
             >
               <Store size={18} className="sm:w-5 sm:h-5" />
-              Sou Estabelecimento
+              <span className="ml-2">Sou Estabelecimento</span>
             </Button>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             <button
               onClick={() => navigate('/planos')}
-              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium text-sm underline transition-colors"
+              className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium text-sm sm:text-base underline transition-colors"
             >
               Ver Planos e Preços
             </button>
           </div>
 
-              {/* Estatísticas em Tempo Real */}
-              <div className="mt-8 sm:mt-12 md:mt-16 lg:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-6xl mx-auto px-4">
+              {/* Estatísticas em Tempo Real - otimizadas para mobile */}
+              <div className="mt-6 sm:mt-8 md:mt-12 lg:mt-16 xl:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 max-w-6xl mx-auto px-2 sm:px-4">
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl sm:rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-                  <div className="relative glass-strong rounded-xl sm:rounded-2xl md:rounded-3xl p-3 sm:p-4 md:p-6 border-2 border-blue-500/30 hover:border-blue-500/60 transition-all duration-300 card-hover">
-                    <div className="flex justify-center mb-2 sm:mb-3 md:mb-4">
-                      <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <Store className="text-white" size={16} />
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl blur-lg sm:blur-xl opacity-15 sm:opacity-20 group-hover:opacity-25 sm:group-hover:opacity-40 transition-all duration-500"></div>
+                  <div className="relative glass-strong rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-2 sm:p-3 md:p-4 lg:p-6 border-2 border-blue-500/30 hover:border-blue-500/60 transition-all duration-300 card-hover">
+                    <div className="flex justify-center mb-1 sm:mb-2 md:mb-3 lg:mb-4">
+                      <div className="p-1.5 sm:p-2 md:p-3 lg:p-4 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-md sm:rounded-lg md:rounded-xl lg:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <Store className="text-white" size={14} />
                       </div>
                     </div>
-                    <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-1 sm:mb-2">
+                    <div className="text-base sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl font-black bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-1 sm:mb-2 text-center">
                       <AnimatedNumber value={stats.estabelecimentos} />+
                     </div>
-                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                    <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold text-center leading-tight">
                       Estabelecimentos
                     </div>
                   </div>
                 </div>
 
             <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl sm:rounded-2xl md:rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-              <div className="relative glass-strong rounded-xl sm:rounded-2xl md:rounded-3xl p-3 sm:p-4 md:p-6 border-2 border-green-500/30 hover:border-green-500/60 transition-all duration-300 card-hover">
-                <div className="flex justify-center mb-2 sm:mb-3 md:mb-4">
-                  <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Calendar className="text-white" size={16} />
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl blur-lg sm:blur-xl opacity-15 sm:opacity-20 group-hover:opacity-25 sm:group-hover:opacity-40 transition-all duration-500"></div>
+              <div className="relative glass-strong rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-2 sm:p-3 md:p-4 lg:p-6 border-2 border-green-500/30 hover:border-green-500/60 transition-all duration-300 card-hover">
+                <div className="flex justify-center mb-1 sm:mb-2 md:mb-3 lg:mb-4">
+                  <div className="p-1.5 sm:p-2 md:p-3 lg:p-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-md sm:rounded-lg md:rounded-xl lg:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Calendar className="text-white" size={14} />
                   </div>
                 </div>
-                <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1 sm:mb-2">
+                <div className="text-base sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1 sm:mb-2 text-center">
                   <AnimatedNumber value={stats.agendamentos} />+
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold text-center leading-tight">
                   Agendamentos
                 </div>
               </div>
             </div>
 
             <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl sm:rounded-2xl md:rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-              <div className="relative glass-strong rounded-xl sm:rounded-2xl md:rounded-3xl p-3 sm:p-4 md:p-6 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-300 card-hover">
-                <div className="flex justify-center mb-2 sm:mb-3 md:mb-4">
-                  <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Star className="text-white" size={16} />
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl blur-lg sm:blur-xl opacity-15 sm:opacity-20 group-hover:opacity-25 sm:group-hover:opacity-40 transition-all duration-500"></div>
+              <div className="relative glass-strong rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-2 sm:p-3 md:p-4 lg:p-6 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-300 card-hover">
+                <div className="flex justify-center mb-1 sm:mb-2 md:mb-3 lg:mb-4">
+                  <div className="p-1.5 sm:p-2 md:p-3 lg:p-4 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-md sm:rounded-lg md:rounded-xl lg:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Star className="text-white" size={14} />
                   </div>
                 </div>
-                <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-1 sm:mb-2">
+                <div className="text-base sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl font-black bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-1 sm:mb-2 text-center">
                   <AnimatedNumber value={stats.avaliacoes} />+
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold text-center leading-tight">
                   Avaliações
                 </div>
               </div>
             </div>
 
             <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl sm:rounded-2xl md:rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-              <div className="relative glass-strong rounded-xl sm:rounded-2xl md:rounded-3xl p-3 sm:p-4 md:p-6 border-2 border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 card-hover">
-                <div className="flex justify-center mb-2 sm:mb-3 md:mb-4">
-                  <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Users className="text-white" size={16} />
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl blur-lg sm:blur-xl opacity-15 sm:opacity-20 group-hover:opacity-25 sm:group-hover:opacity-40 transition-all duration-500"></div>
+              <div className="relative glass-strong rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl p-2 sm:p-3 md:p-4 lg:p-6 border-2 border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 card-hover">
+                <div className="flex justify-center mb-1 sm:mb-2 md:mb-3 lg:mb-4">
+                  <div className="p-1.5 sm:p-2 md:p-3 lg:p-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-md sm:rounded-lg md:rounded-xl lg:rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Users className="text-white" size={14} />
                   </div>
                 </div>
-                <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1 sm:mb-2">
+                <div className="text-base sm:text-lg md:text-2xl lg:text-3xl xl:text-4xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1 sm:mb-2 text-center">
                   <AnimatedNumber value={stats.usuarios} />+
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-semibold text-center leading-tight">
                   Usuários Ativos
                 </div>
               </div>
@@ -187,18 +196,18 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Features Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto mt-12 sm:mt-16 md:mt-20 lg:mt-24 px-4">
+        {/* Features Section - otimizada para mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8 max-w-6xl mx-auto mt-8 sm:mt-12 md:mt-16 lg:mt-20 xl:mt-24 px-2 sm:px-4">
           <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-purple-500 rounded-2xl sm:rounded-3xl blur-2xl opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
-            <Card glass hoverable className="text-center cursor-pointer border-2 border-primary-500/20 hover:border-primary-500/60 group-hover:shadow-2xl p-4 sm:p-6">
-              <div className="relative mb-3 sm:mb-4 md:mb-6">
-                <div className="absolute inset-0 bg-primary-600/20 rounded-full blur-3xl group-hover:bg-primary-600/40 transition-all duration-500"></div>
-                <div className="relative bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 rounded-xl sm:rounded-2xl md:rounded-3xl w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
-                  <Calendar className="text-white drop-shadow-lg" size={20} />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-purple-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl blur-lg sm:blur-xl md:blur-2xl opacity-0 group-hover:opacity-20 sm:group-hover:opacity-30 transition-all duration-500"></div>
+            <Card glass hoverable className="text-center cursor-pointer border-2 border-primary-500/20 hover:border-primary-500/60 group-hover:shadow-2xl p-3 sm:p-4 md:p-6">
+              <div className="relative mb-2 sm:mb-3 md:mb-4 lg:mb-6">
+                <div className="absolute inset-0 bg-primary-600/15 sm:bg-primary-600/20 rounded-full blur-2xl sm:blur-3xl group-hover:bg-primary-600/25 sm:group-hover:bg-primary-600/40 transition-all duration-500"></div>
+                <div className="relative bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 flex items-center justify-center mx-auto shadow-xl sm:shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
+                  <Calendar className="text-white drop-shadow-lg" size={16} />
                 </div>
               </div>
-              <h3 className="font-display font-black text-base sm:text-lg md:text-xl lg:text-2xl mb-2 sm:mb-3 md:mb-4 bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
+              <h3 className="font-display font-black text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-1 sm:mb-2 md:mb-3 lg:mb-4 bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform leading-tight">
                 Agendamento Fácil
               </h3>
               <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed font-medium">
@@ -208,15 +217,15 @@ const Home = () => {
           </div>
 
           <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl sm:rounded-3xl blur-2xl opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
-            <Card glass hoverable className="text-center cursor-pointer border-2 border-emerald-500/20 hover:border-emerald-500/60 group-hover:shadow-2xl p-4 sm:p-6">
-              <div className="relative mb-3 sm:mb-4 md:mb-6">
-                <div className="absolute inset-0 bg-emerald-600/20 rounded-full blur-3xl group-hover:bg-emerald-600/40 transition-all duration-500"></div>
-                <div className="relative bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500 rounded-xl sm:rounded-2xl md:rounded-3xl w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
-                  <Store className="text-white drop-shadow-lg" size={20} />
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl blur-lg sm:blur-xl md:blur-2xl opacity-0 group-hover:opacity-20 sm:group-hover:opacity-30 transition-all duration-500"></div>
+            <Card glass hoverable className="text-center cursor-pointer border-2 border-emerald-500/20 hover:border-emerald-500/60 group-hover:shadow-2xl p-3 sm:p-4 md:p-6">
+              <div className="relative mb-2 sm:mb-3 md:mb-4 lg:mb-6">
+                <div className="absolute inset-0 bg-emerald-600/15 sm:bg-emerald-600/20 rounded-full blur-2xl sm:blur-3xl group-hover:bg-emerald-600/25 sm:group-hover:bg-emerald-600/40 transition-all duration-500"></div>
+                <div className="relative bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 flex items-center justify-center mx-auto shadow-xl sm:shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
+                  <Store className="text-white drop-shadow-lg" size={16} />
                 </div>
               </div>
-              <h3 className="font-display font-black text-base sm:text-lg md:text-xl lg:text-2xl mb-2 sm:mb-3 md:mb-4 bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
+              <h3 className="font-display font-black text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-1 sm:mb-2 md:mb-3 lg:mb-4 bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform leading-tight">
                 Gestão Completa
               </h3>
               <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed font-medium">
@@ -226,15 +235,15 @@ const Home = () => {
           </div>
 
           <div className="group relative sm:col-span-2 lg:col-span-1">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl sm:rounded-3xl blur-2xl opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
-            <Card glass hoverable className="text-center cursor-pointer border-2 border-purple-500/20 hover:border-purple-500/60 group-hover:shadow-2xl p-4 sm:p-6">
-              <div className="relative mb-3 sm:mb-4 md:mb-6">
-                <div className="absolute inset-0 bg-purple-600/20 rounded-full blur-3xl group-hover:bg-purple-600/40 transition-all duration-500"></div>
-                <div className="relative bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 rounded-xl sm:rounded-2xl md:rounded-3xl w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
-                  <Sparkles className="text-white drop-shadow-lg" size={20} />
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl blur-lg sm:blur-xl md:blur-2xl opacity-0 group-hover:opacity-20 sm:group-hover:opacity-30 transition-all duration-500"></div>
+            <Card glass hoverable className="text-center cursor-pointer border-2 border-purple-500/20 hover:border-purple-500/60 group-hover:shadow-2xl p-3 sm:p-4 md:p-6">
+              <div className="relative mb-2 sm:mb-3 md:mb-4 lg:mb-6">
+                <div className="absolute inset-0 bg-purple-600/15 sm:bg-purple-600/20 rounded-full blur-2xl sm:blur-3xl group-hover:bg-purple-600/25 sm:group-hover:bg-purple-600/40 transition-all duration-500"></div>
+                <div className="relative bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 flex items-center justify-center mx-auto shadow-xl sm:shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-gradient">
+                  <Sparkles className="text-white drop-shadow-lg" size={16} />
                 </div>
               </div>
-              <h3 className="font-display font-black text-base sm:text-lg md:text-xl lg:text-2xl mb-2 sm:mb-3 md:mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
+              <h3 className="font-display font-black text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-1 sm:mb-2 md:mb-3 lg:mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform leading-tight">
                 Interface Moderna
               </h3>
               <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed font-medium">

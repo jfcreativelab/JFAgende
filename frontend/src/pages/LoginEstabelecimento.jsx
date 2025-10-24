@@ -46,11 +46,11 @@ const LoginEstabelecimento = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950/30 relative overflow-hidden flex items-center justify-center p-4">
-      {/* Animated background */}
-      <div className="absolute inset-0 overflow-hidden opacity-40 dark:opacity-20">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-500/30 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950/30 relative overflow-hidden flex items-center justify-center p-3 sm:p-4">
+      {/* Animated background - otimizado para mobile */}
+      <div className="absolute inset-0 overflow-hidden opacity-30 dark:opacity-15 sm:opacity-40 sm:dark:opacity-20">
+        <div className="absolute top-0 left-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-primary-500/20 sm:bg-primary-500/30 rounded-full blur-2xl sm:blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-64 h-64 sm:w-96 sm:h-96 bg-purple-500/20 sm:bg-purple-500/30 rounded-full blur-2xl sm:blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
       </div>
       {/* Toast */}
       {toast && (
@@ -63,31 +63,32 @@ const LoginEstabelecimento = () => {
         </div>
       )}
 
-      <div className="w-full max-w-md">
-        {/* Back Button */}
+      <div className="w-full max-w-sm sm:max-w-md">
+        {/* Back Button - otimizado para mobile */}
         <Button
           variant="ghost"
           onClick={() => navigate('/')}
-          className="mb-6"
+          className="mb-4 sm:mb-6 text-sm sm:text-base"
         >
-          <ArrowLeft size={20} />
-          Voltar
+          <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
+          <span className="ml-1">Voltar</span>
         </Button>
 
         <Card>
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-6">
-              <Logo size="2xl" />
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="flex justify-center mb-4 sm:mb-6">
+              <Logo size="lg" className="sm:hidden" />
+              <Logo size="xl" className="hidden sm:block" />
             </div>
-            <h1 className="font-display text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
               Login Estabelecimento
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
               Acesse seu painel administrativo
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <Input
               label="Email"
               type="email"
@@ -110,8 +111,8 @@ const LoginEstabelecimento = () => {
               required
             />
 
-            {/* Checkbox Lembrar Login */}
-            <div className="flex items-center">
+            {/* Checkbox Lembrar Login - otimizado para mobile */}
+            <div className="flex items-center py-1">
               <input
                 type="checkbox"
                 id="rememberLogin"
@@ -119,7 +120,7 @@ const LoginEstabelecimento = () => {
                 onChange={(e) => setRememberLogin(e.target.checked)}
                 className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
-              <label htmlFor="rememberLogin" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+              <label htmlFor="rememberLogin" className="ml-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 Lembrar login
               </label>
             </div>
@@ -128,14 +129,14 @@ const LoginEstabelecimento = () => {
               type="submit"
               fullWidth
               disabled={loading}
-              className="mt-6"
+              className="mt-4 sm:mt-6 h-12 sm:h-14 text-base sm:text-lg font-semibold"
             >
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-600 text-sm">
+          <div className="mt-4 sm:mt-6 text-center">
+            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
               Não tem uma conta?{' '}
               <a
                 href="/cadastro/estabelecimento"
@@ -145,7 +146,7 @@ const LoginEstabelecimento = () => {
                   console.log('🔍 Debug - Navegando para /cadastro/estabelecimento')
                   navigate('/cadastro/estabelecimento')
                 }}
-                className="text-primary-600 font-medium hover:text-primary-700 cursor-pointer underline hover:no-underline transition-all"
+                className="text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300 cursor-pointer underline hover:no-underline transition-all"
                 style={{ 
                   pointerEvents: 'auto',
                   zIndex: 10,
