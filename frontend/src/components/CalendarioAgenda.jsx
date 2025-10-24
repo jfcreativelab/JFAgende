@@ -3,6 +3,15 @@ import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, addHours, startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
+
+// Configuração de localização para português brasileiro
+const ptBRLocale = {
+  ...ptBR,
+  options: {
+    ...ptBR.options,
+    weekStartsOn: 0, // Domingo como primeiro dia da semana
+  }
+}
 import { Clock, Ban, User, MessageSquare, X, Phone, Plus, Calendar as CalendarIcon, Users, DollarSign, AlertCircle, CheckCircle } from 'lucide-react'
 import Modal from './Modal'
 import Button from './Button'
@@ -12,12 +21,12 @@ import Toast from './Toast'
 import Card from './Card'
 import AgendamentoNaoCadastrado from './AgendamentoNaoCadastrado'
 
-const locales = { 'pt-BR': ptBR }
+const locales = { 'pt-BR': ptBRLocale }
 
 const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek: () => startOfWeek(new Date(), { locale: ptBR }),
+  format: (date, formatStr) => format(date, formatStr, { locale: ptBRLocale }),
+  parse: (str, formatStr) => parse(str, formatStr, new Date(), { locale: ptBRLocale }),
+  startOfWeek: (date) => startOfWeek(date, { locale: ptBRLocale }),
   getDay,
   locales,
 })
@@ -201,7 +210,7 @@ const AgendaProfissional = ({
     try {
       const dateObj = new Date(date)
       if (isNaN(dateObj.getTime())) return ''
-      return format(dateObj, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })
+      return format(dateObj, "dd/MM/yyyy 'às' HH:mm", { locale: ptBRLocale })
     } catch (error) {
       return ''
     }
@@ -374,6 +383,7 @@ const AgendaProfissional = ({
             eventPropGetter={eventStyleGetter}
             view={view}
             onView={setView}
+            culture="pt-BR"
             messages={{
               next: 'Próximo',
               previous: 'Anterior',
@@ -386,6 +396,11 @@ const AgendaProfissional = ({
               time: 'Hora',
               event: 'Evento',
               noEventsInRange: 'Nenhum evento neste período',
+              showMore: (total) => `+ Ver mais (${total})`,
+              allDay: 'Dia inteiro',
+              work_week: 'Semana de trabalho',
+              yesterday: 'Ontem',
+              tomorrow: 'Amanhã',
             }}
             views={['month', 'week', 'day', 'agenda']}
           />
