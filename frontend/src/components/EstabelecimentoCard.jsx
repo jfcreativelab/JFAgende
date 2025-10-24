@@ -88,8 +88,8 @@ const EstabelecimentoCard = ({
         )}
 
         {/* Logo do Estabelecimento */}
-        {estabelecimento.fotoPerfilUrl && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-3 border-white dark:border-gray-800 shadow-2xl ring-2 ring-primary-500/30 group-hover:scale-110 transition-transform duration-300 z-10">
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-3 border-white dark:border-gray-800 shadow-2xl ring-2 ring-primary-500/30 group-hover:scale-110 transition-transform duration-300 z-10">
+          {estabelecimento.fotoPerfilUrl ? (
             <img 
               src={estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl)} 
               alt={`Logo ${estabelecimento.nome}`}
@@ -107,12 +107,12 @@ const EstabelecimentoCard = ({
                 console.log('✅ URL usada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
               }}
             />
-            {/* Fallback visual quando a imagem não carrega */}
-            <div className="w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs" style={{display: 'none'}}>
-              {estabelecimento.nome.charAt(0).toUpperCase()}
-            </div>
+          ) : null}
+          {/* Fallback visual sempre visível */}
+          <div className={`w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs ${estabelecimento.fotoPerfilUrl ? 'hidden' : 'flex'}`}>
+            {estabelecimento.nome.charAt(0).toUpperCase()}
           </div>
-        )}
+        </div>
 
         {/* Overlay com gradiente */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>

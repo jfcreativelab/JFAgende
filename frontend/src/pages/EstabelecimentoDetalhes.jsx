@@ -120,7 +120,7 @@ const EstabelecimentoDetalhes = () => {
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             <Card>
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6">
-                <div className="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-2xl flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-primary-500/20 mx-auto sm:mx-0">
+                <div className="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-2xl flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-primary-500/20 mx-auto sm:mx-0 relative">
                   {estabelecimento.fotoPerfilUrl ? (
                     <img 
                       src={estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl)} 
@@ -128,28 +128,21 @@ const EstabelecimentoDetalhes = () => {
                       className="w-full h-full object-cover"
                       loading="lazy"
                       onError={(e) => {
-                        console.error('Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
-                        e.target.onerror = null;
+                        console.error('❌ Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
+                        console.error('❌ URL tentada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
                         e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
                       }}
                       onLoad={() => {
-                        console.log('Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
+                        console.log('✅ Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
                       }}
                     />
-                  ) : estabelecimento.imagemCapa ? (
-                    <img 
-                      src={estabelecimento.imagemCapa} 
-                      alt={estabelecimento.nome}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      onError={(e) => {
-                        console.error('Erro ao carregar imagem de capa:', estabelecimento.imagemCapa);
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <MapPin className="text-primary-600 dark:text-primary-400" size={48} />
-                  )}
+                  ) : null}
+                  
+                  {/* Fallback visual */}
+                  <div className={`w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl ${estabelecimento.fotoPerfilUrl ? 'hidden' : 'flex'}`}>
+                    {estabelecimento.nome.charAt(0).toUpperCase()}
+                  </div>
                 </div>
                 
                 <div className="flex-1 text-center sm:text-left">

@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import sharp from 'sharp';
+import cloudinaryService from '../services/cloudinaryService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -371,45 +372,44 @@ export const uploadLogo = async (req, res) => {
       return res.status(400).json({ error: 'Nenhuma imagem foi enviada' });
     }
 
-    // Processar imagem e mover de temp para uploads/estabelecimentos
-    const tempPath = req.file.path; // caminho salvo pelo multer
-    const destDir = path.join(__dirname, '../../uploads/estabelecimentos');
-    await fs.mkdir(destDir, { recursive: true });
-
-    const baseName = `logo-${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const finalPath = path.join(destDir, `${baseName}.webp`);
-
-    await sharp(tempPath)
+    // Processar imagem com Sharp
+    const tempPath = req.file.path;
+    const processedImageBuffer = await sharp(tempPath)
       .resize(512, 512, { fit: 'cover' })
       .webp({ quality: 85 })
-      .toFile(finalPath);
+      .toBuffer();
 
-    // apagar arquivo temp
+    // Upload para Cloudinary
+    const uploadResult = await cloudinaryService.uploadImageFromBuffer(
+      processedImageBuffer, 
+      'jfagende/estabelecimentos'
+    );
+
+    if (!uploadResult.success) {
+      return res.status(500).json({ error: 'Erro ao fazer upload da imagem' });
+    }
+
+    // Remover arquivo temporário
     try { await fs.unlink(tempPath); } catch {}
 
-    // URL pública
-    // URL da logo (URL completa para garantir persistência)
-    const baseUrl = process.env.BASE_URL || 'https://jfagende-production.up.railway.app';
-    const logoUrl = `${baseUrl}/uploads/estabelecimentos/${baseName}.webp`;
-    
-    console.log('🔗 Base URL:', baseUrl);
-    console.log('🖼️ Logo URL gerada:', logoUrl);
-    console.log('📁 Arquivo salvo em:', finalPath);
+    console.log('🖼️ Logo enviada para Cloudinary:', uploadResult.url);
 
-    // Remover logo antiga se existir
+    // Remover logo antiga do Cloudinary se existir
     const atual = await prisma.estabelecimento.findUnique({
       where: { id: estabelecimentoId },
       select: { fotoPerfilUrl: true }
     });
-    if (atual?.fotoPerfilUrl) {
-      const oldPath = path.join(__dirname, '../../', atual.fotoPerfilUrl.replace(/^\/+/, ''));
-      try { await fs.unlink(oldPath); } catch {}
+    
+    if (atual?.fotoPerfilUrl && atual.fotoPerfilUrl.includes('cloudinary.com')) {
+      // Extrair public_id da URL do Cloudinary
+      const publicId = atual.fotoPerfilUrl.split('/').pop().split('.')[0];
+      await cloudinaryService.deleteImage(`jfagende/estabelecimentos/${publicId}`);
     }
 
     // Atualizar o estabelecimento com a URL da logo
     const estabelecimentoAtualizado = await prisma.estabelecimento.update({
       where: { id: estabelecimentoId },
-      data: { fotoPerfilUrl: logoUrl },
+      data: { fotoPerfilUrl: uploadResult.url },
       select: {
         id: true,
         nome: true,
