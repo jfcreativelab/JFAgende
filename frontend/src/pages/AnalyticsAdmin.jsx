@@ -946,48 +946,53 @@ const AnalyticsAdmin = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Analytics Avançado
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Análise detalhada de performance e comportamento dos usuários
-            </p>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-100 dark:from-slate-900 dark:via-purple-900 dark:to-indigo-900 p-6 space-y-8">
+        {/* Header Premium */}
+        <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 rounded-2xl p-8 shadow-2xl">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <div>
+              <h1 className="text-4xl font-black text-white drop-shadow-lg mb-2">
+                📊 ANALYTICS ULTRA PREMIUM
+              </h1>
+              <p className="text-purple-100 text-lg font-medium">
+                ✨ Análise detalhada de performance e comportamento dos usuários
+              </p>
+            </div>
           
-          <div className="flex items-center gap-3">
-            <Button
-              onClick={() => setAutoRefresh(!autoRefresh)}
-              variant={autoRefresh ? "default" : "outline"}
-              size="sm"
-            >
-              <RefreshCw size={16} className={autoRefresh ? 'animate-spin' : ''} />
-              Auto Refresh
-            </Button>
-            <Button
-              onClick={() => exportAnalytics('pdf')}
-              variant="outline"
-              size="sm"
-            >
-              <Download size={16} />
-              Exportar
-            </Button>
-          </div>
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
+                  autoRefresh 
+                    ? 'bg-white text-purple-600 shadow-lg hover:shadow-xl' 
+                    : 'bg-white/20 text-white hover:bg-white/30 border-2 border-white/30'
+                }`}
+              >
+                <RefreshCw size={20} className={autoRefresh ? 'animate-spin' : ''} />
+                <span className="ml-2">🔄 Auto Refresh</span>
+              </Button>
+              <Button
+                onClick={() => exportAnalytics('pdf')}
+                className="px-6 py-3 bg-white text-purple-600 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-white/30"
+              >
+                <Download size={20} />
+                <span className="ml-2">📥 Exportar</span>
+              </Button>
+            </div>
         </div>
 
-        {/* Filtros */}
-        <Card className="p-4">
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Filter size={16} />
-              <span className="text-sm font-medium">Período:</span>
+        {/* Filtros Premium */}
+        <Card className="p-6 bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-slate-800 dark:via-purple-900 dark:to-pink-900 border-2 border-purple-200 dark:border-purple-700 shadow-xl">
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+                <Filter className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              </div>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">📅 Período:</span>
               <select
                 value={timeRange}
                 onChange={(e) => setTimeRange(e.target.value)}
-                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-sm"
+                className="px-4 py-2 border-2 border-purple-300 dark:border-purple-600 rounded-xl bg-white dark:bg-slate-800 text-sm font-medium shadow-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
                 {timeRanges.map(range => (
                   <option key={range.value} value={range.value}>

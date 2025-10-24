@@ -950,17 +950,18 @@ const MonitoramentoAdmin = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Monitoramento do Sistema
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Acompanhe a performance e saúde do sistema em tempo real
-            </p>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-100 dark:from-slate-900 dark:via-red-900 dark:to-orange-900 p-6 space-y-8">
+        {/* Header Premium */}
+        <div className="bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 rounded-2xl p-8 shadow-2xl">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <div>
+              <h1 className="text-4xl font-black text-white drop-shadow-lg mb-2">
+                🖥️ MONITORAMENTO ULTRA PREMIUM
+              </h1>
+              <p className="text-red-100 text-lg font-medium">
+                ✨ Acompanhe a performance e saúde do sistema em tempo real
+              </p>
+            </div>
           
           <div className="flex items-center gap-3">
             <Button

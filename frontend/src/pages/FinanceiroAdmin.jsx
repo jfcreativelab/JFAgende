@@ -974,17 +974,18 @@ const FinanceiroAdmin = () => {
 
   return (
     <AdminLayout>
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Centro Financeiro
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Gerencie receitas, despesas, comissões e relatórios financeiros
-            </p>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100 dark:from-slate-900 dark:via-green-900 dark:to-emerald-900 p-6 space-y-8">
+        {/* Header Premium */}
+        <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl p-8 shadow-2xl">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <div>
+              <h1 className="text-4xl font-black text-white drop-shadow-lg mb-2">
+                💰 CENTRO FINANCEIRO PREMIUM
+              </h1>
+              <p className="text-green-100 text-lg font-medium">
+                ✨ Gerencie receitas, despesas, comissões e relatórios financeiros
+              </p>
+            </div>
           
           <div className="flex items-center gap-3">
             <Button
