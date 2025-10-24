@@ -75,6 +75,17 @@ export const estabelecimentoService = {
     console.log('📱 User Agent:', navigator.userAgent)
     
     return fullUrl
+  },
+
+  // URLs do Cloudinary para fallback
+  getCloudinaryUrl: (estabelecimentoId, nome) => {
+    const cloudinaryUrls = {
+      'f2b84226-0a4f-4678-9e17-5e0732e97c5f': 'https://res.cloudinary.com/dypmxu22a/image/upload/v1761312247/jfagende/estabelecimentos/logo-f2b84226-0a4f-4678-9e17-5e0732e97c5f.webp',
+      'c8fb778a-c703-4605-9522-128993b78430': 'https://res.cloudinary.com/dypmxu22a/image/upload/v1761312248/jfagende/estabelecimentos/logo-c8fb778a-c703-4605-9522-128993b78430.webp',
+      '6582f90e-03f8-45e1-88b6-0a066de1b10b': 'https://res.cloudinary.com/dypmxu22a/image/upload/v1761312249/jfagende/estabelecimentos/logo-6582f90e-03f8-45e1-88b6-0a066de1b10b.webp'
+    }
+    
+    return cloudinaryUrls[estabelecimentoId] || null
   }
 }
 

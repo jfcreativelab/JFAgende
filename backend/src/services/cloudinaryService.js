@@ -1,7 +1,13 @@
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Carregar variáveis de ambiente do arquivo .env.cloudinary
+dotenv.config({ path: path.join(__dirname, '../../.env.cloudinary') });
 
 // Configurar Cloudinary
 cloudinary.config({
@@ -9,6 +15,11 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+console.log('🔧 Cloudinary configurado com:');
+console.log('   Cloud Name:', process.env.CLOUDINARY_CLOUD_NAME);
+console.log('   API Key:', process.env.CLOUDINARY_API_KEY ? '✅ Configurado' : '❌ Não configurado');
+console.log('   API Secret:', process.env.CLOUDINARY_API_SECRET ? '✅ Configurado' : '❌ Não configurado');
 
 export const cloudinaryService = {
   /**

@@ -130,8 +130,17 @@ const EstabelecimentoDetalhes = () => {
                       onError={(e) => {
                         console.error('❌ Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
                         console.error('❌ URL tentada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
-                        e.target.style.display = 'none';
-                        e.target.nextSibling.style.display = 'flex';
+                        
+                        // Tentar URL do Cloudinary como fallback
+                        const cloudinaryUrl = estabelecimentoService.getCloudinaryUrl(estabelecimento.id, estabelecimento.nome);
+                        if (cloudinaryUrl) {
+                          console.log('🔄 Tentando URL do Cloudinary:', cloudinaryUrl);
+                          e.target.src = cloudinaryUrl;
+                        } else {
+                          // Mostrar fallback visual
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }
                       }}
                       onLoad={() => {
                         console.log('✅ Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
