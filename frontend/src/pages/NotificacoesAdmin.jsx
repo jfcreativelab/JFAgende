@@ -506,7 +506,8 @@ const NotificacoesAdmin = () => {
   }
 
   const carregarNotificacoesSimuladas = () => {
-    // Simular dados de notificações
+    try {
+      // Simular dados de notificações
       const dadosSimulados = [
         {
           id: 1,
