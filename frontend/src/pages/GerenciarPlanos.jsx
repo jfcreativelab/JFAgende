@@ -604,9 +604,9 @@ const GerenciarPlanos = () => {
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-lg">
                 Controle total de planos e receita da plataforma
-              </p>
-            </div>
-            
+          </p>
+        </div>
+
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/20 rounded-full">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -688,18 +688,18 @@ const GerenciarPlanos = () => {
                               >
                     <Download size={16} />
                     CSV
-                              </Button>
-                                <Button
+                    </Button>
+                    <Button
                     onClick={() => handleExport('excel')}
-                    variant="outline"
-                                  size="sm"
+                      variant="outline"
+                      size="sm"
                     className="hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                                >
+                    >
                     <Download size={16} />
                     Excel
-                                </Button>
-                            </div>
-              </div>
+                    </Button>
+                  </div>
+                </div>
                   </div>
                 </div>
         </Card>
