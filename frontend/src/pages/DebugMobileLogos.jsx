@@ -10,6 +10,7 @@ const DebugMobileLogos = () => {
   const [estabelecimentos, setEstabelecimentos] = useState([])
   const [loading, setLoading] = useState(true)
   const [debugInfo, setDebugInfo] = useState({})
+  const [testando, setTestando] = useState(false)
 
   useEffect(() => {
     carregarEstabelecimentos()
@@ -92,10 +93,36 @@ const DebugMobileLogos = () => {
   }
 
   const testarTodos = async () => {
-    for (const estabelecimento of estabelecimentos) {
-      await testarEstabelecimento(estabelecimento)
-      // Pequena pausa entre testes
-      await new Promise(resolve => setTimeout(resolve, 500))
+    console.log('🚀 Iniciando teste de todos os estabelecimentos...')
+    setTestando(true)
+    
+    // Limpar resultados anteriores
+    setDebugInfo(prev => {
+      const newInfo = { ...prev }
+      Object.keys(newInfo).forEach(key => {
+        if (key.startsWith('test_')) {
+          delete newInfo[key]
+        }
+      })
+      return newInfo
+    })
+    
+    try {
+      for (let i = 0; i < estabelecimentos.length; i++) {
+        const estabelecimento = estabelecimentos[i]
+        console.log(`🔍 Testando ${i + 1}/${estabelecimentos.length}: ${estabelecimento.nome}`)
+        
+        await testarEstabelecimento(estabelecimento)
+        
+        // Pequena pausa entre testes
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
+      
+      console.log('✅ Teste de todos os estabelecimentos concluído!')
+    } catch (error) {
+      console.error('❌ Erro durante o teste:', error)
+    } finally {
+      setTestando(false)
     }
   }
 
@@ -171,18 +198,40 @@ const DebugMobileLogos = () => {
               <ImageIcon size={20} className="text-purple-500" />
               Teste de URLs
             </h2>
-            <Button onClick={testarTodos} className="flex items-center gap-2">
-              <Bug size={16} />
-              Testar Todos
+            <Button 
+              onClick={testarTodos} 
+              disabled={testando}
+              className="flex items-center gap-2"
+            >
+              {testando ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Testando...
+                </>
+              ) : (
+                <>
+                  <Bug size={16} />
+                  Testar Todos
+                </>
+              )}
             </Button>
           </div>
           
           <div className="space-y-4">
-            {estabelecimentos.map((estabelecimento) => {
-              const testKey = `test_${estabelecimento.id}`
-              const test = debugInfo[testKey]
-              
-              return (
+            {estabelecimentos.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>Nenhum estabelecimento encontrado</p>
+              </div>
+            ) : Object.keys(debugInfo).filter(key => key.startsWith('test_')).length === 0 && !testando ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>Clique em "Testar Todos" para verificar as URLs</p>
+              </div>
+            ) : (
+              estabelecimentos.map((estabelecimento) => {
+                const testKey = `test_${estabelecimento.id}`
+                const test = debugInfo[testKey]
+                
+                return (
                 <div key={estabelecimento.id} className="border rounded-lg p-4">
                   <h3 className="font-semibold mb-2">{estabelecimento.nome}</h3>
                   
@@ -230,8 +279,9 @@ const DebugMobileLogos = () => {
                     Testar Este
                   </Button>
                 </div>
-              )
-            })}
+                )
+              })
+            )}
           </div>
         </Card>
 
