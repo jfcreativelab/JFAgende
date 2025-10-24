@@ -1,4 +1,4 @@
-import { MapPin, Star, Clock, TrendingUp, Heart, Crown } from 'lucide-react'
+import { MapPin, Star, Clock, TrendingUp, Heart, Crown, Bug } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import Badge from './Badge'
 import Button from './Button'
@@ -87,6 +87,25 @@ const EstabelecimentoCard = ({
           </div>
         )}
 
+        {/* Debug Button - Mobile Only */}
+        {window.innerWidth < 768 && (
+          <button
+            onClick={() => {
+              const logs = [
+                `🔍 Debug: ${estabelecimento.nome}`,
+                `📱 Mobile: ${navigator.userAgent.includes('Mobile')}`,
+                `🖼️ FotoPerfilUrl: ${estabelecimento.fotoPerfilUrl || 'Nenhuma'}`,
+                `🔗 URL Railway: ${estabelecimento.fotoPerfilUrl ? estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl) : 'N/A'}`,
+                `☁️ URL Cloudinary: ${estabelecimentoService.getCloudinaryUrl(estabelecimento.id, estabelecimento.nome) || 'N/A'}`
+              ]
+              alert(logs.join('\n'))
+            }}
+            className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded text-xs z-20"
+          >
+            <Bug size={12} />
+          </button>
+        )}
+
         {/* Logo do Estabelecimento */}
         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-3 border-white dark:border-gray-800 shadow-2xl ring-2 ring-primary-500/30 group-hover:scale-110 transition-transform duration-300 z-10">
           {/* Imagem principal */}
@@ -97,23 +116,42 @@ const EstabelecimentoCard = ({
             loading="lazy"
             style={{display: estabelecimento.fotoPerfilUrl ? 'block' : 'none'}}
             onError={(e) => {
+              const railwayUrl = estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl);
               console.error('❌ Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
-              console.error('❌ URL tentada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
+              console.error('❌ URL tentada:', railwayUrl);
+              
+              // Log para mobile debug
+              if (window.innerWidth < 768) {
+                console.log('📱 MOBILE DEBUG - Erro Railway:', railwayUrl);
+              }
               
               // Tentar URL do Cloudinary como fallback
               const cloudinaryUrl = estabelecimentoService.getCloudinaryUrl(estabelecimento.id, estabelecimento.nome);
               if (cloudinaryUrl) {
                 console.log('🔄 Tentando URL do Cloudinary:', cloudinaryUrl);
+                if (window.innerWidth < 768) {
+                  console.log('📱 MOBILE DEBUG - Tentando Cloudinary:', cloudinaryUrl);
+                }
                 e.target.src = cloudinaryUrl;
               } else {
+                console.log('❌ Sem URL do Cloudinary disponível');
+                if (window.innerWidth < 768) {
+                  console.log('📱 MOBILE DEBUG - Sem Cloudinary, mostrando fallback');
+                }
                 // Mostrar fallback visual
                 e.target.style.display = 'none';
                 e.target.nextSibling.style.display = 'flex';
               }
             }}
-            onLoad={() => {
+            onLoad={(e) => {
               console.log('✅ Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
               console.log('✅ URL usada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
+              
+              // Log para mobile debug
+              if (window.innerWidth < 768) {
+                console.log('📱 MOBILE DEBUG - Imagem carregada com sucesso!');
+              }
+              
               // Esconder fallback quando imagem carrega
               e.target.nextSibling.style.display = 'none';
             }}
