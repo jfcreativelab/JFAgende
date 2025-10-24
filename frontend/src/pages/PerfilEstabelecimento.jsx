@@ -9,6 +9,7 @@ import Input from '../components/Input'
 import Toast from '../components/Toast'
 import Loading from '../components/Loading'
 import Badge from '../components/Badge'
+import LogoUpload from '../components/LogoUpload'
 import estabelecimentoService from '../services/estabelecimentoService'
 
 const PerfilEstabelecimento = () => {
@@ -30,7 +31,6 @@ const PerfilEstabelecimento = () => {
     chavePix: ''
   })
 
-  const [logoFile, setLogoFile] = useState(null)
   const [logoPreview, setLogoPreview] = useState(null)
   const [horarios, setHorarios] = useState([])
   const [loadingHorarios, setLoadingHorarios] = useState(false)
@@ -81,31 +81,6 @@ const PerfilEstabelecimento = () => {
     }))
   }
 
-  const handleLogoSelect = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      // Validar tipo de arquivo
-      if (!file.type.startsWith('image/')) {
-        setToast({ type: 'error', message: 'Por favor, selecione apenas arquivos de imagem.' })
-        return
-      }
-
-      // Validar tamanho (máximo 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setToast({ type: 'error', message: 'A imagem deve ter no máximo 5MB.' })
-        return
-      }
-
-      setLogoFile(file)
-      
-      // Criar preview
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setLogoPreview(e.target.result)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
 
   const handleSave = async () => {
     setLoading(true)
@@ -113,27 +88,9 @@ const PerfilEstabelecimento = () => {
       // Atualizar dados do estabelecimento
       await estabelecimentoService.update(user.id, formData)
       
-      // Upload da logo se houver
-      if (logoFile) {
-        const formDataLogo = new FormData()
-        formDataLogo.append('logo', logoFile)
-        
-        const response = await fetch(`https://jfagende-production.up.railway.app/api/estabelecimentos/${user.id}/logo`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: formDataLogo
-        })
-
-        if (!response.ok) {
-          throw new Error('Erro ao fazer upload da logo')
-        }
-      }
 
       setToast({ type: 'success', message: 'Perfil atualizado com sucesso!' })
       setEditing(false)
-      setLogoFile(null)
       
       // Atualizar contexto do usuário
       updateUser({ ...user, ...formData })
@@ -157,8 +114,12 @@ const PerfilEstabelecimento = () => {
       chavePix: user.chavePix || ''
     })
     setLogoPreview(user.fotoPerfilUrl ? `https://jfagende-production.up.railway.app${user.fotoPerfilUrl}` : null)
-    setLogoFile(null)
     setEditing(false)
+  }
+
+  const handleLogoUpdate = (newLogoUrl) => {
+    updateUser({ ...user, fotoPerfilUrl: newLogoUrl })
+    setLogoPreview(newLogoUrl)
   }
 
   const salvarHorarios = async () => {
@@ -327,55 +288,12 @@ const PerfilEstabelecimento = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Logo e Foto */}
-              <div className="text-center">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Logo do Estabelecimento
-                </h3>
-                
-                <div className="relative inline-block mb-4">
-                  {logoPreview ? (
-                    <div className="relative group">
-                      <img
-                        src={logoPreview}
-                        alt="Logo do estabelecimento"
-                        className="w-32 h-32 object-cover rounded-xl border-4 border-white shadow-xl group-hover:scale-105 transition-transform duration-200"
-                      />
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">✓</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="w-32 h-32 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center group hover:border-primary-400 transition-colors">
-                      <div className="text-center">
-                        <Camera className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Adicionar Logo</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {editing && (
-                  <div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoSelect}
-                      className="hidden"
-                      id="logoInput"
-                    />
-                    <Button
-                      variant="outline"
-                      onClick={() => document.getElementById('logoInput').click()}
-                      className="w-full"
-                    >
-                      <Upload size={18} className="mr-2" />
-                      {logoPreview ? 'Alterar Logo' : 'Adicionar Logo'}
-                    </Button>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                      JPG, PNG, GIF - Máx 5MB
-                    </p>
-                  </div>
-                )}
+              <div>
+                <LogoUpload 
+                  estabelecimento={user}
+                  onLogoUpdate={handleLogoUpdate}
+                  className="w-full"
+                />
               </div>
 
               {/* Informações Básicas */}

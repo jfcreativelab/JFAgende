@@ -1,24 +1,21 @@
-import { useState, useRef } from 'react'
-import { Upload, X, Image as ImageIcon, CheckCircle } from 'lucide-react'
+import { useState } from 'react'
+import { Upload, X, Camera, CheckCircle, AlertCircle } from 'lucide-react'
 import Button from './Button'
-import Card from './Card'
-import Loading from './Loading'
 import Toast from './Toast'
 
 const LogoUpload = ({ 
-  currentLogo, 
-  onLogoUpload, 
-  onLogoRemove, 
-  estabelecimentoId,
-  className = '' 
+  estabelecimento, 
+  onLogoUpdate, 
+  className = "",
+  showPreview = true 
 }) => {
-  const [isUploading, setIsUploading] = useState(false)
-  const [preview, setPreview] = useState(null)
+  const [logoFile, setLogoFile] = useState(null)
+  const [logoPreview, setLogoPreview] = useState(estabelecimento?.fotoPerfilUrl || null)
+  const [uploading, setUploading] = useState(false)
   const [toast, setToast] = useState(null)
-  const fileInputRef = useRef(null)
 
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0]
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0]
     if (!file) return
 
     // Validar tipo de arquivo
@@ -33,32 +30,46 @@ const LogoUpload = ({
       return
     }
 
+    setLogoFile(file)
+    
     // Criar preview
     const reader = new FileReader()
     reader.onload = (e) => {
-      setPreview(e.target.result)
+      setLogoPreview(e.target.result)
     }
     reader.readAsDataURL(file)
-
-    // Fazer upload
-    uploadLogo(file)
   }
 
-  const uploadLogo = async (file) => {
-    setIsUploading(true)
-    
-    try {
-      const formData = new FormData()
-      formData.append('logo', file)
+  const handleUpload = async () => {
+    if (!logoFile) return
 
-      const token = localStorage.getItem('estabelecimentoToken')
-      const response = await fetch(`https://jfagende-production.up.railway.app/api/estabelecimentos/${estabelecimentoId}/logo`, {
+    setUploading(true)
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        setToast({ type: 'error', message: 'Sessão expirada. Faça login novamente.' })
+        return
+      }
+
+      const formData = new FormData()
+      formData.append('logo', logoFile)
+      
+      const baseURL = window.location.hostname.includes('vercel.app')
+        ? 'https://jfagende-production.up.railway.app'
+        : 'http://localhost:5000'
+      
+      const response = await fetch(`${baseURL}/api/estabelecimentos/${estabelecimento.id}/logo`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
         },
         body: formData
       })
+
+      if (response.status === 401) {
+        setToast({ type: 'error', message: 'Sessão expirada. Faça login novamente.' })
+        return
+      }
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -67,24 +78,38 @@ const LogoUpload = ({
 
       const data = await response.json()
       setToast({ type: 'success', message: 'Logo atualizada com sucesso!' })
-      onLogoUpload?.(data.estabelecimento.fotoPerfilUrl)
-      setPreview(null)
+      setLogoFile(null)
+      
+      // Atualizar preview
+      setLogoPreview(data.estabelecimento.fotoPerfilUrl)
+      
+      // Notificar componente pai
+      if (onLogoUpdate) {
+        onLogoUpdate(data.estabelecimento.fotoPerfilUrl)
+      }
       
     } catch (error) {
-      console.error('Erro ao fazer upload:', error)
-      setToast({ type: 'error', message: error.message })
-      setPreview(null)
+      console.error('Erro ao fazer upload da logo:', error)
+      setToast({ type: 'error', message: error.message || 'Erro ao fazer upload da logo' })
     } finally {
-      setIsUploading(false)
+      setUploading(false)
     }
   }
 
-  const removeLogo = async () => {
-    setIsUploading(true)
-    
+  const handleRemove = async () => {
+    setUploading(true)
     try {
-      const token = localStorage.getItem('estabelecimentoToken')
-      const response = await fetch(`https://jfagende-production.up.railway.app/api/estabelecimentos/${estabelecimentoId}/logo`, {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        setToast({ type: 'error', message: 'Sessão expirada. Faça login novamente.' })
+        return
+      }
+
+      const baseURL = window.location.hostname.includes('vercel.app')
+        ? 'https://jfagende-production.up.railway.app'
+        : 'http://localhost:5000'
+      
+      const response = await fetch(`${baseURL}/api/estabelecimentos/${estabelecimento.id}/logo`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -93,110 +118,151 @@ const LogoUpload = ({
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Erro ao remover logo')
+        throw new Error('Erro ao remover logo')
       }
 
       setToast({ type: 'success', message: 'Logo removida com sucesso!' })
-      onLogoRemove?.()
-      setPreview(null)
+      setLogoPreview(null)
+      setLogoFile(null)
+      
+      // Notificar componente pai
+      if (onLogoUpdate) {
+        onLogoUpdate(null)
+      }
       
     } catch (error) {
       console.error('Erro ao remover logo:', error)
-      setToast({ type: 'error', message: error.message })
+      setToast({ type: 'error', message: 'Erro ao remover logo' })
     } finally {
-      setIsUploading(false)
+      setUploading(false)
     }
   }
 
-  const triggerFileInput = () => {
-    fileInputRef.current?.click()
+  const getImageUrl = (url) => {
+    if (!url) return ''
+    if (url.startsWith('http')) return url
+    
+    const baseURL = window.location.hostname.includes('vercel.app')
+      ? 'https://jfagende-production.up.railway.app'
+      : 'http://localhost:5000'
+    
+    return `${baseURL}${url}`
   }
 
-  const displayImage = preview || currentLogo
-
   return (
-    <Card className={`p-6 ${className}`}>
+    <div className={`space-y-4 ${className}`}>
+      {/* Toast */}
       {toast && (
         <div className="fixed top-4 right-4 z-50">
-          <Toast
-            type={toast.type}
+          <Toast 
+            type={toast.type} 
             message={toast.message}
             onClose={() => setToast(null)}
           />
         </div>
       )}
 
-      <div className="text-center">
-        <div className="mb-6">
-          {displayImage ? (
-            <div className="relative inline-block group">
-              <img
-                src={displayImage}
+      {/* Preview da Logo */}
+      {showPreview && (
+        <div className="flex items-center gap-4">
+          <div className="w-20 h-20 rounded-xl overflow-hidden border-2 border-gray-200 dark:border-gray-700 flex-shrink-0">
+            {logoPreview ? (
+              <img 
+                src={getImageUrl(logoPreview)} 
                 alt="Logo do estabelecimento"
-                className="w-32 h-32 object-cover rounded-xl border-4 border-white shadow-xl group-hover:scale-105 transition-transform duration-200"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  console.error('Erro ao carregar logo:', logoPreview)
+                  e.target.style.display = 'none'
+                  e.target.nextSibling.style.display = 'flex'
+                }}
               />
-              {preview && (
-                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-xl flex items-center justify-center">
-                  <CheckCircle className="w-8 h-8 text-green-400" />
-                </div>
-              )}
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-bold">✓</span>
-              </div>
+            ) : null}
+            <div 
+              className="w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl"
+              style={{ display: logoPreview ? 'none' : 'flex' }}
+            >
+              {estabelecimento?.nome?.charAt(0)?.toUpperCase() || 'E'}
             </div>
-          ) : (
-            <div className="w-32 h-32 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center group hover:border-primary-400 transition-colors">
-              <div className="text-center">
-                <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-xs text-gray-500 dark:text-gray-400">Adicionar Logo</p>
-              </div>
-            </div>
-          )}
+          </div>
+          
+          <div className="flex-1">
+            <h3 className="font-semibold text-gray-900 dark:text-white">
+              Logo do Estabelecimento
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {logoPreview ? 'Logo atualizada' : 'Nenhuma logo definida'}
+            </p>
+          </div>
         </div>
+      )}
 
-        <div className="space-y-3">
+      {/* Controles de Upload */}
+      <div className="space-y-3">
+        {/* Input de arquivo */}
+        <div className="relative">
           <input
-            ref={fileInputRef}
             type="file"
+            id="logo-upload"
             accept="image/*"
             onChange={handleFileSelect}
-            className="hidden"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            disabled={uploading}
           />
-          
-          <Button
-            onClick={triggerFileInput}
-            disabled={isUploading}
-            className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-lg hover:shadow-xl transition-all duration-200"
+          <label
+            htmlFor="logo-upload"
+            className={`flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer transition-colors hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {isUploading ? (
-              <Loading size="sm" />
-            ) : (
-              <>
-                <Upload className="w-4 h-4 mr-2" />
-                {displayImage ? 'Alterar Logo' : 'Adicionar Logo'}
-              </>
-            )}
-          </Button>
+            <Camera size={20} className="text-gray-500" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {logoFile ? 'Arquivo selecionado' : 'Selecionar Logo'}
+            </span>
+          </label>
+        </div>
 
-          {displayImage && (
+        {/* Botões de ação */}
+        <div className="flex gap-2">
+          {logoFile && (
+            <Button
+              onClick={handleUpload}
+              disabled={uploading}
+              className="flex-1 flex items-center justify-center gap-2"
+            >
+              {uploading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Enviando...
+                </>
+              ) : (
+                <>
+                  <Upload size={16} />
+                  Enviar Logo
+                </>
+              )}
+            </Button>
+          )}
+          
+          {logoPreview && (
             <Button
               variant="outline"
-              onClick={removeLogo}
-              disabled={isUploading}
-              className="w-full border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+              onClick={handleRemove}
+              disabled={uploading}
+              className="flex items-center gap-2"
             >
-              <X className="w-4 h-4 mr-2" />
-              Remover Logo
+              <X size={16} />
+              Remover
             </Button>
           )}
         </div>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-          Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB.
-        </p>
+        {/* Informações */}
+        <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+          <p>• Formatos aceitos: JPG, PNG, WEBP</p>
+          <p>• Tamanho máximo: 5MB</p>
+          <p>• Recomendado: 512x512px</p>
+        </div>
       </div>
-    </Card>
+    </div>
   )
 }
 
