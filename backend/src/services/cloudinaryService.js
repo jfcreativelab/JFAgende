@@ -6,8 +6,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Carregar variáveis de ambiente do arquivo .env.cloudinary
-dotenv.config({ path: path.join(__dirname, '../../.env.cloudinary') });
+// Carregar variáveis de ambiente do arquivo .env.cloudinary (se existir)
+try {
+  dotenv.config({ path: path.join(__dirname, '../../.env.cloudinary') });
+} catch (error) {
+  console.log('📝 Arquivo .env.cloudinary não encontrado, usando variáveis de ambiente padrão');
+}
 
 // Configurar Cloudinary
 cloudinary.config({
@@ -55,26 +59,26 @@ export const cloudinaryService = {
    */
   uploadImageFromBuffer: async (buffer, folder = 'jfagende') => {
     try {
-      const result = await cloudinary.uploader.upload_stream(
-        {
-          folder: folder,
-          resource_type: 'image',
-          transformation: [
-            { width: 512, height: 512, crop: 'fill', quality: 'auto' },
-            { format: 'webp' }
-          ]
-        },
-        (error, result) => {
-          if (error) {
-            console.error('Erro no upload stream:', error);
-            return { success: false, error: error.message };
+      return new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          {
+            folder: folder,
+            resource_type: 'image',
+            transformation: [
+              { width: 512, height: 512, crop: 'fill', quality: 'auto' },
+              { format: 'webp' }
+            ]
+          },
+          (error, result) => {
+            if (error) {
+              console.error('Erro no upload stream:', error);
+              resolve({ success: false, error: error.message });
+            } else {
+              resolve({ success: true, url: result.secure_url, publicId: result.public_id });
+            }
           }
-          return { success: true, url: result.secure_url, publicId: result.public_id };
-        }
-      );
-      
-      result.end(buffer);
-      return result;
+        ).end(buffer);
+      });
     } catch (error) {
       console.error('Erro ao fazer upload para Cloudinary:', error);
       return {

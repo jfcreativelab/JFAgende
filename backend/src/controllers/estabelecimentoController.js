@@ -386,7 +386,8 @@ export const uploadLogo = async (req, res) => {
     );
 
     if (!uploadResult.success) {
-      return res.status(500).json({ error: 'Erro ao fazer upload da imagem' });
+      console.error('❌ Erro no Cloudinary:', uploadResult.error);
+      return res.status(500).json({ error: 'Erro ao fazer upload da imagem: ' + uploadResult.error });
     }
 
     // Remover arquivo temporário
