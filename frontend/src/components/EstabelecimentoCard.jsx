@@ -4,6 +4,7 @@ import Badge from './Badge'
 import Button from './Button'
 import StarRating from './StarRating'
 import PlanoBadge from './PlanoBadge'
+import estabelecimentoService from '../services/estabelecimentoService'
 
 const EstabelecimentoCard = ({ 
   estabelecimento, 
@@ -90,12 +91,16 @@ const EstabelecimentoCard = ({
         {estabelecimento.fotoPerfilUrl && (
           <div className="absolute top-3 left-3 sm:top-4 sm:left-4 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-3 border-white dark:border-gray-800 shadow-2xl ring-2 ring-primary-500/30 group-hover:scale-110 transition-transform duration-300">
             <img 
-              src={estabelecimento.fotoPerfilUrl} 
+              src={estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl)} 
               alt={`Logo ${estabelecimento.nome}`}
               className="w-full h-full object-cover"
-              crossOrigin="anonymous"
+              loading="lazy"
               onError={(e) => {
+                console.error('Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
                 e.target.style.display = 'none';
+              }}
+              onLoad={() => {
+                console.log('Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
               }}
             />
           </div>

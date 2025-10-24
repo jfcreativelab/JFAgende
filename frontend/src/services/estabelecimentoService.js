@@ -49,6 +49,19 @@ export const estabelecimentoService = {
     const response = await api.post(`/estabelecimentos/${estabelecimentoId}/horarios`, dados)
     return response.data
   },
+
+  // Obter URL completa da imagem
+  getImageUrl: (url) => {
+    if (!url) return ''
+    if (url.startsWith('http')) return url
+    
+    // Usar URL da produção se estiver no Vercel, senão usa localhost
+    const baseURL = window.location.hostname.includes('vercel.app')
+      ? 'https://jfagende-production.up.railway.app'
+      : 'http://localhost:5000'
+    
+    return `${baseURL}${url}`
+  }
 }
 
 export default estabelecimentoService

@@ -94,6 +94,22 @@ app.use('/api/pagamento', pagamentoRoutes);
 app.use('/api/setup', setupRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 
+// Rota específica para servir imagens com CORS adequado
+app.get('/uploads/*', (req, res, next) => {
+  // Headers CORS para imagens
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  
+  // Headers de cache
+  res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+  res.setHeader('ETag', `"${Date.now()}"`);
+  
+  next();
+});
+
 // Servir arquivos estáticos (imagens do portfólio) com cache
 app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
   maxAge: '30d', // Cache de 30 dias
@@ -103,7 +119,16 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
     // Headers de cache agressivos para imagens
     res.setHeader('Cache-Control', 'public, max-age=2592000, immutable'); // 30 dias
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+    
+    // Headers específicos para imagens
+    if (filePath.endsWith('.webp') || filePath.endsWith('.jpg') || filePath.endsWith('.jpeg') || filePath.endsWith('.png')) {
+      res.setHeader('Content-Type', 'image/webp');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+    }
   }
 }));
 
