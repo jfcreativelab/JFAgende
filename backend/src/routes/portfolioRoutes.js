@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate, isEstabelecimento } from '../middleware/auth.js';
+import { verificarPermissaoRecurso } from '../middleware/planoMiddleware.js';
 import { upload } from '../utils/upload.js';
 import {
   uploadFoto,
@@ -18,7 +19,7 @@ const router = express.Router();
  * @desc    Upload de foto para portfólio
  * @access  Private (Estabelecimento)
  */
-router.post('/upload', authenticate, isEstabelecimento, upload.single('imagem'), uploadFoto);
+router.post('/upload', authenticate, isEstabelecimento, verificarPermissaoRecurso('portfolio'), upload.single('imagem'), uploadFoto);
 
 /**
  * @route   GET /portfolio/estabelecimento/:estabelecimentoId

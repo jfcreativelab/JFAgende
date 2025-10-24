@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate, isCliente, isEstabelecimento } from '../middleware/auth.js';
+import { verificarLimiteAgendamentos } from '../middleware/planoMiddleware.js';
 import {
   createAgendamento,
   getAgendamentosByEstabelecimento,
@@ -15,7 +16,7 @@ const router = express.Router();
  * @desc    Cria um novo agendamento
  * @access  Private (Cliente)
  */
-router.post('/', authenticate, isCliente, createAgendamento);
+router.post('/', authenticate, isCliente, verificarLimiteAgendamentos, createAgendamento);
 
 /**
  * @route   GET /agendamentos/estabelecimento/:id

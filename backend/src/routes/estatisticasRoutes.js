@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate, isEstabelecimento } from '../middleware/auth.js';
+import { verificarPermissaoRecurso } from '../middleware/planoMiddleware.js';
 import { getEstatisticas, getEstatisticasGerais } from '../controllers/estatisticasController.js';
 
 const router = express.Router();
@@ -16,7 +17,7 @@ router.get('/gerais', getEstatisticasGerais);
  * @desc    Obter estatísticas do estabelecimento
  * @access  Private (Estabelecimento)
  */
-router.get('/', authenticate, isEstabelecimento, getEstatisticas);
+router.get('/', authenticate, isEstabelecimento, verificarPermissaoRecurso('relatorios'), getEstatisticas);
 
 export default router;
 
