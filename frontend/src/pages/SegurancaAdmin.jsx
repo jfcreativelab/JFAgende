@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   ShieldAlert,
   ShieldX,
+  Virus,
   Clock,
   RefreshCw,
   Settings,

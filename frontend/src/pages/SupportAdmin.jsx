@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { 
   Headphones,
   MessageCircle,
+  HelpCircle,
+  BookOpen,
   Mail,
   Phone,
   Users,

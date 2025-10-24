@@ -4,6 +4,7 @@ import {
   Users,
   Mail,
   MessageSquare,
+  Megaphone,
   Calendar,
   BarChart3,
   PieChart,

@@ -84,7 +84,8 @@ import {
   Diamond,
   Asterisk,
   Ampersand,
-  Euro
+  Euro,
+  HardDrive
 } from 'lucide-react'
 import AdminLayout from '../components/AdminLayout'
 import Card from '../components/Card'
