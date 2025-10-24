@@ -45,9 +45,9 @@ export const AuthProvider = ({ children }) => {
     setLoading(false)
   }, [])
 
-  const login = async (email, senha, tipo) => {
+  const login = async (email, senha, tipo, rememberLogin = false) => {
     try {
-      console.log('🔐 Iniciando login:', { email, tipo })
+      console.log('🔐 Iniciando login:', { email, tipo, rememberLogin })
       let data
       
       if (tipo === 'cliente') {
@@ -65,12 +65,18 @@ export const AuthProvider = ({ children }) => {
       if (tipo === 'admin') {
         localStorage.setItem('adminToken', data.token)
         localStorage.setItem('adminData', JSON.stringify(data.admin))
+        if (rememberLogin) {
+          localStorage.setItem('rememberAdmin', 'true')
+        }
         const userData = { ...data.admin, tipo: 'admin' }
         console.log('👤 Dados do admin salvos:', userData)
         setUser(userData)
       } else {
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify({ ...data.usuario, tipo: data.tipo }))
+        if (rememberLogin) {
+          localStorage.setItem('rememberUser', 'true')
+        }
         const userData = { ...data.usuario, tipo: data.tipo }
         console.log('👤 Dados do usuário salvos:', userData)
         setUser(userData)
@@ -117,6 +123,8 @@ export const AuthProvider = ({ children }) => {
     authService.logout()
     localStorage.removeItem('adminToken')
     localStorage.removeItem('adminData')
+    localStorage.removeItem('rememberAdmin')
+    localStorage.removeItem('rememberUser')
     setUser(null)
   }
 

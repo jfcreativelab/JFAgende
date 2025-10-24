@@ -16,6 +16,7 @@ const LoginEstabelecimento = () => {
     email: '',
     senha: ''
   })
+  const [rememberLogin, setRememberLogin] = useState(false)
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState(null)
 
@@ -30,7 +31,7 @@ const LoginEstabelecimento = () => {
     e.preventDefault()
     setLoading(true)
 
-    const result = await login(formData.email, formData.senha, 'estabelecimento')
+    const result = await login(formData.email, formData.senha, 'estabelecimento', rememberLogin)
 
     if (result.success) {
       // Aguardar um pouco para garantir que o estado foi atualizado
@@ -108,6 +109,20 @@ const LoginEstabelecimento = () => {
               onChange={handleChange}
               required
             />
+
+            {/* Checkbox Lembrar Login */}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="rememberLogin"
+                checked={rememberLogin}
+                onChange={(e) => setRememberLogin(e.target.checked)}
+                className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label htmlFor="rememberLogin" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                Lembrar login
+              </label>
+            </div>
 
             <Button
               type="submit"
