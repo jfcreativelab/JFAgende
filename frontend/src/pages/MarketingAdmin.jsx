@@ -5,6 +5,7 @@ import {
   Mail,
   MessageSquare,
   Megaphone,
+  ImageIcon,
   Calendar,
   BarChart3,
   PieChart,

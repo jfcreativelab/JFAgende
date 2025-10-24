@@ -312,172 +312,166 @@ const DashboardAdmin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-100 dark:from-slate-900 dark:via-purple-900 dark:to-indigo-900">
-      {/* BANNER DE TESTE - VISUAL ULTRA PREMIUM */}
-      <div className="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 text-white text-center py-4 animate-pulse">
-        <h1 className="text-2xl font-black">🎉 PAINEL ADMIN ULTRA PREMIUM ATIVADO! 🎉</h1>
-        <p className="text-lg font-bold">✨ Visual completamente redesenhado com gradientes vibrantes! ✨</p>
-      </div>
-      
-      {/* Header Premium */}
-      <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 shadow-2xl border-b border-purple-200 dark:border-purple-700 sticky top-0 z-40">
-        <div className="px-6 py-6">
-        <div className="flex items-center justify-between">
-          <div>
-              <h1 className="text-4xl font-black text-white drop-shadow-lg">
-                🚀 PAINEL ADMIN PREMIUM
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+      {/* Header Profissional */}
+      <div className="bg-white dark:bg-slate-800 shadow-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-40">
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Painel Administrativo
               </h1>
-              <p className="text-purple-100 mt-2 text-lg">
-                ✨ Bem-vindo, {user?.nome || 'Administrador'} • {new Date().toLocaleDateString('pt-BR')}
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
+                Bem-vindo, {user?.nome || 'Administrador'} • {new Date().toLocaleDateString('pt-BR')}
               </p>
             </div>
             
             <div className="flex items-center gap-4">
-            <Button
+              <Button
                 onClick={carregarDados}
-              variant="outline"
+                variant="outline"
                 size="sm"
-                className="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border-white/20 dark:border-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-800/80"
-            >
-                <RefreshCw size={16} />
-              Atualizar
-            </Button>
-            
-              <div className="flex items-center gap-2 px-3 py-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                className="hover:bg-gray-50 dark:hover:bg-slate-700"
+              >
+                <RefreshCw size={16} className="mr-2" />
+                Atualizar
+              </Button>
+              
+              <div className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="text-sm font-medium text-green-700 dark:text-green-300">
                   Sistema Online
                 </span>
               </div>
             </div>
           </div>
-          </div>
         </div>
+      </div>
 
       <div className="p-6 space-y-8">
         {/* Métricas Principais */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="p-8 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 hover:rotate-1">
+          <Card className="p-6 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-pink-100 text-lg font-bold">👥 Total de Usuários</p>
-                <p className="text-5xl font-black mt-3 drop-shadow-lg">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total de Usuários</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
                   <AnimatedNumber value={stats.totalUsers} />
                 </p>
-                <div className="flex items-center mt-3 bg-green-500/30 rounded-full px-3 py-1">
-                  <ArrowUpRight className="w-5 h-5 text-green-300 animate-bounce" />
-                  <span className="text-green-300 text-lg font-bold ml-2">
-                    +{stats.crescimentoUsuarios}% 📈
+                <div className="flex items-center mt-2">
+                  <ArrowUpRight className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-green-600 dark:text-green-400 ml-1">
+                    +{stats.crescimentoUsuarios}%
                   </span>
                 </div>
               </div>
-              <div className="p-4 bg-white/30 rounded-2xl shadow-lg">
-                <Users className="w-12 h-12 animate-pulse" />
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-8 bg-gradient-to-br from-green-500 via-teal-500 to-cyan-600 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 hover:-rotate-1">
+          <Card className="p-6 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-lg font-bold">🏢 Estabelecimentos</p>
-                <p className="text-5xl font-black mt-3 drop-shadow-lg">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Estabelecimentos</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
                   <AnimatedNumber value={stats.totalEstabelecimentos} />
                 </p>
-                <div className="flex items-center mt-3 bg-green-500/30 rounded-full px-3 py-1">
-                  <ArrowUpRight className="w-5 h-5 text-green-300 animate-bounce" />
-                  <span className="text-green-300 text-lg font-bold ml-2">
-                    +{stats.crescimentoEstabelecimentos}% 📈
+                <div className="flex items-center mt-2">
+                  <ArrowUpRight className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-green-600 dark:text-green-400 ml-1">
+                    +{stats.crescimentoEstabelecimentos}%
                   </span>
                 </div>
               </div>
-              <div className="p-4 bg-white/30 rounded-2xl shadow-lg">
-                <Building2 className="w-12 h-12 animate-pulse" />
+              <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <Building2 className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-8 bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 hover:rotate-1">
+          <Card className="p-6 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-lg font-bold">📅 Agendamentos</p>
-                <p className="text-5xl font-black mt-3 drop-shadow-lg">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Agendamentos</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
                   <AnimatedNumber value={stats.totalAgendamentos} />
                 </p>
-                <div className="flex items-center mt-3 bg-green-500/30 rounded-full px-3 py-1">
-                  <ArrowUpRight className="w-5 h-5 text-green-300 animate-bounce" />
-                  <span className="text-green-300 text-lg font-bold ml-2">
-                    +{stats.crescimentoAgendamentos}% 📈
-                      </span>
+                <div className="flex items-center mt-2">
+                  <ArrowUpRight className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-green-600 dark:text-green-400 ml-1">
+                    +{stats.crescimentoAgendamentos}%
+                  </span>
                 </div>
               </div>
-              <div className="p-4 bg-white/30 rounded-2xl shadow-lg">
-                <Calendar className="w-12 h-12 animate-pulse" />
+              <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <Calendar className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-8 bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 hover:-rotate-1">
+          <Card className="p-6 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-yellow-100 text-lg font-bold">💰 Receita Total</p>
-                <p className="text-4xl font-black mt-3 drop-shadow-lg">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Receita Total</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
                   {formatCurrency(stats.receitaTotal)}
                 </p>
-                <div className="flex items-center mt-3 bg-green-500/30 rounded-full px-3 py-1">
-                  <ArrowUpRight className="w-5 h-5 text-green-300 animate-bounce" />
-                  <span className="text-green-300 text-lg font-bold ml-2">
-                    +{stats.crescimentoReceita}% 📈
+                <div className="flex items-center mt-2">
+                  <ArrowUpRight className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-green-600 dark:text-green-400 ml-1">
+                    +{stats.crescimentoReceita}%
                   </span>
                 </div>
               </div>
-              <div className="p-4 bg-white/30 rounded-2xl shadow-lg">
-                <DollarSign className="w-12 h-12 animate-pulse" />
+              <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                <DollarSign className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
               </div>
             </div>
           </Card>
         </div>
 
         {/* Métricas em Tempo Real */}
-        <Card className="p-6 bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border-2 border-cyan-200 dark:border-cyan-700 shadow-xl">
-          <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600 mb-6 flex items-center gap-2">
-            <Zap className="w-7 h-7 text-cyan-600 animate-pulse" />
-            📊 MÉTRICAS EM TEMPO REAL
-            </h3>
+        <Card className="p-6 bg-white dark:bg-slate-800 shadow-sm border border-gray-200 dark:border-slate-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <Zap className="w-5 h-5 text-blue-600" />
+            Métricas em Tempo Real
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-800/20 rounded-xl border border-green-200 dark:border-green-700">
-              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
-                <Users className="w-6 h-6 text-white" />
+            <div className="text-center p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
+              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <Users className="w-5 h-5 text-green-600 dark:text-green-400" />
               </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Usuários Online</p>
-              <p className="text-2xl font-bold text-green-600">{realTimeStats.onlineUsers}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{realTimeStats.onlineUsers}</p>
             </div>
             
-            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-800/20 rounded-xl border border-blue-200 dark:border-blue-700">
-              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
-                <Activity className="w-6 h-6 text-white" />
+            <div className="text-center p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Sessões Ativas</p>
-              <p className="text-2xl font-bold text-blue-600">{realTimeStats.activeSessions}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{realTimeStats.activeSessions}</p>
             </div>
             
-            <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-yellow-100 dark:from-orange-900/20 dark:to-yellow-800/20 rounded-xl border border-orange-200 dark:border-orange-700">
-              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
-                <Calendar className="w-6 h-6 text-white" />
-                    </div>
+            <div className="text-center p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
+              <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <Calendar className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+              </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Agendamentos Pendentes</p>
-              <p className="text-2xl font-bold text-orange-600">{realTimeStats.pendingAppointments}</p>
-                    </div>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{realTimeStats.pendingAppointments}</p>
+            </div>
             
-            <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-800/20 rounded-xl border border-purple-200 dark:border-purple-700">
-              <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse">
-                <DollarSign className="w-6 h-6 text-white" />
-                  </div>
+            <div className="text-center p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
+              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <DollarSign className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              </div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Receita Hoje</p>
-              <p className="text-2xl font-bold text-purple-600">{formatCurrency(realTimeStats.todayRevenue)}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{formatCurrency(realTimeStats.todayRevenue)}</p>
             </div>
-            </div>
-          </Card>
+          </div>
+        </Card>
 
         {/* Status do Sistema */}
         <Card className="p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-white/20 dark:border-slate-700/50 shadow-xl">
@@ -521,152 +515,145 @@ const DashboardAdmin = () => {
           </Card>
 
         {/* Funcionalidades do Painel */}
-        <Card className="p-8 bg-gradient-to-br from-white via-purple-50 to-pink-50 dark:from-slate-800 dark:via-purple-900 dark:to-pink-900 backdrop-blur-xl border-2 border-purple-200 dark:border-purple-700 shadow-2xl">
-          <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 mb-8 flex items-center gap-3">
-            <Settings className="w-8 h-8 text-purple-600 animate-spin" />
-            🚀 FUNCIONALIDADES ADMINISTRATIVAS PREMIUM
-              </h3>
+        <Card className="p-6 bg-white dark:bg-slate-800 shadow-sm border border-gray-200 dark:border-slate-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            Funcionalidades Administrativas
+          </h3>
           
-          {/* Primeira linha de funcionalidades */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Button
               onClick={() => navigate('/admin/analytics')}
-              className="h-28 flex flex-col items-center justify-center gap-3 hover:scale-110 hover:rotate-2 transition-all duration-500 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 hover:from-pink-500 hover:to-indigo-500 text-white shadow-2xl hover:shadow-3xl border-2 border-white/20"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <BarChart3 className="w-10 h-10 animate-pulse" />
-              <span className="text-lg font-black">📊 Analytics</span>
+              <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Analytics</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/notificacoes')}
-              className="h-28 flex flex-col items-center justify-center gap-3 hover:scale-110 hover:-rotate-2 transition-all duration-500 bg-gradient-to-br from-pink-500 via-red-500 to-orange-500 hover:from-orange-500 hover:to-pink-500 text-white shadow-2xl hover:shadow-3xl border-2 border-white/20"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <Bell className="w-10 h-10 animate-pulse" />
-              <span className="text-lg font-black">🔔 Notificações</span>
+              <Bell className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Notificações</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/monitoramento')}
-              className="h-28 flex flex-col items-center justify-center gap-3 hover:scale-110 hover:rotate-2 transition-all duration-500 bg-gradient-to-br from-red-500 via-pink-500 to-purple-500 hover:from-purple-500 hover:to-red-500 text-white shadow-2xl hover:shadow-3xl border-2 border-white/20"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <Server className="w-10 h-10 animate-pulse" />
-              <span className="text-lg font-black">🖥️ Monitoramento</span>
+              <Server className="w-6 h-6 text-green-600 dark:text-green-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Monitoramento</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/logs')}
-              className="h-28 flex flex-col items-center justify-center gap-3 hover:scale-110 hover:-rotate-2 transition-all duration-500 bg-gradient-to-br from-gray-500 via-blue-500 to-indigo-500 hover:from-indigo-500 hover:to-gray-500 text-white shadow-2xl hover:shadow-3xl border-2 border-white/20"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <Database className="w-10 h-10 animate-pulse" />
-              <span className="text-lg font-black">📋 Logs</span>
+              <Database className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Logs</span>
             </Button>
-              </div>
-              
-          {/* Segunda linha de funcionalidades */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            
             <Button
               onClick={() => navigate('/admin/backup')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <HardDrive className="w-8 h-8" />
-              <span className="text-sm font-semibold">Backup</span>
+              <HardDrive className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Backup</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/seguranca')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <Shield className="w-8 h-8" />
-              <span className="text-sm font-semibold">Segurança</span>
+              <Shield className="w-6 h-6 text-red-600 dark:text-red-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Segurança</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/financeiro')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <DollarSign className="w-8 h-8" />
-              <span className="text-sm font-semibold">Financeiro</span>
+              <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Financeiro</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/marketing')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <Megaphone className="w-8 h-8" />
-              <span className="text-sm font-semibold">Marketing</span>
+              <Megaphone className="w-6 h-6 text-pink-600 dark:text-pink-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Marketing</span>
             </Button>
-              </div>
-              
-          {/* Terceira linha de funcionalidades */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
             <Button
               onClick={() => navigate('/admin/api')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <Code className="w-8 h-8" />
-              <span className="text-sm font-semibold">API</span>
+              <Code className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">API</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/conteudo')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <FileText className="w-8 h-8" />
-              <span className="text-sm font-semibold">Conteúdo</span>
+              <FileText className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Conteúdo</span>
             </Button>
             
             <Button
               onClick={() => navigate('/admin/suporte')}
-              className="h-24 flex flex-col items-center justify-center gap-3 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg hover:shadow-xl"
+              className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-600"
             >
-              <Headphones className="w-8 h-8" />
-              <span className="text-sm font-semibold">Suporte</span>
+              <Headphones className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Suporte</span>
             </Button>
             
-            <div className="h-24 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600">
+            <div className="h-20 flex items-center justify-center bg-gray-50 dark:bg-slate-700/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-slate-600">
               <div className="text-center">
-                <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+                <Plus className="w-6 h-6 text-gray-400 mx-auto mb-1" />
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                   Em breve...
                 </span>
               </div>
-              </div>
             </div>
-          </Card>
+          </div>
+        </Card>
 
         {/* Atividade Recente */}
-        <Card className="p-6 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-white/20 dark:border-slate-700/50 shadow-xl">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-            <Activity className="w-6 h-6 text-blue-600" />
+        <Card className="p-6 bg-white dark:bg-slate-800 shadow-sm border border-gray-200 dark:border-slate-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-blue-600" />
             Atividade Recente
           </h3>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {recentActivity && recentActivity.length > 0 ? recentActivity.map(activity => {
               if (!activity || !activity.id) return null
               const Icon = activity.icon || Activity
               const color = activity.color || 'blue'
               return (
-                <div key={activity.id} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-slate-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
-                  <div className={`p-3 rounded-xl bg-${color}-100 dark:bg-${color}-900/20`}>
-                    <Icon className={`w-5 h-5 text-${color}-600 dark:text-${color}-400`} />
+                <div key={activity.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
+                  <div className={`p-2 rounded-lg bg-${color}-100 dark:bg-${color}-900/20`}>
+                    <Icon className={`w-4 h-4 text-${color}-600 dark:text-${color}-400`} />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900 dark:text-white">{activity.message || 'Atividade'}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(activity.timestamp)}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{activity.message || 'Atividade'}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(activity.timestamp)}</p>
                   </div>
                   <Badge color={color} size="sm">
                     {activity.type?.replace('_', ' ') || 'Atividade'}
                   </Badge>
-              </div>
+                </div>
               )
             }) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>Nenhuma atividade recente</p>
+              <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                <Activity className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">Nenhuma atividade recente</p>
               </div>
             )}
-            </div>
-          </Card>
+          </div>
+        </Card>
               </div>
 
       {/* Toast */}
