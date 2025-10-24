@@ -29,14 +29,22 @@ const Agendamento = () => {
   const [showPagamentoModal, setShowPagamentoModal] = useState(false)
 
   useEffect(() => {
+    // Verificar se o usuário é um cliente
+    if (user?.tipo !== 'cliente') {
+      console.log('❌ Acesso negado: apenas clientes podem fazer agendamentos');
+      setToast({ type: 'error', message: 'Apenas clientes podem fazer agendamentos' });
+      navigate('/');
+      return;
+    }
+    
     carregarDados()
-  }, [estabelecimentoId])
+  }, [estabelecimentoId, user, navigate])
 
   useEffect(() => {
-    if (dataSelecionada) {
+    if (dataSelecionada && user?.tipo === 'cliente') {
       buscarHorariosDisponiveis()
     }
-  }, [dataSelecionada])
+  }, [dataSelecionada, user])
 
   const carregarDados = async () => {
     try {
@@ -54,6 +62,26 @@ const Agendamento = () => {
   }
 
   const buscarHorariosDisponiveis = async () => {
+    console.log('🔍 buscarHorariosDisponiveis chamado com:', {
+      estabelecimentoId,
+      servicoId,
+      dataSelecionada,
+      userTipo: user?.tipo
+    });
+
+    // Verificar se o usuário é um cliente
+    if (user?.tipo !== 'cliente') {
+      console.log('❌ Acesso negado: apenas clientes podem buscar horários');
+      setToast({ type: 'error', message: 'Apenas clientes podem buscar horários disponíveis' });
+      return;
+    }
+
+    if (!estabelecimentoId || !servicoId || !dataSelecionada) {
+      console.log('❌ Parâmetros obrigatórios ausentes');
+      setToast({ type: 'error', message: 'Dados necessários não encontrados' });
+      return;
+    }
+
     setLoadingHorarios(true)
     try {
       const data = await agendamentoService.getHorariosDisponiveis(
@@ -62,11 +90,13 @@ const Agendamento = () => {
         dataSelecionada
       )
       
+      console.log('✅ Dados de horários recebidos:', data);
+      
       // Gera horários de exemplo (simplificado)
       const horarios = gerarHorarios(data)
       setHorariosDisponiveis(horarios)
     } catch (error) {
-      console.error('Erro ao buscar horários:', error)
+      console.error('❌ Erro ao buscar horários:', error)
       setToast({ type: 'error', message: 'Erro ao buscar horários disponíveis' })
     } finally {
       setLoadingHorarios(false)

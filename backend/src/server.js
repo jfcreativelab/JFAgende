@@ -57,7 +57,12 @@ if (!fs.existsSync(comprovantesDir)) {
 }
 
 // Middlewares globais
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: false
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -132,16 +137,52 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
   }
 }));
 
+// Middleware de debug para todas as requisições
+app.use((req, res, next) => {
+  console.log('🌐 Requisição recebida:', {
+    method: req.method,
+    url: req.url,
+    originalUrl: req.originalUrl,
+    baseUrl: req.baseUrl,
+    headers: {
+      authorization: req.headers.authorization ? 'Presente' : 'Ausente',
+      'content-type': req.headers['content-type'],
+      'user-agent': req.headers['user-agent']
+    }
+  });
+  next();
+});
+
 // Middleware de tratamento de erros 404
 app.use((req, res) => {
+  console.log('❌ Rota não encontrada:', {
+    method: req.method,
+    url: req.url,
+    originalUrl: req.originalUrl,
+    baseUrl: req.baseUrl,
+    path: req.path
+  });
   res.status(404).json({ error: 'Rota não encontrada' });
 });
 
 // Middleware de tratamento de erros global
 app.use((err, req, res, next) => {
-  console.error('Erro:', err);
+  console.error('❌ Erro global capturado:', {
+    message: err.message,
+    stack: err.stack,
+    url: req.url,
+    method: req.method,
+    status: err.status,
+    originalUrl: req.originalUrl,
+    baseUrl: req.baseUrl,
+    path: req.path
+  });
+  
+  // Garantir que sempre retorne JSON
   res.status(err.status || 500).json({
-    error: err.message || 'Erro interno do servidor'
+    error: err.message || 'Erro interno do servidor',
+    timestamp: new Date().toISOString(),
+    path: req.url
   });
 });
 

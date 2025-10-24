@@ -16,10 +16,28 @@ export const agendamentoService = {
 
   // Buscar horários disponíveis
   getHorariosDisponiveis: async (estabelecimentoId, servicoId, data) => {
-    const response = await api.get('/agendamentos/horarios-disponiveis', {
-      params: { estabelecimentoId, servicoId, data }
-    })
-    return response.data
+    console.log('🔍 agendamentoService.getHorariosDisponiveis chamado com:', {
+      estabelecimentoId,
+      servicoId,
+      data
+    });
+    
+    try {
+      const response = await api.get('/agendamentos/horarios-disponiveis', {
+        params: { estabelecimentoId, servicoId, data }
+      });
+      
+      console.log('✅ getHorariosDisponiveis resposta:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Erro em getHorariosDisponiveis:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        url: error.config?.url
+      });
+      throw error;
+    }
   },
 
   // Atualizar status

@@ -115,7 +115,7 @@ function App() {
           <Route
             path="/estabelecimento/:id"
             element={
-              <ProtectedRoute tipo="cliente">
+              <ProtectedRoute>
                 <EstabelecimentoDetalhes />
               </ProtectedRoute>
             }

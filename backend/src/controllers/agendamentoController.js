@@ -326,10 +326,25 @@ export const cancelAgendamento = async (req, res) => {
  */
 export const getHorariosDisponiveis = async (req, res) => {
   try {
+    console.log('🔍 getHorariosDisponiveis chamado com:', {
+      query: req.query,
+      user: req.user,
+      method: req.method,
+      url: req.url,
+      headers: req.headers
+    });
+
     const { estabelecimentoId, servicoId, data } = req.query;
 
     if (!estabelecimentoId || !servicoId || !data) {
+      console.log('❌ Parâmetros obrigatórios ausentes:', { estabelecimentoId, servicoId, data });
       return res.status(400).json({ error: 'Estabelecimento, serviço e data são obrigatórios' });
+    }
+
+    // Verificar se o usuário é cliente
+    if (req.user.tipo !== 'cliente') {
+      console.log('❌ Usuário não é cliente:', req.user.tipo);
+      return res.status(403).json({ error: 'Acesso negado. Apenas clientes podem buscar horários disponíveis.' });
     }
 
     // Busca o serviço para obter a duração
@@ -381,13 +396,16 @@ export const getHorariosDisponiveis = async (req, res) => {
     // Gera lista de horários disponíveis (simplificado)
     const horariosOcupados = agendamentosOcupados.map(a => a.dataHora.toISOString());
 
-    res.json({
+    const response = {
       horarioFuncionamento,
       duracaoServico: servico.duracaoMin,
       horariosOcupados
-    });
+    };
+
+    console.log('✅ getHorariosDisponiveis retornando:', response);
+    res.json(response);
   } catch (error) {
-    console.error('Erro ao buscar horários disponíveis:', error);
+    console.error('❌ Erro ao buscar horários disponíveis:', error);
     res.status(500).json({ error: 'Erro ao buscar horários disponíveis' });
   }
 };

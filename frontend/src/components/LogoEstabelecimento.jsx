@@ -1,7 +1,8 @@
 const LogoEstabelecimento = ({ 
   estabelecimento, 
   className = "w-full h-full object-cover",
-  fallbackClassName = "w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold"
+  fallbackClassName = "w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold",
+  showDebug = false
 }) => {
   // URLs do Cloudinary para fallback (hardcoded para garantir funcionamento)
   const getCloudinaryUrl = (estabelecimentoId, nome) => {
@@ -16,16 +17,30 @@ const LogoEstabelecimento = ({
 
   // Função para obter URL da imagem
   const getImageUrl = (fotoPerfilUrl, estabelecimentoId, nome) => {
+    console.log('🔍 LogoEstabelecimento - getImageUrl:', { fotoPerfilUrl, estabelecimentoId, nome })
+    
     // Se tem fotoPerfilUrl e é uma URL válida, usar
     if (fotoPerfilUrl && fotoPerfilUrl.startsWith('http')) {
+      console.log('✅ Usando fotoPerfilUrl:', fotoPerfilUrl)
       return fotoPerfilUrl
     }
     
     // Se não tem fotoPerfilUrl ou é inválida, usar Cloudinary
-    return getCloudinaryUrl(estabelecimentoId, nome) || ''
+    const cloudinaryUrl = getCloudinaryUrl(estabelecimentoId, nome)
+    console.log('☁️ Usando Cloudinary URL:', cloudinaryUrl)
+    return cloudinaryUrl || ''
   }
 
   const imageUrl = getImageUrl(estabelecimento.fotoPerfilUrl, estabelecimento.id, estabelecimento.nome)
+  
+  if (showDebug) {
+    console.log('🐛 LogoEstabelecimento Debug:', {
+      estabelecimento: estabelecimento.nome,
+      fotoPerfilUrl: estabelecimento.fotoPerfilUrl,
+      imageUrl,
+      hasImage: !!imageUrl
+    })
+  }
 
   return (
     <div className="relative">
@@ -36,9 +51,13 @@ const LogoEstabelecimento = ({
           className={className}
           loading="lazy"
           onError={(e) => {
+            console.error('❌ Erro ao carregar logo:', imageUrl, e)
             // Se falhar, mostrar fallback
             e.target.style.display = 'none'
             e.target.nextSibling.style.display = 'flex'
+          }}
+          onLoad={() => {
+            console.log('✅ Logo carregada com sucesso:', imageUrl)
           }}
         />
       ) : null}

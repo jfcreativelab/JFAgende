@@ -29,7 +29,7 @@ router.get('/estabelecimento/:id', authenticate, isEstabelecimento, getAgendamen
  * @desc    Busca horários disponíveis
  * @access  Private (Cliente)
  */
-router.get('/horarios-disponiveis', authenticate, getHorariosDisponiveis);
+router.get('/horarios-disponiveis', authenticate, isCliente, getHorariosDisponiveis);
 
 /**
  * @route   PUT /agendamentos/:id
