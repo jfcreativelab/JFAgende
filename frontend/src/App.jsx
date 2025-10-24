@@ -46,6 +46,7 @@ import PagamentoCancelado from './pages/PagamentoCancelado'
 import TesteImagens from './pages/TesteImagens'
 import TesteMobileLogos from './pages/TesteMobileLogos'
 import DebugMobileLogos from './pages/DebugMobileLogos'
+import TesteLogosMobile from './pages/TesteLogosMobile'
 
 // Componente de rota protegida
 function ProtectedRoute({ children, tipo }) {
@@ -346,6 +347,7 @@ function App() {
           <Route path="/teste-imagens" element={<TesteImagens />} />
           <Route path="/teste-mobile-logos" element={<TesteMobileLogos />} />
           <Route path="/debug-mobile-logos" element={<DebugMobileLogos />} />
+          <Route path="/teste-logos-mobile" element={<TesteLogosMobile />} />
 
           {/* Rota 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />

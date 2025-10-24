@@ -4,6 +4,7 @@ import Badge from './Badge'
 import Button from './Button'
 import StarRating from './StarRating'
 import PlanoBadge from './PlanoBadge'
+import LogoEstabelecimento from './LogoEstabelecimento'
 import estabelecimentoService from '../services/estabelecimentoService'
 
 const EstabelecimentoCard = ({ 
@@ -108,56 +109,12 @@ const EstabelecimentoCard = ({
 
         {/* Logo do Estabelecimento */}
         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-3 border-white dark:border-gray-800 shadow-2xl ring-2 ring-primary-500/30 group-hover:scale-110 transition-transform duration-300 z-10">
-          {/* Imagem principal */}
-          <img 
-            src={estabelecimentoService.getImageUrlWithFallback(estabelecimento.fotoPerfilUrl, estabelecimento.id, estabelecimento.nome)} 
-            alt={`Logo ${estabelecimento.nome}`}
+          <LogoEstabelecimento 
+            estabelecimento={estabelecimento}
             className="w-full h-full object-cover"
-            loading="lazy"
-            onError={(e) => {
-              console.error('❌ Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
-              
-              // Log para mobile debug
-              if (window.innerWidth < 768) {
-                console.log('📱 MOBILE DEBUG - Erro ao carregar imagem');
-                console.log('📱 URL tentada:', e.target.src);
-              }
-              
-              // Tentar URL do Cloudinary como fallback
-              const cloudinaryUrl = estabelecimentoService.getCloudinaryUrl(estabelecimento.id, estabelecimento.nome);
-              if (cloudinaryUrl) {
-                console.log('🔄 Tentando URL do Cloudinary:', cloudinaryUrl);
-                if (window.innerWidth < 768) {
-                  console.log('📱 MOBILE DEBUG - Tentando Cloudinary:', cloudinaryUrl);
-                }
-                e.target.src = cloudinaryUrl;
-              } else {
-                console.log('❌ Sem URL do Cloudinary disponível');
-                if (window.innerWidth < 768) {
-                  console.log('📱 MOBILE DEBUG - Sem Cloudinary, mostrando fallback');
-                }
-                // Mostrar fallback visual
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'flex';
-              }
-            }}
-            onLoad={(e) => {
-              console.log('✅ Logo carregada com sucesso!');
-              console.log('✅ URL usada:', e.target.src);
-              
-              // Log para mobile debug
-              if (window.innerWidth < 768) {
-                console.log('📱 MOBILE DEBUG - Imagem carregada com sucesso!');
-              }
-              
-              // Esconder fallback quando imagem carrega
-              e.target.nextSibling.style.display = 'none';
-            }}
+            fallbackClassName="w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs"
+            showDebug={window.innerWidth < 768}
           />
-          {/* Fallback visual */}
-          <div className="w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs" style={{display: 'none'}}>
-            {estabelecimento.nome.charAt(0).toUpperCase()}
-          </div>
         </div>
 
         {/* Overlay com gradiente */}
