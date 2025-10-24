@@ -4,9 +4,9 @@ console.log('🚀 CONFIGURANDO CLOUDINARY NO RAILWAY\n');
 
 const variables = {
   'CLOUDINARY_CLOUD_NAME': 'dypmxu22a',
-  'CLOUDINARY_API_KEY': '123456789012345',
-  'CLOUDINARY_API_SECRET': 'abcdefghijklmnopqrstuvwxyz123456789',
-  'CLOUDINARY_URL': 'cloudinary://123456789012345:abcdefghijklmnopqrstuvwxyz123456789@dypmxu22a'
+  'CLOUDINARY_API_KEY': '313929499946394',
+  'CLOUDINARY_API_SECRET': 'WndYrcC3VVeKKVIzC0ZzWHYnZho',
+  'CLOUDINARY_URL': 'cloudinary://313929499946394:WndYrcC3VVeKKVIzC0ZzWHYnZho@dypmxu22a'
 };
 
 console.log('📋 Variáveis que serão configuradas:');
