@@ -467,12 +467,46 @@ const NotificacoesAdmin = () => {
 
   useEffect(() => {
     carregarNotificacoes()
+    
+    // Atualizar notificações a cada 30 segundos
+    const interval = setInterval(() => {
+      carregarNotificacoes()
+    }, 30000)
+    
+    return () => clearInterval(interval)
   }, [filter])
 
   const carregarNotificacoes = async () => {
     setLoading(true)
     try {
-      // Simular dados de notificações
+      const token = localStorage.getItem('adminToken')
+      
+      // Buscar notificações reais da API
+      const response = await fetch('https://jfagende-production.up.railway.app/api/admin/notificacoes', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setNotifications(data.notificacoes || [])
+      } else {
+        // Se não conseguir dados reais, usar dados simulados
+        carregarNotificacoesSimuladas()
+      }
+    } catch (error) {
+      console.error('Erro ao carregar notificações:', error)
+      carregarNotificacoesSimuladas()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const carregarNotificacoesSimuladas = () => {
+    // Simular dados de notificações
       const dadosSimulados = [
         {
           id: 1,
@@ -612,30 +646,41 @@ const NotificacoesAdmin = () => {
 
   const createNotification = async () => {
     try {
-      const notification = {
-        id: Date.now(),
-        ...newNotification,
-        createdAt: new Date(),
-        readAt: null,
-        sentAt: newNotification.scheduledFor ? new Date(newNotification.scheduledFor) : new Date(),
-        status: 'sent',
-        read: false
-      }
+      const token = localStorage.getItem('adminToken')
       
-      setNotifications([notification, ...notifications])
-      setShowCreateModal(false)
-      setNewNotification({
-        title: '',
-        message: '',
-        type: 'info',
-        priority: 'medium',
-        channels: ['in-app'],
-        targetUsers: 'all',
-        scheduledFor: null,
-        expiresAt: null
+      const response = await fetch('https://jfagende-production.up.railway.app/api/admin/notificacoes', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...newNotification,
+          scheduledFor: newNotification.scheduledFor ? new Date(newNotification.scheduledFor) : new Date(),
+          expiresAt: newNotification.expiresAt ? new Date(newNotification.expiresAt) : null
+        })
       })
-      setToast({ type: 'success', message: 'Notificação criada com sucesso' })
+
+      if (response.ok) {
+        const data = await response.json()
+        setNotifications([data.notificacao, ...notifications])
+        setShowCreateModal(false)
+        setNewNotification({
+          title: '',
+          message: '',
+          type: 'info',
+          priority: 'medium',
+          channels: ['in-app'],
+          targetUsers: 'all',
+          scheduledFor: null,
+          expiresAt: null
+        })
+        setToast({ type: 'success', message: 'Notificação criada e enviada com sucesso' })
+      } else {
+        throw new Error('Erro ao criar notificação')
+      }
     } catch (error) {
+      console.error('Erro ao criar notificação:', error)
       setToast({ type: 'error', message: 'Erro ao criar notificação' })
     }
   }

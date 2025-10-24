@@ -550,20 +550,53 @@ const FinanceiroAdmin = () => {
   const carregarDados = async () => {
     setLoading(true)
     try {
-      // Simular dados financeiros
+      const token = localStorage.getItem('adminToken')
+      
+      // Buscar dados financeiros reais da API
+      const [statsData, revenueData, transactionsData, commissionsData] = await Promise.all([
+        fetch('https://jfagende-production.up.railway.app/api/admin/financeiro/estatisticas', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(res => res.ok ? res.json() : null),
+        
+        fetch('https://jfagende-production.up.railway.app/api/admin/financeiro/receita', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(res => res.ok ? res.json() : null),
+        
+        fetch('https://jfagende-production.up.railway.app/api/admin/financeiro/transacoes', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(res => res.ok ? res.json() : null),
+        
+        fetch('https://jfagende-production.up.railway.app/api/admin/financeiro/comissoes', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(res => res.ok ? res.json() : null)
+      ])
+
+      // Usar dados reais quando disponíveis, senão dados simulados
       const stats = {
-        totalRevenue: 125680.50,
-        monthlyRevenue: 28500.30,
-        totalExpenses: 15680.25,
-        netProfit: 109000.25,
-        revenueGrowth: 12.5,
-        profitMargin: 86.7,
-        totalCommissions: 12568.05,
-        pendingPayments: 3599.70,
-        averageTransaction: 199.80,
-        totalTransactions: 628
+        totalRevenue: statsData?.receitaTotal || 125680.50,
+        monthlyRevenue: revenueData?.receitaMensal || 28500.30,
+        totalExpenses: statsData?.despesasTotal || 15680.25,
+        netProfit: statsData?.lucroLiquido || 109000.25,
+        revenueGrowth: revenueData?.crescimentoReceita || 12.5,
+        profitMargin: statsData?.margemLucro || 86.7,
+        totalCommissions: commissionsData?.totalComissoes || 12568.05,
+        pendingPayments: statsData?.pagamentosPendentes || 3599.70,
+        averageTransaction: statsData?.valorMedioTransacao || 199.80,
+        totalTransactions: statsData?.totalTransacoes || 628
       }
+      
       setFinancialStats(stats)
+      
+      // Atualizar dados de transações se disponíveis
+      if (transactionsData?.transacoes) {
+        setTransactions(transactionsData.transacoes)
+      }
+      
+      // Atualizar dados de comissões se disponíveis
+      if (commissionsData?.comissoes) {
+        setCommissions(commissionsData.comissoes)
+      }
+      
     } catch (error) {
       console.error('Erro ao carregar dados:', error)
       setToast({ type: 'error', message: 'Erro ao carregar dados financeiros' })

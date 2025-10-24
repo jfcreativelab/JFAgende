@@ -80,24 +80,58 @@ const GerenciarUsuarios = () => {
   const carregarDados = async () => {
     setLoading(true)
     try {
+      const token = localStorage.getItem('adminToken')
+      
       if (abaAtiva === 'clientes') {
-        const data = await adminService.getAllClientes({
-          page: pagination.page,
-          limit: pagination.limit,
-          search,
-          ...filtros
+        // Buscar dados reais de clientes
+        const response = await fetch(`https://jfagende-production.up.railway.app/api/admin/clientes?page=${pagination.page}&limit=${pagination.limit}&search=${search}&${new URLSearchParams(filtros).toString()}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
         })
-        setClientes(data.clientes)
-        setPagination(prev => ({ ...prev, ...data.pagination }))
+        
+        if (response.ok) {
+          const data = await response.json()
+          setClientes(data.clientes || [])
+          setPagination(prev => ({ 
+            ...prev, 
+            total: data.total || 0,
+            totalPages: Math.ceil((data.total || 0) / pagination.limit)
+          }))
+        } else {
+          // Fallback para dados simulados
+          const data = await adminService.getAllClientes({
+            page: pagination.page,
+            limit: pagination.limit,
+            search,
+            ...filtros
+          })
+          setClientes(data.clientes)
+          setPagination(prev => ({ ...prev, ...data.pagination }))
+        }
       } else {
-        const data = await adminService.getAllEstabelecimentos({
-          page: pagination.page,
-          limit: pagination.limit,
-          search,
-          ...filtros
+        // Buscar dados reais de estabelecimentos
+        const response = await fetch(`https://jfagende-production.up.railway.app/api/admin/estabelecimentos?page=${pagination.page}&limit=${pagination.limit}&search=${search}&${new URLSearchParams(filtros).toString()}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
         })
-        setEstabelecimentos(data.estabelecimentos)
-        setPagination(prev => ({ ...prev, ...data.pagination }))
+        
+        if (response.ok) {
+          const data = await response.json()
+          setEstabelecimentos(data.estabelecimentos || [])
+          setPagination(prev => ({ 
+            ...prev, 
+            total: data.total || 0,
+            totalPages: Math.ceil((data.total || 0) / pagination.limit)
+          }))
+        } else {
+          // Fallback para dados simulados
+          const data = await adminService.getAllEstabelecimentos({
+            page: pagination.page,
+            limit: pagination.limit,
+            search,
+            ...filtros
+          })
+          setEstabelecimentos(data.estabelecimentos)
+          setPagination(prev => ({ ...prev, ...data.pagination }))
+        }
       }
 
       // Carregar estatísticas

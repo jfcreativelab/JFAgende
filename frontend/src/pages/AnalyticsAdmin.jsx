@@ -482,17 +482,34 @@ const AnalyticsAdmin = () => {
   const carregarAnalytics = async () => {
     setLoading(true)
     try {
-      // Simular dados de analytics (em produção, buscar da API)
+      const token = localStorage.getItem('adminToken')
+      
+      // Buscar dados reais da API
+      const [overviewData, realtimeData, trendsData] = await Promise.all([
+        fetch('https://jfagende-production.up.railway.app/api/admin/estatisticas-gerais', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(res => res.ok ? res.json() : null),
+        
+        fetch('https://jfagende-production.up.railway.app/api/admin/analytics-realtime', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(res => res.ok ? res.json() : null),
+        
+        fetch('https://jfagende-production.up.railway.app/api/admin/analytics-trends', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(res => res.ok ? res.json() : null)
+      ])
+
+      // Usar dados reais quando disponíveis, senão dados simulados
       const dadosSimulados = {
         overview: {
-          totalUsers: 15420,
-          totalRevenue: 125680.50,
+          totalUsers: overviewData?.totalUsuarios || 15420,
+          totalRevenue: overviewData?.receitaTotal || 125680.50,
           conversionRate: 3.2,
           avgSessionDuration: 4.5,
           bounceRate: 42.1,
           pageViews: 89450,
-          uniqueVisitors: 12340,
-          returningVisitors: 3080
+          uniqueVisitors: overviewData?.totalUsuarios || 12340,
+          returningVisitors: Math.floor((overviewData?.totalUsuarios || 12340) * 0.25)
         },
         realtime: {
           activeUsers: 47,

@@ -114,13 +114,31 @@ const LogsAuditoria = () => {
   const carregarLogs = async () => {
     setLoading(true)
     try {
-      const data = await adminService.getLogs({
-        page: pagination.page,
-        limit: pagination.limit,
-        ...filtros
+      const token = localStorage.getItem('adminToken')
+      
+      // Buscar logs reais da API
+      const response = await fetch(`https://jfagende-production.up.railway.app/api/admin/logs?page=${pagination.page}&limit=${pagination.limit}&${new URLSearchParams(filtros).toString()}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
       })
-      setLogs(data.logs)
-      setPagination(prev => ({ ...prev, ...data.pagination }))
+      
+      if (response.ok) {
+        const data = await response.json()
+        setLogs(data.logs || [])
+        setPagination(prev => ({ 
+          ...prev, 
+          total: data.total || 0,
+          totalPages: Math.ceil((data.total || 0) / pagination.limit)
+        }))
+      } else {
+        // Fallback para dados simulados
+        const data = await adminService.getLogs({
+          page: pagination.page,
+          limit: pagination.limit,
+          ...filtros
+        })
+        setLogs(data.logs)
+        setPagination(prev => ({ ...prev, ...data.pagination }))
+      }
     } catch (error) {
       console.error('Erro ao carregar logs:', error)
       setToast({ type: 'error', message: 'Erro ao carregar logs' })

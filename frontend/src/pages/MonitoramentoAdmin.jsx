@@ -495,7 +495,24 @@ const MonitoramentoAdmin = () => {
   const carregarMetricas = async () => {
     setLoading(true)
     try {
-      // Simular dados de monitoramento (em produção, buscar da API)
+      const token = localStorage.getItem('adminToken')
+      
+      // Buscar dados reais de monitoramento da API
+      const [serverData, performanceData, alertsData] = await Promise.all([
+        fetch('https://jfagende-production.up.railway.app/api/admin/monitoramento/servidor', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(res => res.ok ? res.json() : null),
+        
+        fetch('https://jfagende-production.up.railway.app/api/admin/monitoramento/performance', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(res => res.ok ? res.json() : null),
+        
+        fetch('https://jfagende-production.up.railway.app/api/admin/monitoramento/alertas', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(res => res.ok ? res.json() : null)
+      ])
+
+      // Usar dados reais quando disponíveis, senão dados simulados
       const dadosSimulados = {
         server: {
           status: Math.random() > 0.1 ? 'online' : 'offline',

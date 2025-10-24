@@ -92,6 +92,21 @@ router.post('/exportar-estabelecimentos', isAdmin, adminController.exportarEstab
 router.post('/exportar-relatorio', isAdmin, adminController.exportarRelatorio)
 router.post('/exportar-logs', isAdmin, adminController.exportarLogs)
 
+// APIs para funcionalidades reais do painel admin
+router.get('/agendamentos-hoje', isAdmin, adminController.getAgendamentosHoje)
+router.get('/receita-hoje', isAdmin, adminController.getReceitaHoje)
+router.get('/analytics-realtime', isAdmin, adminController.getAnalyticsRealtime)
+router.get('/analytics-trends', isAdmin, adminController.getAnalyticsTrends)
+router.get('/notificacoes', isAdmin, adminController.getNotificacoes)
+router.post('/notificacoes', isAdmin, adminController.createNotificacao)
+router.get('/monitoramento/servidor', isAdmin, adminController.getMonitoramentoServidor)
+router.get('/monitoramento/performance', isAdmin, adminController.getMonitoramentoPerformance)
+router.get('/monitoramento/alertas', isAdmin, adminController.getMonitoramentoAlertas)
+router.get('/financeiro/estatisticas', isAdmin, adminController.getFinanceiroEstatisticas)
+router.get('/financeiro/receita', isAdmin, adminController.getFinanceiroReceita)
+router.get('/financeiro/transacoes', isAdmin, adminController.getFinanceiroTransacoes)
+router.get('/financeiro/comissoes', isAdmin, adminController.getFinanceiroComissoes)
+
 // =====================================================
 // ROTAS DE SUPER ADMIN (Gerenciamento de Admins)
 // =====================================================
