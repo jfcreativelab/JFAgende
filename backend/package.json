@@ -18,6 +18,7 @@
     "fix-assinaturas": "node scripts/fix-assinaturas.js",
     "setup-stripe": "node scripts/setup-stripe-products.js",
     "verify-stripe": "node scripts/verificar-stripe.js",
+    "migrate-images": "node migrar-imagens-cloudinary.js",
     "criar-dados-teste": "node criar-dados-teste.js",
     "populate-db": "node populate-database.js"
   },

@@ -1,0 +1,12 @@
+# CLOUDINARY CONFIGURATION
+# Cole as credenciais do Cloudinary aqui e depois renomeie este arquivo para .env.cloudinary
+
+CLOUDINARY_CLOUD_NAME=seu_cloud_name_aqui
+CLOUDINARY_API_KEY=sua_api_key_aqui
+CLOUDINARY_API_SECRET=seu_api_secret_aqui
+
+# INSTRUÇÕES:
+# 1. Copie as credenciais do Cloudinary
+# 2. Cole nos campos acima
+# 3. Renomeie este arquivo para .env.cloudinary
+# 4. Execute: npm run migrate-images
