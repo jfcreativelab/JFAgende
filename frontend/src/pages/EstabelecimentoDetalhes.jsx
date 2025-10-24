@@ -123,35 +123,53 @@ const EstabelecimentoDetalhes = () => {
                 <div className="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-2xl flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-primary-500/20 mx-auto sm:mx-0 relative">
                   {/* Imagem principal */}
                   <img 
-                    src={estabelecimento.fotoPerfilUrl ? estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl) : ''} 
+                    src={estabelecimentoService.getImageUrlWithFallback(estabelecimento.fotoPerfilUrl, estabelecimento.id, estabelecimento.nome)} 
                     alt={estabelecimento.nome}
                     className="w-full h-full object-cover"
                     loading="lazy"
-                    style={{display: estabelecimento.fotoPerfilUrl ? 'block' : 'none'}}
                     onError={(e) => {
                       console.error('❌ Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
-                      console.error('❌ URL tentada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
+                      console.error('❌ URL tentada:', e.target.src);
+                      
+                      // Log para mobile debug
+                      if (window.innerWidth < 768) {
+                        console.log('📱 MOBILE DEBUG - Erro ao carregar logo');
+                      }
                       
                       // Tentar URL do Cloudinary como fallback
                       const cloudinaryUrl = estabelecimentoService.getCloudinaryUrl(estabelecimento.id, estabelecimento.nome);
                       if (cloudinaryUrl) {
                         console.log('🔄 Tentando URL do Cloudinary:', cloudinaryUrl);
+                        if (window.innerWidth < 768) {
+                          console.log('📱 MOBILE DEBUG - Tentando Cloudinary:', cloudinaryUrl);
+                        }
                         e.target.src = cloudinaryUrl;
                       } else {
+                        console.log('❌ Sem URL do Cloudinary disponível');
+                        if (window.innerWidth < 768) {
+                          console.log('📱 MOBILE DEBUG - Sem Cloudinary, mostrando fallback');
+                        }
                         // Mostrar fallback visual
                         e.target.style.display = 'none';
                         e.target.nextSibling.style.display = 'flex';
                       }
                     }}
-                    onLoad={() => {
-                      console.log('✅ Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
+                    onLoad={(e) => {
+                      console.log('✅ Logo carregada com sucesso!');
+                      console.log('✅ URL usada:', e.target.src);
+                      
+                      // Log para mobile debug
+                      if (window.innerWidth < 768) {
+                        console.log('📱 MOBILE DEBUG - Logo carregada com sucesso!');
+                      }
+                      
                       // Esconder fallback quando imagem carrega
                       e.target.nextSibling.style.display = 'none';
                     }}
                   />
                   
                   {/* Fallback visual */}
-                  <div className="w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl" style={{display: estabelecimento.fotoPerfilUrl ? 'none' : 'flex'}}>
+                  <div className="w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl" style={{display: 'none'}}>
                     {estabelecimento.nome.charAt(0).toUpperCase()}
                   </div>
                 </div>

@@ -110,19 +110,17 @@ const EstabelecimentoCard = ({
         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-3 border-white dark:border-gray-800 shadow-2xl ring-2 ring-primary-500/30 group-hover:scale-110 transition-transform duration-300 z-10">
           {/* Imagem principal */}
           <img 
-            src={estabelecimento.fotoPerfilUrl ? estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl) : ''} 
+            src={estabelecimentoService.getImageUrlWithFallback(estabelecimento.fotoPerfilUrl, estabelecimento.id, estabelecimento.nome)} 
             alt={`Logo ${estabelecimento.nome}`}
             className="w-full h-full object-cover"
             loading="lazy"
-            style={{display: estabelecimento.fotoPerfilUrl ? 'block' : 'none'}}
             onError={(e) => {
-              const railwayUrl = estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl);
               console.error('❌ Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
-              console.error('❌ URL tentada:', railwayUrl);
               
               // Log para mobile debug
               if (window.innerWidth < 768) {
-                console.log('📱 MOBILE DEBUG - Erro Railway:', railwayUrl);
+                console.log('📱 MOBILE DEBUG - Erro ao carregar imagem');
+                console.log('📱 URL tentada:', e.target.src);
               }
               
               // Tentar URL do Cloudinary como fallback
@@ -144,8 +142,8 @@ const EstabelecimentoCard = ({
               }
             }}
             onLoad={(e) => {
-              console.log('✅ Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
-              console.log('✅ URL usada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
+              console.log('✅ Logo carregada com sucesso!');
+              console.log('✅ URL usada:', e.target.src);
               
               // Log para mobile debug
               if (window.innerWidth < 768) {
@@ -157,7 +155,7 @@ const EstabelecimentoCard = ({
             }}
           />
           {/* Fallback visual */}
-          <div className="w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs" style={{display: estabelecimento.fotoPerfilUrl ? 'none' : 'flex'}}>
+          <div className="w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs" style={{display: 'none'}}>
             {estabelecimento.nome.charAt(0).toUpperCase()}
           </div>
         </div>

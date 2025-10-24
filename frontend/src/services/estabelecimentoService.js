@@ -77,6 +77,24 @@ export const estabelecimentoService = {
     return fullUrl
   },
 
+  // Obter URL com fallback automático para mobile
+  getImageUrlWithFallback: (url, estabelecimentoId, nome) => {
+    console.log('🔄 getImageUrlWithFallback chamada com:', { url, estabelecimentoId, nome })
+    
+    // Se não tem URL, tentar Cloudinary direto
+    if (!url) {
+      const cloudinaryUrl = estabelecimentoService.getCloudinaryUrl(estabelecimentoId, nome)
+      console.log('📱 Mobile: Sem URL Railway, usando Cloudinary:', cloudinaryUrl)
+      return cloudinaryUrl || ''
+    }
+    
+    // Se tem URL, usar Railway primeiro
+    const railwayUrl = estabelecimentoService.getImageUrl(url)
+    console.log('🚂 Railway URL:', railwayUrl)
+    
+    return railwayUrl
+  },
+
   // URLs do Cloudinary para fallback
   getCloudinaryUrl: (estabelecimentoId, nome) => {
     const cloudinaryUrls = {
