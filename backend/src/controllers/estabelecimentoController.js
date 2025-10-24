@@ -379,51 +379,42 @@ export const uploadLogo = async (req, res) => {
       .webp({ quality: 85 })
       .toBuffer();
 
-    // Salvar imagem localmente no Railway
-    const fileName = `logo-${Date.now()}-${Math.floor(Math.random() * 1000000000)}.webp`;
-    const filePath = path.join(estabelecimentosDir, fileName);
-    
-    try {
-      await fs.writeFile(filePath, processedImageBuffer);
-      console.log('🖼️ Logo salva localmente:', fileName);
-    } catch (error) {
-      console.error('❌ Erro ao salvar logo localmente:', error);
-      return res.status(500).json({ error: 'Erro ao salvar a imagem' });
+    // Upload para Cloudinary
+    const uploadResult = await cloudinaryService.uploadImageFromBuffer(
+      processedImageBuffer, 
+      'jfagende/estabelecimentos'
+    );
+
+    if (!uploadResult.success) {
+      console.error('❌ Erro no Cloudinary:', uploadResult.error);
+      return res.status(500).json({ 
+        error: 'Erro ao fazer upload da imagem. Verifique se o Cloudinary está configurado corretamente.',
+        details: uploadResult.error 
+      });
     }
 
     // Remover arquivo temporário
     try { await fs.unlink(tempPath); } catch {}
 
-    // Construir URL da imagem
-    const baseURL = process.env.NODE_ENV === 'production' 
-      ? 'https://jfagende-production.up.railway.app'
-      : 'http://localhost:5000';
-    const imageUrl = `${baseURL}/uploads/estabelecimentos/${fileName}`;
+    console.log('🖼️ Logo enviada para Cloudinary:', uploadResult.url);
 
-    console.log('🖼️ Logo URL:', imageUrl);
-
-    // Remover logo antiga se existir (arquivo local)
+    // Remover logo antiga do Cloudinary se existir
     const atual = await prisma.estabelecimento.findUnique({
       where: { id: estabelecimentoId },
       select: { fotoPerfilUrl: true }
     });
     
-    if (atual?.fotoPerfilUrl && atual.fotoPerfilUrl.includes('/uploads/estabelecimentos/')) {
-      // Extrair nome do arquivo da URL
-      const oldFileName = atual.fotoPerfilUrl.split('/').pop();
-      const oldFilePath = path.join(estabelecimentosDir, oldFileName);
-      try {
-        await fs.unlink(oldFilePath);
-        console.log('🗑️ Logo antiga removida:', oldFileName);
-      } catch (error) {
-        console.log('⚠️ Não foi possível remover logo antiga:', error.message);
-      }
+    if (atual?.fotoPerfilUrl && atual.fotoPerfilUrl.includes('cloudinary.com')) {
+      // Extrair public_id da URL do Cloudinary
+      const publicId = atual.fotoPerfilUrl.split('/').pop().split('.')[0];
+      await cloudinaryService.deleteImage(`jfagende/estabelecimentos/${publicId}`);
+      console.log('🗑️ Logo antiga removida do Cloudinary:', publicId);
     }
 
     // Atualizar o estabelecimento com a URL da logo
     const estabelecimentoAtualizado = await prisma.estabelecimento.update({
       where: { id: estabelecimentoId },
-      data: { fotoPerfilUrl: imageUrl },
+      data: { fotoPerfilUrl: uploadResult.url },
       select: {
         id: true,
         nome: true,
