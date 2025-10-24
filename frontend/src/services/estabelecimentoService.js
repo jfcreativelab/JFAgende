@@ -52,15 +52,29 @@ export const estabelecimentoService = {
 
   // Obter URL completa da imagem
   getImageUrl: (url) => {
-    if (!url) return ''
-    if (url.startsWith('http')) return url
+    console.log('🔍 getImageUrl chamada com:', url)
+    
+    if (!url) {
+      console.log('❌ URL vazia, retornando string vazia')
+      return ''
+    }
+    
+    if (url.startsWith('http')) {
+      console.log('✅ URL já completa:', url)
+      return url
+    }
     
     // Usar URL da produção se estiver no Vercel, senão usa localhost
     const baseURL = window.location.hostname.includes('vercel.app')
       ? 'https://jfagende-production.up.railway.app'
       : 'http://localhost:5000'
     
-    return `${baseURL}${url}`
+    const fullUrl = `${baseURL}${url}`
+    console.log('🔗 URL construída:', fullUrl)
+    console.log('🌐 Hostname atual:', window.location.hostname)
+    console.log('📱 User Agent:', navigator.userAgent)
+    
+    return fullUrl
   }
 }
 
