@@ -22,7 +22,7 @@ import {
   ShieldCheck,
   ShieldAlert,
   ShieldX,
-  Virus,
+  Bug,
   Clock,
   RefreshCw,
   Settings,
@@ -277,7 +277,7 @@ const SegurancaAdmin = () => {
     { value: 'brute_force', label: 'Força Bruta', icon: ShieldX, color: 'red' },
     { value: 'suspicious_login', label: 'Login Suspeito', icon: AlertTriangle, color: 'yellow' },
     { value: 'data_breach', label: 'Vazamento de Dados', icon: Database, color: 'red' },
-    { value: 'malware', label: 'Malware', icon: Virus, color: 'red' },
+    { value: 'malware', label: 'Malware', icon: Bug, color: 'red' },
     { value: 'phishing', label: 'Phishing', icon: Globe, color: 'orange' }
   ]
 
