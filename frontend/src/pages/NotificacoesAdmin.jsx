@@ -1153,6 +1153,7 @@ const NotificacoesAdmin = () => {
             />
           </div>
         )}
+        </div>
       </div>
     </AdminLayout>
   )
