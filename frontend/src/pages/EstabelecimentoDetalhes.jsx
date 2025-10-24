@@ -13,7 +13,6 @@ import StarRating from '../components/StarRating'
 import AvaliacaoCard from '../components/AvaliacaoCard'
 import GaleriaPortfolio from '../components/GaleriaPortfolio'
 import Toast from '../components/Toast'
-import estabelecimentoService from '../services/estabelecimentoService'
 
 const EstabelecimentoDetalhes = () => {
   const { id } = useParams()
