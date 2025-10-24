@@ -492,9 +492,10 @@ const NotificacoesAdmin = () => {
 
       if (response.ok) {
         const data = await response.json()
+        console.log('📢 Notificações reais carregadas:', data)
         setNotifications(data.notificacoes || [])
       } else {
-        // Se não conseguir dados reais, usar dados simulados
+        console.log('⚠️ Usando notificações simuladas como fallback')
         carregarNotificacoesSimuladas()
       }
     } catch (error) {
@@ -599,22 +600,49 @@ const NotificacoesAdmin = () => {
     try {
       const token = localStorage.getItem('adminToken')
       
+      // Mapear dados do frontend para o formato da API
+      const apiData = {
+        titulo: newNotification.title,
+        mensagem: newNotification.message,
+        tipo: newNotification.type,
+        prioridade: newNotification.priority,
+        canais: newNotification.channels,
+        usuariosAlvo: newNotification.targetUsers,
+        usuariosCustom: newNotification.customUsers,
+        agendadaPara: newNotification.scheduledFor ? new Date(newNotification.scheduledFor) : null,
+        expiraEm: newNotification.expiresAt ? new Date(newNotification.expiresAt) : null
+      }
+      
       const response = await fetch('https://jfagende-production.up.railway.app/api/admin/notificacoes', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          ...newNotification,
-          scheduledFor: newNotification.scheduledFor ? new Date(newNotification.scheduledFor) : new Date(),
-          expiresAt: newNotification.expiresAt ? new Date(newNotification.expiresAt) : null
-        })
+        body: JSON.stringify(apiData)
       })
 
       if (response.ok) {
         const data = await response.json()
-        setNotifications([data.notificacao, ...notifications])
+        console.log('✅ Notificação criada com sucesso:', data)
+        
+        // Mapear dados da API para o formato do frontend
+        const notificacaoFormatada = {
+          id: data.notificacao.id,
+          title: data.notificacao.titulo,
+          message: data.notificacao.mensagem,
+          type: data.notificacao.tipo,
+          priority: data.notificacao.prioridade,
+          channels: data.notificacao.canais,
+          targetUsers: data.notificacao.usuariosAlvo,
+          read: data.notificacao.lida,
+          createdAt: data.notificacao.criadoEm,
+          readAt: data.notificacao.lidaEm,
+          sentAt: data.notificacao.enviadaEm,
+          status: data.notificacao.status
+        }
+        
+        setNotifications([notificacaoFormatada, ...notifications])
         setShowCreateModal(false)
         setNewNotification({
           title: '',

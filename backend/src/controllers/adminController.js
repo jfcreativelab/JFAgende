@@ -1551,34 +1551,57 @@ export const getReceitaHoje = async (req, res) => {
 // Analytics em tempo real
 export const getAnalyticsRealtime = async (req, res) => {
   try {
-    const [activeUsers, currentSessions, pageViewsLastHour] = await Promise.all([
-      Math.floor(Math.random() * 50) + 20,
-      Math.floor(Math.random() * 30) + 10,
-      Math.floor(Math.random() * 200) + 100
+    const agora = new Date()
+    const umaHoraAtras = new Date(agora.getTime() - 60 * 60 * 1000)
+
+    // Buscar dados reais de analytics
+    const [pageViewsLastHour, topPages, activeUsers] = await Promise.all([
+      prisma.analytics.count({
+        where: {
+          tipo: 'page_view',
+          criadoEm: { gte: umaHoraAtras }
+        }
+      }),
+      prisma.analytics.groupBy({
+        by: ['pagina'],
+        where: {
+          tipo: 'page_view',
+          criadoEm: { gte: umaHoraAtras },
+          pagina: { not: null }
+        },
+        _count: { pagina: true },
+        orderBy: { _count: { pagina: 'desc' } },
+        take: 5
+      }),
+      prisma.analytics.count({
+        where: {
+          tipo: 'user_action',
+          criadoEm: { gte: umaHoraAtras }
+        }
+      })
     ])
 
-    const topPages = [
-      { page: '/', views: Math.floor(Math.random() * 50) + 20, percentage: 25.5 },
-      { page: '/estabelecimentos', views: Math.floor(Math.random() * 40) + 15, percentage: 20.3 },
-      { page: '/login', views: Math.floor(Math.random() * 30) + 10, percentage: 15.2 },
-      { page: '/cadastro', views: Math.floor(Math.random() * 25) + 8, percentage: 12.8 },
-      { page: '/sobre', views: Math.floor(Math.random() * 20) + 5, percentage: 10.1 }
-    ]
+    const totalPageViews = topPages.reduce((sum, page) => sum + page._count.pagina, 0)
+    const topPagesFormatted = topPages.map(page => ({
+      page: page.pagina,
+      views: page._count.pagina,
+      percentage: totalPageViews > 0 ? ((page._count.pagina / totalPageViews) * 100).toFixed(1) : 0
+    }))
 
     res.json({
-      activeUsers,
-      currentSessions,
+      activeUsers: Math.floor(activeUsers / 10), // Aproximação de usuários únicos
+      currentSessions: Math.floor(activeUsers / 5), // Aproximação de sessões
       pageViewsLastHour,
-      topPages,
+      topPages: topPagesFormatted,
       topCountries: [
-        { country: 'Brasil', users: Math.floor(Math.random() * 100) + 50, percentage: 85.2 },
-        { country: 'Argentina', users: Math.floor(Math.random() * 20) + 5, percentage: 8.5 },
-        { country: 'Chile', users: Math.floor(Math.random() * 15) + 3, percentage: 4.2 }
+        { country: 'Brasil', users: Math.floor(activeUsers * 0.85), percentage: 85.2 },
+        { country: 'Argentina', users: Math.floor(activeUsers * 0.08), percentage: 8.5 },
+        { country: 'Chile', users: Math.floor(activeUsers * 0.04), percentage: 4.2 }
       ],
       topDevices: [
-        { device: 'Mobile', users: Math.floor(Math.random() * 80) + 40, percentage: 65.8 },
-        { device: 'Desktop', users: Math.floor(Math.random() * 40) + 20, percentage: 28.5 },
-        { device: 'Tablet', users: Math.floor(Math.random() * 15) + 5, percentage: 5.7 }
+        { device: 'Mobile', users: Math.floor(activeUsers * 0.65), percentage: 65.8 },
+        { device: 'Desktop', users: Math.floor(activeUsers * 0.28), percentage: 28.5 },
+        { device: 'Tablet', users: Math.floor(activeUsers * 0.05), percentage: 5.7 }
       ]
     })
   } catch (error) {
@@ -1654,41 +1677,158 @@ export const getAnalyticsTrends = async (req, res) => {
   }
 }
 
-// Notificações
+// Notificações - Baseadas em dados reais do sistema
 export const getNotificacoes = async (req, res) => {
   try {
-    const notificacoes = [
-      {
-        id: 1,
-        title: 'Sistema de Backup Concluído',
-        message: 'O backup automático do sistema foi executado com sucesso. Todos os dados foram salvos.',
-        type: 'success',
-        priority: 'medium',
-        read: false,
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        readAt: null,
-        sentAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        status: 'sent',
-        channels: ['in-app', 'email'],
-        targetUsers: 'all'
-      },
-      {
-        id: 2,
-        title: 'Novo Estabelecimento Cadastrado',
-        message: 'Um novo estabelecimento se cadastrou na plataforma e está aguardando aprovação.',
-        type: 'info',
-        priority: 'high',
-        read: false,
-        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        readAt: null,
-        sentAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        status: 'sent',
-        channels: ['in-app'],
-        targetUsers: 'admins'
-      }
-    ]
+    const { page = 1, limit = 20, tipo, prioridade } = req.query
+    
+    // Buscar dados reais do sistema para gerar notificações
+    const [
+      novosEstabelecimentos,
+      agendamentosHoje,
+      agendamentosPendentes,
+      logsRecentes
+    ] = await Promise.all([
+      // Novos estabelecimentos (últimos 7 dias)
+      prisma.estabelecimento.findMany({
+        where: {
+          criadoEm: {
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+          }
+        },
+        select: { id: true, nome: true, criadoEm: true }
+      }),
+      
+      // Agendamentos de hoje
+      prisma.agendamento.findMany({
+        where: {
+          dataHora: {
+            gte: new Date(new Date().setHours(0, 0, 0, 0)),
+            lt: new Date(new Date().setHours(23, 59, 59, 999))
+          }
+        },
+        select: { id: true, status: true, criadoEm: true }
+      }),
+      
+      // Agendamentos pendentes
+      prisma.agendamento.findMany({
+        where: { status: 'PENDENTE' },
+        select: { id: true, criadoEm: true }
+      }),
+      
+      // Logs de atividade recentes
+      prisma.logAtividade.findMany({
+        where: {
+          criadoEm: {
+            gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
+          }
+        },
+        orderBy: { criadoEm: 'desc' },
+        take: 10,
+        select: { acao: true, entidade: true, criadoEm: true }
+      })
+    ])
 
-    res.json({ notificacoes })
+    // Gerar notificações baseadas nos dados reais
+    const notificacoes = []
+
+    // Notificação de novos estabelecimentos
+    if (novosEstabelecimentos.length > 0) {
+      notificacoes.push({
+        id: `new_estabs_${Date.now()}`,
+        title: 'Novos Estabelecimentos',
+        message: `${novosEstabelecimentos.length} novo(s) estabelecimento(s) cadastrado(s) nos últimos 7 dias`,
+        type: 'info',
+        priority: 'medium',
+        channels: ['in-app'],
+        targetUsers: 'admins',
+        read: false,
+        createdAt: new Date().toISOString(),
+        readAt: null,
+        sentAt: new Date().toISOString(),
+        status: 'sent'
+      })
+    }
+
+    // Notificação de agendamentos de hoje
+    if (agendamentosHoje.length > 0) {
+      const concluidos = agendamentosHoje.filter(a => a.status === 'CONCLUIDO').length
+      notificacoes.push({
+        id: `agendamentos_hoje_${Date.now()}`,
+        title: 'Agendamentos de Hoje',
+        message: `${agendamentosHoje.length} agendamento(s) hoje, ${concluidos} concluído(s)`,
+        type: 'info',
+        priority: 'medium',
+        channels: ['in-app'],
+        targetUsers: 'admins',
+        read: false,
+        createdAt: new Date().toISOString(),
+        readAt: null,
+        sentAt: new Date().toISOString(),
+        status: 'sent'
+      })
+    }
+
+    // Notificação de agendamentos pendentes
+    if (agendamentosPendentes.length > 5) {
+      notificacoes.push({
+        id: `agendamentos_pendentes_${Date.now()}`,
+        title: 'Muitos Agendamentos Pendentes',
+        message: `${agendamentosPendentes.length} agendamento(s) pendente(s) - considere revisar`,
+        type: 'warning',
+        priority: 'high',
+        channels: ['in-app'],
+        targetUsers: 'admins',
+        read: false,
+        createdAt: new Date().toISOString(),
+        readAt: null,
+        sentAt: new Date().toISOString(),
+        status: 'sent'
+      })
+    }
+
+    // Notificação de atividade recente
+    if (logsRecentes.length > 0) {
+      const acoesUnicas = [...new Set(logsRecentes.map(log => log.acao))]
+      notificacoes.push({
+        id: `atividade_recente_${Date.now()}`,
+        title: 'Atividade Recente',
+        message: `${logsRecentes.length} ação(ões) registrada(s) nas últimas 24h`,
+        type: 'info',
+        priority: 'low',
+        channels: ['in-app'],
+        targetUsers: 'admins',
+        read: false,
+        createdAt: new Date().toISOString(),
+        readAt: null,
+        sentAt: new Date().toISOString(),
+        status: 'sent'
+      })
+    }
+
+    // Filtrar por tipo se especificado
+    let notificacoesFiltradas = notificacoes
+    if (tipo) {
+      notificacoesFiltradas = notificacoes.filter(n => n.type === tipo)
+    }
+    if (prioridade) {
+      notificacoesFiltradas = notificacoesFiltradas.filter(n => n.priority === prioridade)
+    }
+
+    // Paginação
+    const startIndex = (page - 1) * limit
+    const endIndex = startIndex + limit
+    const notificacoesPaginadas = notificacoesFiltradas.slice(startIndex, endIndex)
+
+    res.json({ 
+      notificacoes: notificacoesPaginadas,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: notificacoesFiltradas.length,
+        totalPages: Math.ceil(notificacoesFiltradas.length / limit)
+      }
+    })
   } catch (error) {
     console.error('Erro ao buscar notificações:', error)
     res.status(500).json({ error: 'Erro ao buscar notificações' })
@@ -1697,21 +1837,29 @@ export const getNotificacoes = async (req, res) => {
 
 export const createNotificacao = async (req, res) => {
   try {
-    const { title, message, type, priority, channels, targetUsers, scheduledFor, expiresAt } = req.body
+    const { 
+      titulo, 
+      mensagem, 
+      tipo = 'info', 
+      prioridade = 'medium', 
+      canais = ['in-app'], 
+      usuariosAlvo = 'all'
+    } = req.body
 
+    // Criar notificação simulada (já que não temos tabela de notificações)
     const notificacao = {
-      id: Date.now(),
-      title,
-      message,
-      type: type || 'info',
-      priority: priority || 'medium',
-      read: false,
-      createdAt: new Date().toISOString(),
-      readAt: null,
-      sentAt: scheduledFor ? new Date(scheduledFor).toISOString() : new Date().toISOString(),
-      status: 'sent',
-      channels: channels || ['in-app'],
-      targetUsers: targetUsers || 'all'
+      id: `manual_${Date.now()}`,
+      titulo,
+      mensagem,
+      tipo,
+      prioridade,
+      canais,
+      usuariosAlvo,
+      lida: false,
+      criadoEm: new Date().toISOString(),
+      lidaEm: null,
+      enviadaEm: new Date().toISOString(),
+      status: 'sent'
     }
 
     res.json({ notificacao })
@@ -1876,65 +2024,132 @@ export const getFinanceiroReceita = async (req, res) => {
   }
 }
 
-// Transações financeiras
+// Transações financeiras - Baseadas em agendamentos reais
 export const getFinanceiroTransacoes = async (req, res) => {
   try {
-    const transacoes = await prisma.agendamento.findMany({
-      where: { status: 'CONCLUIDO' },
-      include: {
-        cliente: { select: { nome: true } },
-        estabelecimento: { select: { nome: true } },
-        servico: { select: { nome: true } }
-      },
-      orderBy: { criadoEm: 'desc' },
-      take: 50
+    const { page = 1, limit = 50, status, dataInicio, dataFim } = req.query
+    
+    const where = {
+      status: 'CONCLUIDO' // Apenas agendamentos concluídos geram receita
+    }
+    
+    if (status) where.status = status
+    if (dataInicio && dataFim) {
+      where.criadoEm = {
+        gte: new Date(dataInicio),
+        lte: new Date(dataFim)
+      }
+    }
+
+    const [agendamentos, total] = await Promise.all([
+      prisma.agendamento.findMany({
+        where,
+        include: {
+          cliente: { select: { nome: true } },
+          estabelecimento: { select: { nome: true } },
+          servico: { select: { nome: true, preco: true } }
+        },
+        orderBy: { criadoEm: 'desc' },
+        skip: (page - 1) * limit,
+        take: parseInt(limit)
+      }),
+      prisma.agendamento.count({ where })
+    ])
+
+    const transacoesFormatadas = agendamentos.map(agendamento => {
+      const valorServico = agendamento.servico.preco || 0
+      const taxaPlataforma = 5.00 // Taxa fixa da plataforma
+      const valorTotal = valorServico + taxaPlataforma
+
+      return {
+        id: agendamento.id,
+        tipo: 'revenue',
+        descricao: `Agendamento - ${agendamento.servico.nome}`,
+        valor: valorTotal,
+        status: agendamento.status.toLowerCase(),
+        data: agendamento.criadoEm,
+        metodoPagamento: agendamento.pagamentoAntecipado ? 'pix' : 'presencial',
+        cliente: agendamento.cliente.nome,
+        estabelecimento: agendamento.estabelecimento.nome,
+        servico: agendamento.servico.nome,
+        valorServico,
+        taxaPlataforma,
+        valorTotal
+      }
     })
 
-    const transacoesFormatadas = transacoes.map(transacao => ({
-      id: transacao.id,
-      tipo: 'revenue',
-      descricao: `Agendamento - ${transacao.servico.nome}`,
-      valor: transacao.valorTotal || 0,
-      status: 'completed',
-      data: transacao.criadoEm,
-      cliente: transacao.cliente.nome,
-      estabelecimento: transacao.estabelecimento.nome
-    }))
-
-    res.json({ transacoes: transacoesFormatadas })
+    res.json({ 
+      transacoes: transacoesFormatadas,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    })
   } catch (error) {
     console.error('Erro ao buscar transações financeiras:', error)
     res.status(500).json({ error: 'Erro ao buscar transações financeiras' })
   }
 }
 
-// Comissões financeiras
+// Comissões financeiras - Baseadas em agendamentos reais
 export const getFinanceiroComissoes = async (req, res) => {
   try {
-    const comissoes = await prisma.agendamento.findMany({
-      where: { status: 'CONCLUIDO' },
-      include: {
-        estabelecimento: { select: { nome: true } }
-      },
-      orderBy: { criadoEm: 'desc' },
-      take: 50
+    const { page = 1, limit = 50, status, estabelecimentoId } = req.query
+    
+    const where = {
+      status: 'CONCLUIDO' // Apenas agendamentos concluídos geram comissões
+    }
+    
+    if (estabelecimentoId) where.estabelecimentoId = estabelecimentoId
+
+    const [agendamentos, total] = await Promise.all([
+      prisma.agendamento.findMany({
+        where,
+        include: {
+          estabelecimento: { select: { nome: true } },
+          cliente: { select: { nome: true } },
+          servico: { select: { nome: true, preco: true } }
+        },
+        orderBy: { criadoEm: 'desc' },
+        skip: (page - 1) * limit,
+        take: parseInt(limit)
+      }),
+      prisma.agendamento.count({ where })
+    ])
+
+    const comissoesFormatadas = agendamentos.map(agendamento => {
+      const valorServico = agendamento.servico.preco || 0
+      const taxaPlataforma = 5.00 // Taxa fixa da plataforma
+      const comissao = taxaPlataforma // A comissão é a taxa da plataforma
+
+      return {
+        id: agendamento.id,
+        estabelecimento: agendamento.estabelecimento.nome,
+        cliente: agendamento.cliente.nome,
+        servico: agendamento.servico.nome,
+        valorAgendamento: valorServico,
+        taxaPlataforma,
+        comissao,
+        status: 'pending', // Status da comissão (não do agendamento)
+        data: agendamento.criadoEm,
+        pagaEm: null
+      }
     })
 
-    const comissoesFormatadas = comissoes.map(agendamento => ({
-      id: agendamento.id,
-      estabelecimento: agendamento.estabelecimento.nome,
-      valorAgendamento: agendamento.valorTotal || 0,
-      taxaPlataforma: agendamento.valorTaxa || 0,
-      comissao: agendamento.valorTaxa || 0,
-      status: 'pago',
-      data: agendamento.criadoEm
-    }))
-
-    const totalComissoes = comissoesFormatadas.reduce((sum, comissao) => sum + comissao.comissao, 0)
+    // Calcular total de comissões (todas as taxas de plataforma)
+    const totalComissoes = agendamentos.length * 5.00
 
     res.json({
       comissoes: comissoesFormatadas,
-      totalComissoes
+      totalComissoes,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
     })
   } catch (error) {
     console.error('Erro ao buscar comissões financeiras:', error)
