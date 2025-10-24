@@ -43,6 +43,7 @@ import SupportAdmin from './pages/SupportAdmin'
 import Notificacoes from './pages/Notificacoes'
 import PagamentoSucesso from './pages/PagamentoSucesso'
 import PagamentoCancelado from './pages/PagamentoCancelado'
+import TesteImagens from './pages/TesteImagens'
 
 // Componente de rota protegida
 function ProtectedRoute({ children, tipo }) {
@@ -338,6 +339,9 @@ function App() {
           {/* Páginas de Pagamento */}
           <Route path="/assinatura/sucesso" element={<PagamentoSucesso />} />
           <Route path="/assinatura/cancelado" element={<PagamentoCancelado />} />
+
+          {/* Página de Teste */}
+          <Route path="/teste-imagens" element={<TesteImagens />} />
 
           {/* Rota 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
