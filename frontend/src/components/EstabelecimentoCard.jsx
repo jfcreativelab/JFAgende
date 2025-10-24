@@ -89,35 +89,37 @@ const EstabelecimentoCard = ({
 
         {/* Logo do Estabelecimento */}
         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl overflow-hidden border-2 sm:border-3 border-white dark:border-gray-800 shadow-2xl ring-2 ring-primary-500/30 group-hover:scale-110 transition-transform duration-300 z-10">
-          {estabelecimento.fotoPerfilUrl ? (
-            <img 
-              src={estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl)} 
-              alt={`Logo ${estabelecimento.nome}`}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              onError={(e) => {
-                console.error('❌ Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
-                console.error('❌ URL tentada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
-                
-                // Tentar URL do Cloudinary como fallback
-                const cloudinaryUrl = estabelecimentoService.getCloudinaryUrl(estabelecimento.id, estabelecimento.nome);
-                if (cloudinaryUrl) {
-                  console.log('🔄 Tentando URL do Cloudinary:', cloudinaryUrl);
-                  e.target.src = cloudinaryUrl;
-                } else {
-                  // Mostrar fallback visual
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }
-              }}
-              onLoad={() => {
-                console.log('✅ Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
-                console.log('✅ URL usada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
-              }}
-            />
-          ) : null}
-          {/* Fallback visual sempre visível */}
-          <div className={`w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs ${estabelecimento.fotoPerfilUrl ? 'hidden' : 'flex'}`}>
+          {/* Imagem principal */}
+          <img 
+            src={estabelecimento.fotoPerfilUrl ? estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl) : ''} 
+            alt={`Logo ${estabelecimento.nome}`}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            style={{display: estabelecimento.fotoPerfilUrl ? 'block' : 'none'}}
+            onError={(e) => {
+              console.error('❌ Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
+              console.error('❌ URL tentada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
+              
+              // Tentar URL do Cloudinary como fallback
+              const cloudinaryUrl = estabelecimentoService.getCloudinaryUrl(estabelecimento.id, estabelecimento.nome);
+              if (cloudinaryUrl) {
+                console.log('🔄 Tentando URL do Cloudinary:', cloudinaryUrl);
+                e.target.src = cloudinaryUrl;
+              } else {
+                // Mostrar fallback visual
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }
+            }}
+            onLoad={() => {
+              console.log('✅ Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
+              console.log('✅ URL usada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
+              // Esconder fallback quando imagem carrega
+              e.target.nextSibling.style.display = 'none';
+            }}
+          />
+          {/* Fallback visual */}
+          <div className="w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs" style={{display: estabelecimento.fotoPerfilUrl ? 'none' : 'flex'}}>
             {estabelecimento.nome.charAt(0).toUpperCase()}
           </div>
         </div>

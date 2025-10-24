@@ -121,35 +121,37 @@ const EstabelecimentoDetalhes = () => {
             <Card>
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6">
                 <div className="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-primary-100 via-purple-100 to-pink-100 dark:from-primary-900 dark:via-purple-900 dark:to-pink-900 rounded-2xl flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-primary-500/20 mx-auto sm:mx-0 relative">
-                  {estabelecimento.fotoPerfilUrl ? (
-                    <img 
-                      src={estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl)} 
-                      alt={estabelecimento.nome}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      onError={(e) => {
-                        console.error('❌ Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
-                        console.error('❌ URL tentada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
-                        
-                        // Tentar URL do Cloudinary como fallback
-                        const cloudinaryUrl = estabelecimentoService.getCloudinaryUrl(estabelecimento.id, estabelecimento.nome);
-                        if (cloudinaryUrl) {
-                          console.log('🔄 Tentando URL do Cloudinary:', cloudinaryUrl);
-                          e.target.src = cloudinaryUrl;
-                        } else {
-                          // Mostrar fallback visual
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }
-                      }}
-                      onLoad={() => {
-                        console.log('✅ Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
-                      }}
-                    />
-                  ) : null}
+                  {/* Imagem principal */}
+                  <img 
+                    src={estabelecimento.fotoPerfilUrl ? estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl) : ''} 
+                    alt={estabelecimento.nome}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    style={{display: estabelecimento.fotoPerfilUrl ? 'block' : 'none'}}
+                    onError={(e) => {
+                      console.error('❌ Erro ao carregar logo:', estabelecimento.fotoPerfilUrl);
+                      console.error('❌ URL tentada:', estabelecimentoService.getImageUrl(estabelecimento.fotoPerfilUrl));
+                      
+                      // Tentar URL do Cloudinary como fallback
+                      const cloudinaryUrl = estabelecimentoService.getCloudinaryUrl(estabelecimento.id, estabelecimento.nome);
+                      if (cloudinaryUrl) {
+                        console.log('🔄 Tentando URL do Cloudinary:', cloudinaryUrl);
+                        e.target.src = cloudinaryUrl;
+                      } else {
+                        // Mostrar fallback visual
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }
+                    }}
+                    onLoad={() => {
+                      console.log('✅ Logo carregada com sucesso:', estabelecimento.fotoPerfilUrl);
+                      // Esconder fallback quando imagem carrega
+                      e.target.nextSibling.style.display = 'none';
+                    }}
+                  />
                   
                   {/* Fallback visual */}
-                  <div className={`w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl ${estabelecimento.fotoPerfilUrl ? 'hidden' : 'flex'}`}>
+                  <div className="w-full h-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl" style={{display: estabelecimento.fotoPerfilUrl ? 'none' : 'flex'}}>
                     {estabelecimento.nome.charAt(0).toUpperCase()}
                   </div>
                 </div>
