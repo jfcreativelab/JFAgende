@@ -70,9 +70,18 @@ export const criarSessaoPagamento = async (req, res) => {
     const assinaturaExistente = estabelecimento.assinatura;
 
     if (assinaturaExistente && assinaturaExistente.status === 'ATIVA') {
-      return res.status(400).json({ 
-        error: 'Já existe uma assinatura ativa para este estabelecimento',
-        assinatura: assinaturaExistente
+      // Verificar se é o mesmo plano
+      if (assinaturaExistente.planoId === planoId) {
+        return res.status(400).json({ 
+          error: 'Você já possui este plano ativo',
+          assinatura: assinaturaExistente
+        });
+      }
+      
+      // Se é um plano diferente, permitir upgrade
+      console.log('🔄 Upgrade de plano detectado:', {
+        planoAtual: assinaturaExistente.plano.nome,
+        novoPlano: plano.nome
       });
     }
 
