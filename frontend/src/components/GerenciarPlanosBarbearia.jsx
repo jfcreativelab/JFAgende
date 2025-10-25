@@ -3,6 +3,7 @@ import { Crown, Star, Zap, Gem, Plus, Edit, Trash2, Save, X, DollarSign, Clock, 
 import Button from './Button';
 import Card from './Card';
 import Toast from './Toast';
+import planoEstabelecimentoService from '../services/planoEstabelecimentoService';
 
 const GerenciarPlanosBarbearia = ({ estabelecimentoId }) => {
   const [planos, setPlanos] = useState([]);
@@ -78,17 +79,36 @@ const GerenciarPlanosBarbearia = ({ estabelecimentoId }) => {
   ];
 
   useEffect(() => {
-    // Por enquanto, usar planos padrão
-    // Futuramente, buscar do backend
-    setPlanos(planosPadrao);
-    setLoading(false);
+    carregarPlanos();
   }, [estabelecimentoId]);
+
+  const carregarPlanos = async () => {
+    try {
+      setLoading(true);
+      const planosData = await planoEstabelecimentoService.getPlanosByEstabelecimento(estabelecimentoId);
+      
+      if (planosData.length === 0) {
+        // Se não há planos, criar planos padrão
+        await planoEstabelecimentoService.criarPlanosPadrao(estabelecimentoId);
+        const novosPlanos = await planoEstabelecimentoService.getPlanosByEstabelecimento(estabelecimentoId);
+        setPlanos(novosPlanos);
+      } else {
+        setPlanos(planosData);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar planos:', error);
+      // Em caso de erro, usar planos padrão
+      setPlanos(planosPadrao);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEditarPlano = (plano) => {
     setEditandoPlano({ ...plano });
   };
 
-  const handleSalvarPlano = () => {
+  const handleSalvarPlano = async () => {
     if (!editandoPlano.nome || !editandoPlano.descricao || editandoPlano.preco <= 0) {
       setToast({
         type: 'error',
@@ -97,47 +117,91 @@ const GerenciarPlanosBarbearia = ({ estabelecimentoId }) => {
       return;
     }
 
-    setPlanos(planos.map(p => 
-      p.id === editandoPlano.id ? editandoPlano : p
-    ));
-    setEditandoPlano(null);
-    setToast({
-      type: 'success',
-      message: 'Plano atualizado com sucesso!'
-    });
+    try {
+      const planoAtualizado = await planoEstabelecimentoService.updatePlano(editandoPlano.id, editandoPlano);
+      setPlanos(planos.map(p => 
+        p.id === editandoPlano.id ? planoAtualizado : p
+      ));
+      setEditandoPlano(null);
+      setToast({
+        type: 'success',
+        message: 'Plano atualizado com sucesso!'
+      });
+    } catch (error) {
+      setToast({
+        type: 'error',
+        message: 'Erro ao atualizar plano: ' + (error.response?.data?.error || error.message)
+      });
+    }
   };
 
   const handleCancelarEdicao = () => {
     setEditandoPlano(null);
   };
 
-  const handleToggleAtivo = (planoId) => {
-    setPlanos(planos.map(p => 
-      p.id === planoId ? { ...p, ativo: !p.ativo } : p
-    ));
-    setToast({
-      type: 'success',
-      message: 'Status do plano atualizado!'
-    });
-  };
-
-  const handleAdicionarServico = (planoId) => {
-    const novoServico = prompt('Digite o novo serviço:');
-    if (novoServico) {
+  const handleToggleAtivo = async (planoId) => {
+    try {
+      const plano = planos.find(p => p.id === planoId);
+      const planoAtualizado = await planoEstabelecimentoService.updatePlano(planoId, { 
+        ativo: !plano.ativo 
+      });
+      
       setPlanos(planos.map(p => 
-        p.id === planoId 
-          ? { ...p, servicos: [...p.servicos, novoServico] }
-          : p
+        p.id === planoId ? planoAtualizado : p
       ));
+      setToast({
+        type: 'success',
+        message: 'Status do plano atualizado!'
+      });
+    } catch (error) {
+      setToast({
+        type: 'error',
+        message: 'Erro ao atualizar status: ' + (error.response?.data?.error || error.message)
+      });
     }
   };
 
-  const handleRemoverServico = (planoId, servicoIndex) => {
-    setPlanos(planos.map(p => 
-      p.id === planoId 
-        ? { ...p, servicos: p.servicos.filter((_, index) => index !== servicoIndex) }
-        : p
-    ));
+  const handleAdicionarServico = async (planoId) => {
+    const novoServico = prompt('Digite o novo serviço:');
+    if (novoServico) {
+      try {
+        const plano = planos.find(p => p.id === planoId);
+        const novosServicos = [...plano.servicos, novoServico];
+        
+        const planoAtualizado = await planoEstabelecimentoService.updatePlano(planoId, { 
+          servicos: novosServicos 
+        });
+        
+        setPlanos(planos.map(p => 
+          p.id === planoId ? planoAtualizado : p
+        ));
+      } catch (error) {
+        setToast({
+          type: 'error',
+          message: 'Erro ao adicionar serviço: ' + (error.response?.data?.error || error.message)
+        });
+      }
+    }
+  };
+
+  const handleRemoverServico = async (planoId, servicoIndex) => {
+    try {
+      const plano = planos.find(p => p.id === planoId);
+      const novosServicos = plano.servicos.filter((_, index) => index !== servicoIndex);
+      
+      const planoAtualizado = await planoEstabelecimentoService.updatePlano(planoId, { 
+        servicos: novosServicos 
+      });
+      
+      setPlanos(planos.map(p => 
+        p.id === planoId ? planoAtualizado : p
+      ));
+    } catch (error) {
+      setToast({
+        type: 'error',
+        message: 'Erro ao remover serviço: ' + (error.response?.data?.error || error.message)
+      });
+    }
   };
 
   if (loading) {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Crown, Star, Zap, Gem, Check, Calendar, Clock, Scissors } from 'lucide-react';
+import planoEstabelecimentoService from '../services/planoEstabelecimentoService';
 
 const PlanosEstabelecimento = ({ estabelecimentoId }) => {
   const [planos, setPlanos] = useState([]);
@@ -66,11 +67,30 @@ const PlanosEstabelecimento = ({ estabelecimentoId }) => {
   ];
 
   useEffect(() => {
-    // Por enquanto, usar planos padrão
-    // Futuramente, buscar do backend
-    setPlanos(planosPadrao);
-    setLoading(false);
+    carregarPlanos();
   }, [estabelecimentoId]);
+
+  const carregarPlanos = async () => {
+    try {
+      setLoading(true);
+      const planosData = await planoEstabelecimentoService.getPlanosByEstabelecimento(estabelecimentoId);
+      
+      if (planosData.length === 0) {
+        // Se não há planos, criar planos padrão
+        await planoEstabelecimentoService.criarPlanosPadrao(estabelecimentoId);
+        const novosPlanos = await planoEstabelecimentoService.getPlanosByEstabelecimento(estabelecimentoId);
+        setPlanos(novosPlanos);
+      } else {
+        setPlanos(planosData);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar planos:', error);
+      // Em caso de erro, usar planos padrão
+      setPlanos(planosPadrao);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
