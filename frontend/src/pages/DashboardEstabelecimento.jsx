@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LogOut, Calendar as CalendarIcon, Package, User, Plus, Edit2, Trash2, Clock, DollarSign, Check, X, BarChart3, CalendarDays, Image as ImageIcon, TrendingUp, TrendingDown, Users, CheckCircle, XCircle, AlertCircle, Wallet, CreditCard, PieChart, ArrowUpCircle, ArrowDownCircle, Smartphone, Crown } from 'lucide-react'
+import { LogOut, Calendar as CalendarIcon, Package, User, Plus, Edit2, Trash2, Clock, DollarSign, Check, X, BarChart3, CalendarDays, Image as ImageIcon, TrendingUp, TrendingDown, Users, CheckCircle, XCircle, AlertCircle, Wallet, CreditCard, PieChart, ArrowUpCircle, ArrowDownCircle, Smartphone } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useNotifications } from '../hooks/useNotifications'
 import { startOfMonth, endOfMonth, addMonths } from 'date-fns'
 import ThemeToggle from '../components/ThemeToggle'
 import NotificationCenter from '../components/NotificationCenter'
 import AgendaProfissional from '../components/CalendarioAgenda'
-import GerenciarPlanosBarbearia from '../components/GerenciarPlanosBarbearia'
 import estabelecimentoService from '../services/estabelecimentoService'
 import agendamentoService from '../services/agendamentoService'
 import agendaService from '../services/agendaService'
@@ -812,18 +811,6 @@ const DashboardEstabelecimento = () => {
             <span className="sm:hidden">Serviços</span>
           </button>
 
-          <button
-            onClick={() => setAbaAtiva('planos')}
-            className={`px-3 sm:px-4 md:px-6 py-2 sm:py-3 font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
-              abaAtiva === 'planos'
-                ? 'text-primary-600 border-b-2 border-primary-600'
-                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
-            }`}
-          >
-            <Crown className="inline mr-1 sm:mr-2" size={16} />
-            <span className="hidden sm:inline">Planos Mensais</span>
-            <span className="sm:hidden">Planos</span>
-          </button>
         </div>
 
         {/* Conteúdo da Aba Estatísticas */}
@@ -1542,11 +1529,6 @@ const DashboardEstabelecimento = () => {
         )}
 
         {/* Conteúdo da Aba Planos */}
-        {abaAtiva === 'planos' && (
-          <div>
-            <GerenciarPlanosBarbearia estabelecimentoId={user.id} />
-          </div>
-        )}
 
       </div>
     </div>

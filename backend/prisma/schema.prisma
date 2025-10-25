@@ -21,7 +21,6 @@ model Cliente {
   agendamentos Agendamento[]
   avaliacoes   Avaliacao[]
   favoritos    Favorito[]
-  assinaturasPlano AssinaturaPlano[]
 
   @@map("clientes")
 }
@@ -48,7 +47,6 @@ model Estabelecimento {
   avaliacoes   Avaliacao[]
   favoritos    Favorito[]
   bloqueios    BloqueioHorario[]
-  planos       PlanoEstabelecimento[]
   portfolio    Galeria[]
   assinatura   Assinatura?
 
@@ -261,46 +259,4 @@ model LogAtividade {
   @@map("logs_atividade")
 }
 
-// Modelo PlanoEstabelecimento - Planos mensais personalizados por estabelecimento
-model PlanoEstabelecimento {
-  id                String          @id @default(uuid())
-  estabelecimentoId String
-  estabelecimento   Estabelecimento @relation(fields: [estabelecimentoId], references: [id], onDelete: Cascade)
-  nome              String          // "Bronze", "Prata", "Ouro", "Diamante"
-  descricao         String
-  preco             Float           // Preço mensal em reais
-  cor               String          // Cor do gradiente (ex: "from-amber-600 to-amber-800")
-  icone             String          // Nome do ícone (ex: "Crown", "Star", "Zap", "Gem")
-  servicos          String[]        // Array de serviços incluídos
-  ativo             Boolean         @default(true)
-  popular           Boolean         @default(false) // Se é o plano mais popular
-  ordem             Int             @default(0) // Ordem de exibição
-  criadoEm          DateTime        @default(now())
-  atualizadoEm      DateTime        @updatedAt
-  
-  // Relacionamentos
-  assinaturas       AssinaturaPlano[]
-
-  @@map("planos_estabelecimento")
-}
-
-// Modelo AssinaturaPlano - Clientes que assinaram planos
-model AssinaturaPlano {
-  id                    String              @id @default(uuid())
-  clienteId             String
-  cliente               Cliente             @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-  planoEstabelecimentoId String
-  planoEstabelecimento  PlanoEstabelecimento @relation(fields: [planoEstabelecimentoId], references: [id], onDelete: Cascade)
-  ativo                 Boolean             @default(true)
-  dataInicio            DateTime            @default(now())
-  dataFim               DateTime?           // Null se ativo
-  cortesUtilizados      Int                 @default(0) // Contador de cortes utilizados no mês
-  barbasUtilizadas      Int                 @default(0) // Contador de barbas utilizadas no mês
-  servicosUtilizados    Json?               // JSON com serviços utilizados
-  criadoEm              DateTime            @default(now())
-  atualizadoEm          DateTime            @updatedAt
-
-  @@unique([clienteId, planoEstabelecimentoId, dataInicio])
-  @@map("assinaturas_plano")
-}
 
