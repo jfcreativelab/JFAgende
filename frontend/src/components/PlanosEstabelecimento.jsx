@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Crown, Star, Zap, Gem, Check, Calendar, Clock, Scissors } from 'lucide-react';
+import { Crown, Star, Zap, Gem, Check, Calendar, Clock, Scissors, CreditCard, Loader2 } from 'lucide-react';
 import planoEstabelecimentoService from '../services/planoEstabelecimentoService';
+import assinaturaPlanoService from '../services/assinaturaPlanoService';
+import { useAuth } from '../context/AuthContext';
+import Toast from './Toast';
 
 const PlanosEstabelecimento = ({ estabelecimentoId }) => {
+  const { user } = useAuth();
   const [planos, setPlanos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [assinando, setAssinando] = useState(null);
+  const [toast, setToast] = useState(null);
 
   // Planos padrão para barbearias
   const planosPadrao = [
@@ -89,6 +95,28 @@ const PlanosEstabelecimento = ({ estabelecimentoId }) => {
       setPlanos(planosPadrao);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAssinarPlano = async (planoId) => {
+    if (!user || user.tipo !== 'cliente') {
+      setToast({
+        type: 'error',
+        message: 'Você precisa estar logado como cliente para assinar um plano'
+      });
+      return;
+    }
+
+    try {
+      setAssinando(planoId);
+      await assinaturaPlanoService.assinarPlano(planoId, user.id);
+    } catch (error) {
+      setToast({
+        type: 'error',
+        message: 'Erro ao processar assinatura: ' + (error.response?.data?.error || error.message)
+      });
+    } finally {
+      setAssinando(null);
     }
   };
 
@@ -180,14 +208,25 @@ const PlanosEstabelecimento = ({ estabelecimentoId }) => {
               {/* Botão de Contratar */}
               <div className="p-6 pt-0">
                 <button
-                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-200 ${
+                  onClick={() => handleAssinarPlano(plano.id)}
+                  disabled={assinando === plano.id}
+                  className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
                     plano.popular
-                      ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:shadow-xl'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900'
+                      ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed'
                   }`}
                 >
-                  <Calendar className="w-5 h-5 inline mr-2" />
-                  Contratar Plano
+                  {assinando === plano.id ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-5 h-5" />
+                      Assinar Plano
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -263,6 +302,15 @@ const PlanosEstabelecimento = ({ estabelecimentoId }) => {
           </div>
         </div>
       </div>
+
+      {/* Toast de notificação */}
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };
