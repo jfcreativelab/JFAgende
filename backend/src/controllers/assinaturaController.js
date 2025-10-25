@@ -4,7 +4,11 @@ import Stripe from 'stripe';
 const prisma = new PrismaClient();
 
 // Configuração do Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.error('❌ STRIPE_SECRET_KEY não configurada!');
+}
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_invalid', {
   apiVersion: '2024-12-18.acacia',
 });
 
@@ -13,6 +17,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
  */
 export const criarSessaoPagamento = async (req, res) => {
   try {
+    // Verificar se Stripe está configurado
+    if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === 'sk_test_invalid') {
+      console.error('❌ Stripe não configurado');
+      return res.status(500).json({ 
+        error: 'Sistema de pagamento não configurado. Entre em contato com o suporte.',
+        code: 'STRIPE_NOT_CONFIGURED'
+      });
+    }
+
     const { planoId, estabelecimentoId } = req.body;
     const userId = req.user.id;
 
