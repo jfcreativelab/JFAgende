@@ -86,7 +86,7 @@ const PlanosPage = () => {
           message: 'Upgrade realizado com sucesso!' 
         })
         setModalUpgrade({ aberto: false, plano: null })
-        carregarAssinatura()
+        carregarDados()
       }
       
     } catch (error) {
