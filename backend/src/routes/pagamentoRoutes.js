@@ -8,6 +8,11 @@ import {
   rejeitarPagamentoPix,
   listarPagamentosPendentes
 } from '../controllers/pagamentoController.js';
+import {
+  criarSessaoPagamento,
+  obterStatusAssinatura,
+  webhookStripe
+} from '../controllers/assinaturaController.js';
 
 const router = express.Router();
 
@@ -45,5 +50,26 @@ router.post('/:agendamentoId/rejeitar', authenticate, isEstabelecimento, rejeita
  * @access  Private (Estabelecimento)
  */
 router.get('/pendentes', authenticate, isEstabelecimento, listarPagamentosPendentes);
+
+/**
+ * @route   POST /pagamento/criar-sessao
+ * @desc    Criar sessão de pagamento para assinatura
+ * @access  Private (Estabelecimento)
+ */
+router.post('/criar-sessao', authenticate, isEstabelecimento, criarSessaoPagamento);
+
+/**
+ * @route   GET /pagamento/status/:estabelecimentoId
+ * @desc    Obter status da assinatura
+ * @access  Private (Estabelecimento)
+ */
+router.get('/status/:estabelecimentoId', authenticate, isEstabelecimento, obterStatusAssinatura);
+
+/**
+ * @route   POST /pagamento/webhook
+ * @desc    Webhook do Stripe
+ * @access  Public (Stripe)
+ */
+router.post('/webhook', webhookStripe);
 
 export default router;
