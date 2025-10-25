@@ -17,6 +17,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_invalid', {
  */
 export const criarSessaoPagamento = async (req, res) => {
   try {
+    console.log('🚀 INÍCIO criarSessaoPagamento');
+    console.log('📋 Headers:', req.headers);
+    console.log('📋 Body:', req.body);
+    console.log('📋 User:', req.user);
+    
     // Verificar se Stripe está configurado
     if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === 'sk_test_invalid') {
       console.error('❌ Stripe não configurado');
@@ -149,8 +154,17 @@ export const criarSessaoPagamento = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erro ao criar sessão de pagamento:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error('❌ ERRO COMPLETO criarSessaoPagamento:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      code: error.code
+    });
+    res.status(500).json({ 
+      error: 'Erro interno do servidor',
+      details: error.message,
+      code: error.code || 'UNKNOWN_ERROR'
+    });
   }
 };
 
