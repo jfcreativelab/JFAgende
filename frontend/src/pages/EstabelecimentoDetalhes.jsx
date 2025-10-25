@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, MapPin, Phone, Mail, Clock, DollarSign, Heart, Star, MessageSquare, Image as ImageIcon } from 'lucide-react'
+import { ArrowLeft, MapPin, Phone, Mail, Clock, DollarSign, Heart, Star, MessageSquare, Image as ImageIcon, Crown } from 'lucide-react'
 import estabelecimentoService from '../services/estabelecimentoService'
 import avaliacaoService from '../services/avaliacaoService'
 import favoritoService from '../services/favoritoService'
@@ -13,6 +13,7 @@ import StarRating from '../components/StarRating'
 import AvaliacaoCard from '../components/AvaliacaoCard'
 import GaleriaPortfolio from '../components/GaleriaPortfolio'
 import LogoEstabelecimento from '../components/LogoEstabelecimento'
+import PlanosEstabelecimento from '../components/PlanosEstabelecimento'
 import Toast from '../components/Toast'
 
 const EstabelecimentoDetalhes = () => {
@@ -243,6 +244,19 @@ const EstabelecimentoDetalhes = () => {
                   Serviços
                 </button>
 
+                <button
+                  onClick={() => setAbaAtiva('planos')}
+                  className={`px-3 py-2 sm:px-6 sm:py-3 font-medium transition-all whitespace-nowrap text-sm sm:text-base ${
+                    abaAtiva === 'planos'
+                      ? 'text-primary-600 border-b-2 border-primary-600'
+                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+                  }`}
+                >
+                  <Crown className="inline mr-1 sm:mr-2" size={16} />
+                  <span className="hidden sm:inline">Planos</span>
+                  <span className="sm:hidden">Planos</span>
+                </button>
+
                 {fotosPortfolio.length > 0 && (
                   <button
                     onClick={() => setAbaAtiva('portfolio')}
@@ -324,6 +338,13 @@ const EstabelecimentoDetalhes = () => {
                       ))
                     )}
                   </div>
+                </div>
+              )}
+
+              {/* Conteúdo Planos */}
+              {abaAtiva === 'planos' && (
+                <div>
+                  <PlanosEstabelecimento estabelecimentoId={id} />
                 </div>
               )}
 
