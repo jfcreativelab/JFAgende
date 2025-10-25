@@ -259,4 +259,3 @@ model LogAtividade {
   @@map("logs_atividade")
 }
 
-

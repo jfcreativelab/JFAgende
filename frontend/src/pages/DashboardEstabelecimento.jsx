@@ -810,7 +810,6 @@ const DashboardEstabelecimento = () => {
             <span className="hidden sm:inline">Meus Serviços</span>
             <span className="sm:hidden">Serviços</span>
           </button>
-
         </div>
 
         {/* Conteúdo da Aba Estatísticas */}
@@ -1527,8 +1526,6 @@ const DashboardEstabelecimento = () => {
             )}
           </div>
         )}
-
-        {/* Conteúdo da Aba Planos */}
 
       </div>
     </div>

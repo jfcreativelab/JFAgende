@@ -1,48 +1,27 @@
 import api from './api'
 
 export const pagamentoService = {
-  // Fazer upgrade de plano
-  fazerUpgrade: async (planoId) => {
+  // Criar sessão de pagamento
+  criarSessaoPagamento: async (planoId, estabelecimentoId) => {
     try {
-      const response = await api.post('/planos/upgrade', {
-        planoId
+      const response = await api.post('/pagamento/criar-sessao', {
+        planoId,
+        estabelecimentoId
       })
       return response.data
     } catch (error) {
-      console.error('Erro ao fazer upgrade:', error)
+      console.error('Erro ao criar sessão de pagamento:', error)
       throw error
     }
   },
 
-  // Obter assinatura atual
-  obterAssinaturaAtual: async () => {
+  // Obter status da assinatura
+  obterStatusAssinatura: async (estabelecimentoId) => {
     try {
-      const response = await api.get('/planos/assinatura')
+      const response = await api.get(`/pagamento/status/${estabelecimentoId}`)
       return response.data
     } catch (error) {
-      console.error('Erro ao obter assinatura:', error)
-      throw error
-    }
-  },
-
-  // Cancelar assinatura
-  cancelarAssinatura: async () => {
-    try {
-      const response = await api.post('/planos/cancelar')
-      return response.data
-    } catch (error) {
-      console.error('Erro ao cancelar assinatura:', error)
-      throw error
-    }
-  },
-
-  // Listar planos disponíveis
-  listarPlanos: async () => {
-    try {
-      const response = await api.get('/planos')
-      return response.data
-    } catch (error) {
-      console.error('Erro ao listar planos:', error)
+      console.error('Erro ao obter status da assinatura:', error)
       throw error
     }
   }

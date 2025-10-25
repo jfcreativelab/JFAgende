@@ -243,7 +243,6 @@ const EstabelecimentoDetalhes = () => {
                   Serviços
                 </button>
 
-
                 {fotosPortfolio.length > 0 && (
                   <button
                     onClick={() => setAbaAtiva('portfolio')}
@@ -327,8 +326,6 @@ const EstabelecimentoDetalhes = () => {
                   </div>
                 </div>
               )}
-
-              {/* Conteúdo Planos */}
 
               {/* Conteúdo Portfólio */}
               {abaAtiva === 'portfolio' && (
