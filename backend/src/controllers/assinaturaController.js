@@ -39,7 +39,13 @@ export const criarSessaoPagamento = async (req, res) => {
     // Verificar se o estabelecimento existe
     const estabelecimento = await prisma.estabelecimento.findUnique({
       where: { id: estabelecimentoId },
-      include: { plano: true }
+      include: { 
+        assinatura: {
+          include: {
+            plano: true
+          }
+        }
+      }
     });
 
     if (!estabelecimento) {
@@ -61,14 +67,9 @@ export const criarSessaoPagamento = async (req, res) => {
     }
 
     // Verificar se já existe assinatura ativa
-    const assinaturaExistente = await prisma.assinatura.findFirst({
-      where: {
-        estabelecimentoId: estabelecimentoId,
-        status: 'ATIVA'
-      }
-    });
+    const assinaturaExistente = estabelecimento.assinatura;
 
-    if (assinaturaExistente) {
+    if (assinaturaExistente && assinaturaExistente.status === 'ATIVA') {
       return res.status(400).json({ 
         error: 'Já existe uma assinatura ativa para este estabelecimento',
         assinatura: assinaturaExistente
@@ -182,11 +183,10 @@ export const obterStatusAssinatura = async (req, res) => {
     const estabelecimento = await prisma.estabelecimento.findUnique({
       where: { id: estabelecimentoId },
       include: { 
-        plano: true,
-        assinaturas: {
-          where: { status: 'ATIVA' },
-          orderBy: { criadoEm: 'desc' },
-          take: 1
+        assinatura: {
+          include: {
+            plano: true
+          }
         }
       }
     });
@@ -200,17 +200,17 @@ export const obterStatusAssinatura = async (req, res) => {
       return res.status(403).json({ error: 'Acesso negado' });
     }
 
-    const assinaturaAtiva = estabelecimento.assinaturas[0];
+    const assinaturaAtiva = estabelecimento.assinatura;
 
     res.json({
       success: true,
       estabelecimento: {
         id: estabelecimento.id,
         nome: estabelecimento.nome,
-        plano: estabelecimento.plano
+        plano: assinaturaAtiva?.plano || null
       },
       assinatura: assinaturaAtiva || null,
-      temAssinaturaAtiva: !!assinaturaAtiva
+      temAssinaturaAtiva: !!(assinaturaAtiva && assinaturaAtiva.status === 'ATIVA')
     });
 
   } catch (error) {
@@ -287,11 +287,7 @@ async function handleCheckoutCompleted(session) {
     }
   });
 
-  // Atualizar plano do estabelecimento
-  await prisma.estabelecimento.update({
-    where: { id: estabelecimentoId },
-    data: { planoId: planoId }
-  });
+    // Não precisamos atualizar o estabelecimento, pois a relação é através da assinatura
 
   console.log('✅ Assinatura criada e estabelecimento atualizado');
 }
