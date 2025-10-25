@@ -73,21 +73,29 @@ const PlanosPage = () => {
     setUpgrading(true)
 
     try {
-      // Criar sessão de pagamento no Stripe
-      const response = await pagamentoService.criarSessaoPagamento(
-        modalUpgrade.plano.id,
-        user.id
-      )
+      // Fazer upgrade de plano
+      const response = await pagamentoService.fazerUpgrade(modalUpgrade.plano.id)
       
-      // Redirecionar para o Stripe Checkout
-      window.location.href = response.url
+      if (response.url) {
+        // Redirecionar para o Stripe Checkout
+        window.location.href = response.url
+      } else {
+        // Upgrade feito com sucesso
+        setToast({ 
+          type: 'success', 
+          message: 'Upgrade realizado com sucesso!' 
+        })
+        setModalUpgrade({ aberto: false, plano: null })
+        carregarAssinatura()
+      }
       
     } catch (error) {
-      console.error('Erro ao criar sessão de pagamento:', error)
+      console.error('Erro ao fazer upgrade:', error)
       setToast({ 
         type: 'error', 
-        message: error.response?.data?.error || 'Erro ao processar pagamento' 
+        message: error.response?.data?.error || 'Erro ao processar upgrade' 
       })
+    } finally {
       setUpgrading(false)
     }
   }

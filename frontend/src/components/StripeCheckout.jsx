@@ -3,6 +3,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import Button from './Button'
 import Loading from './Loading'
+import pagamentoService from '../services/pagamentoService'
 
 // Chave pública do Stripe
 const stripePromise = loadStripe('pk_live_51Rr8vwLNKzwkxa1hdKfYNjib2k1lYHY8FiqY0CNKdxWlbTATnsTrHWSVJ5pEhWJaJfCxzS7qzsDRD2fYwzY97RJ4001ZsDGu4s')
@@ -24,30 +25,19 @@ const CheckoutForm = ({ plano, estabelecimentoId, onSuccess, onCancel }) => {
     setError(null)
 
     try {
-      // Criar sessão de pagamento no backend
-      const response = await fetch('/api/pagamento/criar-sessao', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          planoId: plano.id,
-          estabelecimentoId: estabelecimentoId
-        })
-      })
+      // Fazer upgrade de plano
+      const data = await pagamentoService.fazerUpgrade(plano.id)
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao criar sessão de pagamento')
+      if (data.url) {
+        // Redirecionar para o Stripe Checkout
+        window.location.href = data.url
+      } else {
+        // Se não há URL, o upgrade foi feito diretamente
+        onSuccess()
       }
 
-      // Redirecionar para o Stripe Checkout
-      window.location.href = data.url
-
     } catch (err) {
-      setError(err.message)
+      setError(err.response?.data?.error || err.message || 'Erro ao fazer upgrade')
       setLoading(false)
     }
   }
