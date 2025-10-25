@@ -83,6 +83,18 @@ export const criarSessaoPagamento = async (req, res) => {
         planoAtual: assinaturaExistente.plano.nome,
         novoPlano: plano.nome
       });
+      
+      // Cancelar assinatura anterior (se não for FREE)
+      if (assinaturaExistente.plano.nome !== 'FREE') {
+        console.log('🔄 Cancelando assinatura anterior...');
+        await prisma.assinatura.update({
+          where: { id: assinaturaExistente.id },
+          data: { 
+            status: 'CANCELADA',
+            dataFim: new Date()
+          }
+        });
+      }
     }
 
     // Criar produto no Stripe se não existir
